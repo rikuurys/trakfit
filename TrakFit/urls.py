@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from trakfit_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),
+    path('register/', views.register, name='register'),
+    path('reset-password/', views.resetPassword, name='resetPassword'),
 ]

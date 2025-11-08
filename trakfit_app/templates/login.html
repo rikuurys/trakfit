@@ -1,0 +1,370 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrakFit Login</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+    :root {
+        --primary-color: #3A7CA5;
+        --light-bg: #FAFAFA;
+        --dark-text: #2C3E50;
+        --input-bg: #F3F3F3;
+    }
+
+    body {
+        font-family: 'Sarabun', sans-serif;
+        height: 100vh;
+        overflow: auto;
+    }
+
+    .brand-font {
+        font-family: 'Rajdhani', sans-serif;
+    }
+
+    .split-container {
+        height: 100vh;
+        min-height: 700px;
+    }
+
+    .left-side {
+        background-color: var(--primary-color);
+        position: relative;
+        min-height: 400px;
+    }
+
+    .right-side {
+        background-color: var(--light-bg);
+        min-height: 400px;
+        padding-top: 150px;
+        padding-bottom: 40px;
+    }
+
+    .welcome-text {
+        color: var(--primary-color);
+        font-size: 3.5rem;
+        font-weight: 700;
+        text-align: center;
+        width: 100%;
+        margin-top: 40px;
+    }
+
+    .subtitle {
+        color: var(--dark-text);
+        font-size: 1.2rem;
+    }
+
+    .form-control-custom {
+        background-color: var(--input-bg);
+        border: none;
+        border-radius: 40px;
+        height: 80px;
+        padding: 0 30px;
+        font-size: 1.2rem;
+    }
+
+    .form-control-custom::placeholder {
+        color: rgba(44, 62, 80, 0.5);
+    }
+
+    .btn-signin {
+        background-color: var(--primary-color);
+        border: none;
+        border-radius: 40px;
+        height: 80px;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .forgot-password {
+        color: var(--dark-text);
+        font-size: 1rem;
+    }
+
+    .divider {
+        flex: 1;
+        height: 1px;
+        background-color: var(--primary-color);
+    }
+
+    .divider-text {
+        color: var(--dark-text);
+        padding: 0 15px;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    .social-icon {
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .social-icon img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .signup-text {
+        font-size: 1.2rem;
+    }
+
+    .signup-link {
+        color: var(--primary-color);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .brand-logo {
+        width: 100px;
+        height: 100px;
+        background-color: #D9D9D9;
+        border-radius: 50%;
+    }
+
+    .brand-name {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .brand-header {
+        position: absolute;
+        top: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        width: auto;
+        z-index: 10;
+    }
+
+    .form-content-container {
+        width: 75%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-content-container form {
+        width: 100%;
+    }
+
+    @media (max-width: 1200px) {
+        .form-content-container {
+            width: 85%;
+        }
+
+        .welcome-text {
+            font-size: 3rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .split-container {
+            flex-direction: column;
+            height: auto;
+            min-height: auto;
+        }
+
+        .left-side, .right-side {
+            height: auto;
+            min-height: 50vh;
+        }
+
+        .right-side {
+            padding-top: 140px;
+            padding-bottom: 60px;
+        }
+
+        .brand-header {
+            top: 30px;
+        }
+
+        .welcome-text {
+            font-size: 2.5rem;
+            margin-top: 30px;
+        }
+
+        .form-content-container {
+            width: 90%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .right-side {
+            padding-top: 130px;
+        }
+
+        .welcome-text {
+            font-size: 2rem;
+            margin-top: 25px;
+        }
+
+        .form-control-custom {
+            height: 60px;
+            font-size: 1rem;
+        }
+
+        .btn-signin {
+            height: 60px;
+            font-size: 1rem;
+        }
+
+        .brand-logo {
+            width: 80px;
+            height: 80px;
+        }
+
+        .brand-name {
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+        }
+
+        .divider-text {
+            font-size: 1rem;
+        }
+
+        .signup-text {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .right-side {
+            padding-top: 120px;
+        }
+
+        .welcome-text {
+            font-size: 1.8rem;
+            margin-top: 20px;
+        }
+
+        .form-content-container {
+            width: 95%;
+        }
+
+        .brand-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .brand-logo {
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
+
+        .social-icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        .social-icon img {
+            width: 30px;
+            height: 30px;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .right-side {
+            padding-top: 110px;
+        }
+
+        .welcome-text {
+            font-size: 1.6rem;
+            margin-top: 15px;
+        }
+
+        .brand-header {
+            top: 20px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container-fluid p-0 h-100">
+        <div class="row g-0 split-container">
+            <!-- Left Side (Blue Background) -->
+            <div class="col-lg-6 left-side d-flex align-items-center justify-content-center">
+                <img src="{% static 'login decor.png' %}" alt="TrakFit Illustration" class="img-fluid" style="max-height: 90vh;">
+            </div>
+
+            <!-- Right Side (White Background) -->
+            <div class="col-lg-6 right-side d-flex align-items-center justify-content-center position-relative">
+                <div class="brand-header">
+                    <div class="brand-logo me-3"></div>
+                    <div class="brand-name brand-font">TrakFit</div>
+                </div>
+
+                <!-- Login Form Container -->
+                <div class="form-content-container">
+                    <h1 class="welcome-text mb-4">Welcome back!</h1>
+                    <p class="subtitle mb-5 text-center">Your progress, your data, your motivation — all in one place.</p>
+
+                    <!-- Login Form -->
+                    <form>
+                        <div class="mb-4">
+                            <input type="email" class="form-control form-control-custom" placeholder="Email">
+                        </div>
+                        <div class="mb-4 position-relative">
+                            <input type="password" class="form-control form-control-custom" placeholder="Password">
+                            <!-- Eye icon to view password would go here -->
+                        </div>
+                        <div class="mb-4">
+                            <button type="submit" class="btn btn-signin w-100 d-flex align-items-center justify-content-center">
+                                Sign In
+                            </button>
+                        </div>
+                        <div class="text-end mb-5">
+                            <a href="{% url 'resetPassword' %}" class="forgot-password text-decoration-none">Forgot Password?</a>
+                        </div>
+                    </form>
+
+                    <!-- Divider with "or continue with" -->
+                    <div class="d-flex align-items-center mb-4 w-100">
+                        <div class="divider"></div>
+                        <div class="divider-text">or continue with</div>
+                        <div class="divider"></div>
+                    </div>
+
+                    <!-- Social Login Buttons -->
+                    <div class="d-flex justify-content-center mb-5">
+                        <a href="#" class="social-icon me-4">
+                            <img src="{% static 'google.png' %}" alt="Google Logo">
+                        </a>
+                        <a href="#" class="social-icon">
+                            <img src="{% static 'facebook.png' %}" alt="Facebook Logo">
+                        </a>
+                    </div>
+
+                    <!-- Sign Up Link -->
+                    <div class="text-center signup-text">
+                        <span>Not a member? </span>
+                        <a href="{% url 'register' %}" class="signup-link">Sign up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
