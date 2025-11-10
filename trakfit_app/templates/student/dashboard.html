@@ -1,0 +1,439 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrakFit - Student Dashboard</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Albert+Sans:wght@500;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #3A7CA5;
+            --light-blue: #9EC5E5;
+            --dark-text: #2C3E50;
+            --light-bg: #FAFAFA;
+            --input-bg: #F3F3F3;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--light-bg);
+            overflow-x: hidden;
+        }
+
+        .main-content {
+            margin-left: 400px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .brand-font {
+            font-family: 'Albert Sans', sans-serif;
+        }
+
+        .dashboard-card {
+            background: #9EC5E5;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.10);
+            border-radius: 50px;
+            border: none;
+        }
+
+        .data-card {
+            background: #F3F3F3;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.10);
+            border-radius: 50px;
+            border: none;
+        }
+
+        .remarks-table {
+            background: white;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.10);
+            border-radius: 10px;
+            border: none;
+        }
+
+        .bmi-card {
+            background: #2C3E50;
+            border-radius: 50px;
+            color: white;
+        }
+
+        .vo2-card {
+            background: #F3F3F3;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+            border-radius: 54px;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        @media (max-width: 1400px) {
+            .main-content {
+                margin-left: 350px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                margin-left: 300px;
+            }
+        }
+
+        @media (max-width: 992px) {
+
+            .sidebar-illustration img {
+                max-width: 200px !important;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    {% include 'student/sidebar.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="brand-font text-dark mb-0" style="font-size: 3rem; font-weight: 600;">Personal Progress Dashboard</h1>
+            <div class="d-flex align-items-center">
+                <div class="me-3" style="opacity: 0.50;">
+                    <div style="width: 33.33px; height: 41.67px; background: #1D1B20;"></div>
+                </div>
+                <img src="{% static '' %}" alt="User Avatar" class="user-avatar">
+            </div>
+        </div>
+
+        <!-- Welcome Card -->
+        <div class="dashboard-card p-4 mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <img src="{% static 'decor2.png' %}" alt="Welcome Illustration" class="img-fluid">
+                </div>
+                <div class="col-md-6">
+                    <h2 class="text-dark mb-3" style="font-size: 2.5rem; font-weight: 700;" id="welcome-message">Welcome, Shawn!</h2>
+                    <p class="text-dark mb-0" style="font-size: 1.2rem; font-weight: 600;">
+                        Track progress, monitor growth, and keep surpassing your limits!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- Fitness Comparison Chart -->
+                <div class="data-card p-4 mb-4">
+                    <h3 class="text-dark mb-3" style="font-size: 1.5rem; font-weight: 500;">
+                        Average Fitness Component Comparison (Pre-Test vs Post-Test)
+                    </h3>
+
+                    <div class="chart-container">
+                        <canvas id="fitnessComparisonChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Remarks History -->
+                <div class="data-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-dark mb-0" style="font-weight: 800;">Remarks History</h4>
+                        <button class="btn btn-link p-0" onclick="toggleRemarksFullscreen()">
+                            <img src="{% static 'expand.png' %}" alt="Expand" width="25" height="25">
+                        </button>
+                    </div>
+
+                    <!-- Table Headers -->
+                    <div class="row mb-2">
+                        <div class="col-2">
+                            <small class="text-muted">Date</small>
+                        </div>
+                        <div class="col-3">
+                            <small class="text-muted">Metric</small>
+                        </div>
+                        <div class="col-2">
+                            <small class="text-muted">Pre</small>
+                        </div>
+                        <div class="col-2">
+                            <small class="text-muted">Post</small>
+                        </div>
+                        <div class="col-3">
+                            <small class="text-muted">Remark</small>
+                        </div>
+                    </div>
+
+                    <div id="remarks-container">
+                        <!-- Dynamic remarks will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <!-- BMI Card -->
+                <div class="bmi-card p-4 mb-4">
+                    <h5 class="text-white mb-3">Body Mass Index (BMI)</h5>
+                    <div class="mb-2">
+                        <small class="text-white">Height:</small>
+                        <span class="text-white float-end" id="height-value">170 cm</span>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-white">Weight:</small>
+                        <span class="text-white float-end" id="weight-value">65 kgs</span>
+                    </div>
+                    <div>
+                        <small class="text-white">BMI:</small>
+                        <span class="text-white float-end" id="bmi-value">22.5 (Normal)</span>
+                    </div>
+                </div>
+
+                <!-- VO2 Max Trend -->
+                <div class="vo2-card p-4">
+                    <h5 class="text-dark mb-4" style="font-weight: 800;">
+                        VO<sub>2</sub> Max Trend
+                    </h5>
+
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="vo2TrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Remarks Modal -->
+    <div class="modal fade" id="remarksModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Remarks History</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="fullscreen-remarks-container">
+                        <!-- Fullscreen remarks content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Sample data
+        const studentData = {
+            studentName: "Shawn",
+            bmi: {
+                height: 170,
+                weight: 65,
+                bmi: 22.5,
+                status: "Normal"
+            },
+            fitnessComponents: {
+                labels: ["Flexibility", "Strength", "Agility", "Speed", "Endurance"],
+                preTest: [47.5, 42.5, 47.5, 55, 80],
+                postTest: [52.5, 57.5, 77.5, 77.5, 87.5]
+            },
+            vo2Trend: {
+                dates: ["Jan", "Feb", "Mar", "Apr", "May"],
+                values: [40, 41, 42, 43, 44]
+            },
+            remarks: [
+                {
+                    date: "2025-11-04",
+                    metric: "Strength (Push-ups)",
+                    pre: 30,
+                    post: 38,
+                    remark: "Great form - keep improving technique"
+                },
+                {
+                    date: "2025-11-04",
+                    metric: "VO₂ Max",
+                    pre: 42.1,
+                    post: 43.0,
+                    remark: "Aerobic base improving steadily"
+                },
+                {
+                    date: "2025-10-28",
+                    metric: "Flexibility (Sit & Reach)",
+                    pre: 25,
+                    post: 28,
+                    remark: "Good progress in hamstring flexibility"
+                }
+            ]
+        };
+
+        // Initialize charts and data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+        });
+
+        function initializeDashboard() {
+            updateWelcomeMessage();
+            updateBMIData();
+            renderRemarks();
+            initializeCharts();
+            setupNavigation();
+        }
+
+        function updateWelcomeMessage() {
+            document.getElementById('welcome-message').textContent = `Welcome, ${studentData.studentName}!`;
+        }
+
+        function updateBMIData() {
+            document.getElementById('height-value').textContent = `${studentData.bmi.height} cm`;
+            document.getElementById('weight-value').textContent = `${studentData.bmi.weight} kgs`;
+            document.getElementById('bmi-value').textContent = `${studentData.bmi.bmi} (${studentData.bmi.status})`;
+        }
+
+        function renderRemarks() {
+            const container = document.getElementById('remarks-container');
+            const fullscreenContainer = document.getElementById('fullscreen-remarks-container');
+
+            container.innerHTML = '';
+            fullscreenContainer.innerHTML = '';
+
+            studentData.remarks.forEach(remark => {
+                const remarkHTML = `
+                    <div class="remarks-table p-3 mb-2">
+                        <div class="row align-items-center">
+                            <div class="col-2">${remark.date}</div>
+                            <div class="col-3">${remark.metric}</div>
+                            <div class="col-2">${remark.pre}</div>
+                            <div class="col-2">${remark.post}</div>
+                            <div class="col-3">${remark.remark}</div>
+                        </div>
+                    </div>
+                `;
+
+                container.innerHTML += remarkHTML;
+                fullscreenContainer.innerHTML += remarkHTML;
+            });
+        }
+
+        function initializeCharts() {
+            // Fitness Comparison Chart
+            const fitnessCtx = document.getElementById('fitnessComparisonChart').getContext('2d');
+            new Chart(fitnessCtx, {
+                type: 'bar',
+                data: {
+                    labels: studentData.fitnessComponents.labels,
+                    datasets: [
+                        {
+                            label: 'Pre-Test',
+                            data: studentData.fitnessComponents.preTest,
+                            backgroundColor: '#3A7CA5',
+                            borderColor: '#3A7CA5',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Post-Test',
+                            data: studentData.fitnessComponents.postTest,
+                            backgroundColor: '#2C3E50',
+                            borderColor: '#2C3E50',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+
+            // VO2 Max Trend Chart
+            const vo2Ctx = document.getElementById('vo2TrendChart').getContext('2d');
+            new Chart(vo2Ctx, {
+                type: 'line',
+                data: {
+                    labels: studentData.vo2Trend.dates,
+                    datasets: [{
+                        label: 'VO₂ Max',
+                        data: studentData.vo2Trend.values,
+                        borderColor: '#3A7CA5',
+                        backgroundColor: 'rgba(58, 124, 165, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        function toggleRemarksFullscreen() {
+            const modal = new bootstrap.Modal(document.getElementById('remarksModal'));
+            modal.show();
+        }
+
+        // Function to update data dynamically
+        function updateFitnessData(newData) {
+            // Update the data object
+            Object.assign(studentData.fitnessComponents, newData);
+
+            // Re-initialize charts
+            initializeCharts();
+        }
+    </script>
+</body>
+</html>

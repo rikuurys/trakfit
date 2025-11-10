@@ -1,0 +1,235 @@
+{% load static %}
+<!-- Student Sidebar Component -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="d-flex align-items-center">
+            <div class="brand-logo me-3"></div>
+            <div class="text-white">
+                <div class="h1 mb-0">TrakFit</div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="nav flex-column mt-4 sidebar-nav">
+        <div class="nav-item {% if request.resolver_match.url_name == 'student-dashboard' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'student-dashboard' %}">Progress Dashboard</a>
+        </div>
+        <div class="nav-item {% if request.resolver_match.url_name == 'student-profile' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'student-profile' %}">My Profile</a>
+        </div>
+        <div class="nav-item {% if request.resolver_match.url_name == 'student-profile-update' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'student-profile-update' %}">Update Profile</a>
+        </div>
+        <div class="nav-item {% if request.resolver_match.url_name == 'student-settings' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'student-settings' %}">Settings</a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="sidebar-illustration text-center">
+        <img src="{% static 'decor.png' %}" alt="Fitness Illustration" class="img-fluid" style="max-width: 300px;">
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #3A7CA5;
+        --light-blue: #9EC5E5;
+        --dark-text: #2C3E50;
+        --light-bg: #FAFAFA;
+        --input-bg: #F3F3F3;
+    }
+
+    .sidebar {
+        background-color: var(--primary-color);
+        min-height: 100vh;
+        width: 400px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-bottom: 40px;
+    }
+
+    .sidebar-header {
+        padding: 20px;
+    }
+
+    .sidebar-nav {
+        flex: 1;
+        padding: 0 20px;
+    }
+
+    .sidebar-illustration {
+        padding: 20px;
+        min-height: 200px;
+    }
+
+    .main-content {
+        margin-left: 400px;
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    .brand-font {
+        font-family: 'Albert Sans', sans-serif;
+    }
+
+    .nav-item {
+        padding: 15px 0;
+        margin: 5px 0;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-item.active {
+        background-color: rgba(158, 197, 229, 0.50);
+    }
+
+    .nav-item:hover {
+        background-color: rgba(158, 197, 229, 0.30);
+    }
+
+    .nav-link {
+        color: #FAFAFA !important;
+        font-size: 1.4rem;
+        font-weight: 400;
+        padding-left: 44px !important;
+        text-decoration: none;
+    }
+
+    .nav-item.active .nav-link {
+        font-weight: 700;
+    }
+
+    .brand-logo {
+        width: 100px;
+        height: 100px;
+        background-color: #D9D9D9;
+        border-radius: 50%;
+    }
+
+    @media (max-width: 1400px) {
+        .sidebar {
+            width: 350px;
+        }
+        .main-content {
+            margin-left: 350px;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .sidebar {
+            width: 300px;
+        }
+        .main-content {
+            margin-left: 300px;
+        }
+
+        .nav-link {
+            font-size: 1.2rem;
+            padding-left: 30px !important;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .sidebar {
+            padding-bottom: 150px;
+            position: relative;
+            height: auto;
+            width: 100%;
+        }
+
+        .sidebar-illustration img {
+            max-width: 200px !important;
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        .nav-item {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 10px 20px;
+        }
+
+        .nav-link {
+            padding-left: 0 !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .sidebar-header {
+            padding: 15px;
+        }
+
+        .brand-logo {
+            width: 80px;
+            height: 80px;
+        }
+
+        .sidebar .h1 {
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .sidebar {
+            padding-bottom: 120px;
+        }
+
+        .sidebar-header {
+            padding: 10px;
+        }
+
+        .brand-logo {
+            width: 60px;
+            height: 60px;
+        }
+
+        .sidebar .h1 {
+            font-size: 1.5rem;
+        }
+
+        .nav-item {
+            margin: 3px 5px;
+            padding: 8px 15px;
+        }
+
+        .nav-link {
+            font-size: 1rem;
+        }
+
+        .sidebar-illustration {
+            padding: 15px;
+        }
+
+        .sidebar-illustration img {
+            max-width: 150px !important;
+        }
+    }
+</style>
+
+<script>
+    // Navigation active state handling
+    document.addEventListener('DOMContentLoaded', function() {
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    });
+</script>
