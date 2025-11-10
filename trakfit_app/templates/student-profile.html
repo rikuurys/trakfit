@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,18 +13,18 @@
     <style>
         :root {
             --primary-blue: #4A90A4;
-            --sidebar-blue: #5FA8D3;
-            --light-blue: #B8D4E3;
+            --sidebar-blue: #3A7CA5;
+            --light-blue: #9EC5E5;
             --card-bg: #FFFFFF;
-            --text-dark: #1F2937;
-            --text-light: #6B7280;
+            --text-dark: #2C3E50;
+            --text-light: #7F8C8D;
             --border-color: #E5E7EB;
         }
 
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #F8FAFC;
+            background-color: #FAFAFA;
         }
 
         .dashboard-container {
@@ -34,7 +35,7 @@
         /* Sidebar Styles */
         .sidebar {
             width: 250px;
-            background: linear-gradient(180deg, var(--primary-blue) 0%, var(--sidebar-blue) 100%);
+            background: var(--sidebar-blue) 100%;
             color: white;
             padding: 2rem 0;
             position: fixed;
@@ -49,9 +50,10 @@
             margin-bottom: 3rem;
         }
 
+        /* TrakFit logo */
         .brand-logo {
-            width: 40px;
-            height: 40px;
+            width: 65px;
+            height: 65px;
             background: white;
             border-radius: 50%;
             margin-right: 1rem;
@@ -84,32 +86,24 @@
             background: rgba(255, 255, 255, 0.2);
             color: white;
             transform: translateX(5px);
+            border-radius: 30px;
         }
 
         .sidebar-illustration {
             position: absolute;
-            bottom: 1rem;
             left: 50%;
+            bottom: 130px;
             transform: translateX(-50%);
-            width: 200px;
-            height: 140px;
-            background-image: url("{% static 'sidebar.png' %}");
+            width: 250px;
+            height: 100px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             opacity: 0.9;
         }
 
-        .sidebar-illustration {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 180px;
-            height: 120px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 120"><g fill="white" opacity="0.3"><rect x="40" y="20" width="60" height="40" rx="8"/><circle cx="70" cy="15" r="8"/><rect x="60" y="25" width="20" height="20" rx="4"/><circle cx="120" cy="80" r="15"/><rect x="20" y="70" width="40" height="30" rx="6"/></g></svg>');
-            background-size: contain;
-            background-repeat: no-repeat;
+        .sidebar-illustration img{
+            width: 250px;
         }
 
         /* Main Content */
@@ -136,8 +130,8 @@
             width: 40px;
             height: 40px;
             border: none;
-            background: #F3F4F6;
-            border-radius: 8px;
+            background: #EBEBEB;
+            border-radius: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -152,9 +146,8 @@
         }
 
         .page-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-dark);
+            font-size: 3rem;
+            color: #2C3E50;
             margin: 0;
         }
 
@@ -177,9 +170,9 @@
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--sidebar-blue));
+            width: 60px;
+            height: 60px;
+            background: #D9D9D9;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -200,8 +193,8 @@
         /* Student Info Card */
         .student-info-card {
             background: linear-gradient(135deg, var(--light-blue), #E3F2FD);
-            border-radius: 16px;
-            padding: 1.5rem;
+            border-radius: 30px;
+            padding: 1rem 3rem;
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
@@ -209,30 +202,32 @@
         }
 
         .student-avatar-large {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             background: #D1D5DB;
             flex-shrink: 0;
         }
 
         .student-details {
-            flex: 1;
+            width: 100%;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
             gap: 0.5rem;
         }
 
         .student-name {
-            font-size: 1.25rem;
             font-weight: 700;
             color: var(--text-dark);
             margin: 0;
         }
 
         .student-section {
-            color: var(--text-light);
-            font-size: 0.9rem;
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            font-weight: 500;
             margin: 0;
         }
 
@@ -248,8 +243,8 @@
         }
 
         .info-label {
-            font-size: 0.8rem;
-            color: var(--text-light);
+            font-size: 1.2rem;
+            color: var(--text-dark);
             margin: 0;
             font-weight: 500;
         }
@@ -279,26 +274,25 @@
         }
 
         .fitness-table th {
-            padding: 1.25rem 1rem;
+            padding: 1rem 1rem;
             text-align: center;
             font-weight: 600;
             color: var(--text-dark);
-            font-size: 0.9rem;
+            font-size: 1.2rem;
         }
 
         .fitness-table td {
-            padding: 1rem;
+            padding: 0.7rem 0;
             text-align: center;
             border-bottom: 1px solid #F0F0F0;
             vertical-align: middle;
+            font-weight: 500;
+            font-size: 1rem;
         }
 
-        .fitness-table tr:hover {
-            background: #F9FAFB;
-        }
 
         .component-name {
-            text-align: left !important;
+            text-align: center;
             font-weight: 600;
             color: var(--text-dark);
         }
@@ -332,6 +326,42 @@
         .chart-canvas {
             position: relative;
             height: 400px;
+        }
+
+        .chart-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+            padding-bottom: 1rem;
+        }
+
+        .chart-card {
+            flex: 1;
+            min-width: 160px;
+            max-width: 220px;
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-card canvas {
+            width: 100% !important;
+            height: 20vh !important;
+        }
+
+        .chart-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2C3E50;
+            margin-bottom: 0.5rem;
+            text-align: center;
         }
 
         @media (max-width: 768px) {
@@ -376,7 +406,9 @@
                 </div>
             </div>
 
-            <div class="sidebar-illustration"></div>
+            <div class="sidebar-illustration">
+                <img src="{% static 'sidebar.png' %}">
+            </div>
         </div>
 
         <!-- Main Content -->
@@ -390,7 +422,9 @@
                     <h1 class="page-title">Student Profile</h1>
                 </div>
                 <div class="user-section">
-                    <div class="notification-icon">🔔</div>
+                    <div class="notification-icon">
+                        <i class="fa-regular fa-bell" style="font-size: 2rem; padding-right: 1rem"></i>
+                    </div>
                     <div class="user-avatar">
                         <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
                     </div>
@@ -401,22 +435,27 @@
             <div class="student-info-card">
                 <div class="student-avatar-large"></div>
                 <div class="student-details">
-                    <h2 class="student-name">Juan Dela Cruz</h2>
-                    <div class="student-section">BSIT 1A-G1</div>
-                    <div class="student-info-grid">
+                    <div class="cell">
+                        <h2 class="student-name">Juan Dela Cruz</h2>
+                        <div class="student-section">BSIT 1A-G1</div>
+                    </div>
+                    <div class="cell">
                         <div class="info-item">
                             <span class="info-label">Age: 21</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Contact No.: 09123456789</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Gender: Male</span>
                         </div>
                     </div>
-                    <div class="info-item" style="margin-top: 0.25rem;">
-                        <span class="info-label">Email: juandelacruz@gmail.com</span>
+                    <div class="cell">
+                        <div class="info-item">
+                            <span class="info-label">Contact No.: 09123456789</span>
+                        </div>
+                        <div class="info-item" style="margin-top: 0.25rem;">
+                            <span class="info-label">Email: juandelacruz@gmail.com</span>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -425,7 +464,7 @@
                 <table class="fitness-table">
                     <thead>
                         <tr>
-                            <th style="text-align: left;">Fitness Component</th>
+                            <th style="text-align: center;">Fitness Component</th>
                             <th>Pre-Test Value</th>
                             <th>Pre-Test Date</th>
                             <th>Post-Test Value</th>
@@ -494,13 +533,37 @@
                 </table>
             </div>
 
-            <!-- Chart -->
-            <div class="chart-container">
-                <h3 class="chart-title">Average Fitness Component Comparison (Pre-Test vs Post-Test)</h3>
-                <div class="chart-canvas">
-                    <canvas id="studentFitnessChart"></canvas>
+            <!-- Chart Grid -->
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <h6 class="chart-label">Body Mass Index</h6>
+                        <canvas id="bmiChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h6 class="chart-label">VO₂ Max</h6>
+                        <canvas id="vo2Chart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h6 class="chart-label">Flexibility</h6>
+                        <canvas id="flexibilityChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h6 class="chart-label">Strength</h6>
+                        <canvas id="strengthChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h6 class="chart-label">Agility</h6>
+                        <canvas id="agilityChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h6 class="chart-label">Speed</h6>
+                        <canvas id="speedChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h6 class="chart-label">Endurance</h6>
+                        <canvas id="enduranceChart"></canvas>
+                    </div>
                 </div>
-            </div>
         </div>
     </div>
 
@@ -508,6 +571,48 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        // Utility function for small charts
+        function createMiniChart(ctx, preValue, postValue) {
+            return new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Pre-Test', 'Post-Test'],
+                    datasets: [{
+                        data: [preValue, postValue],
+                        backgroundColor: ['#4A90A4', '#1F2937'],
+                        maxBarThickness: 25
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#2C3E5033' },
+                            ticks: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart data from your table
+        createMiniChart(document.getElementById('bmiChart'), 24.5, 24.2);
+        createMiniChart(document.getElementById('vo2Chart'), 42.5, 46.1);
+        createMiniChart(document.getElementById('flexibilityChart'), 12, 15);
+        createMiniChart(document.getElementById('strengthChart'), 25, 35);
+        createMiniChart(document.getElementById('agilityChart'), 17.8, 16.9);
+        createMiniChart(document.getElementById('speedChart'), 5.9, 5.6);
+        createMiniChart(document.getElementById('enduranceChart'), 12.5, 11.25);
         // Student Fitness Chart
         const ctx = document.getElementById('studentFitnessChart').getContext('2d');
         new Chart(ctx, {

@@ -322,21 +322,34 @@
                     <!-- Login Form -->
                     <form>
                         <div class="mb-4">
-                            <input type="email" class="form-control form-control-custom" placeholder="Email">
+                            <input type="email" id="emailInput" class="form-control form-control-custom" placeholder="Email">
                         </div>
                         <div class="mb-4 position-relative">
-                            <input type="password" class="form-control form-control-custom" placeholder="Password">
+                            <input type="password" id= "passwordInput" class="form-control form-control-custom" placeholder="Password">
                             <!-- Eye icon to view password would go here -->
                         </div>
                         <div class="mb-4">
-                            <button type="submit" class="btn btn-signin w-100 d-flex align-items-center justify-content-center">
+                            <button type="submit" onclick="login()" class="btn btn-signin w-100 d-flex align-items-center justify-content-center">
                                 Sign In
                             </button>
                         </div>
                         <div class="text-end mb-5">
-                            <a href="{% url 'reset-password' %}" class="forgot-password text-decoration-none">Forgot Password?</a>
+                            <a href="{% url 'resetPassword' %}" class="forgot-password text-decoration-none">Forgot Password?</a>
                         </div>
                     </form>
+
+                    <script>
+                        function login(){
+                            const email= document.getElementById("emailInput");
+                            const password= document.getElementById("passwordInput");
+                            if (email.value=== "admin" && password.value === "admin123"){
+                                window.location.href= "teacher-dashboard";
+                            }
+                            else {
+                                alert("Invalid email or password");
+                            }
+                        }
+                    </script>
 
                     <!-- Divider with "or continue with" -->
                     <div class="d-flex align-items-center mb-4 w-100">
