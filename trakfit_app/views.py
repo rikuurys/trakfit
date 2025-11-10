@@ -1,7 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
-
 def login(request):
     return render(request, 'login.html')
 
@@ -11,17 +9,23 @@ def logout(request):
 def register(request):
     return render(request, 'register.html')
 
-def reset_password(request):
+def resetPassword(request):
     return render(request, 'reset_password.html')
 
-def student_dashboard(request):
-    return render(request, 'student/dashboard.html')
+def forgot_password(request):
+    return render(request, 'forgot-password.html')
 
-def student_profile(request):
-    return render(request, 'student/profile.html')
+def enter_code(request):
+    return render(request, 'enter-code.html')
 
-def student_profile_update(request):
-    return render(request, 'student/profile_update.html')
+def teacher_dashboard(request):
+    return render(request, 'teacher-dashboard.html')
 
-def student_settings(request):
-    return render(request, 'student/settings.html')
+def student_management(request):
+    return render(request, 'student-management.html')
+
+def student_profile(request, student_id):
+    return render(request, 'student-profile.html')
+
+def change_password(request):
+    return render(request, 'change-password.html')

@@ -1,0 +1,1366 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrakFit - Teacher Dashboard</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Dashboard Styles -->
+    <style>
+        :root {
+            --primary-blue: #4A90A4;
+            --sidebar-blue: #5FA8D3;
+            --light-blue: #B7D7EA;
+            --card-bg: #FFFFFF;
+            --text-dark: #2C3E50;
+            --text-light: #7F8C8D;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #F8F9FA;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary-blue) 0%, var(--sidebar-blue) 100%);
+            width: 280px;
+            padding: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path d="M20,150 Q50,100 80,150 T140,150 Q170,100 200,150 L200,200 L0,200 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+
+        .brand-section {
+            padding: 0 2rem 3rem 2rem;
+            color: white;
+        }
+
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: 700;
+            vertical-align: middle;
+            color: white;
+        }
+
+        .nav-menu {
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-illustration {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 140px;
+            background-image: url("{% static 'sidebar.png' %}");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+
+        .user-avatar-container {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--sidebar-blue));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .dropdown-profile-image {
+            width: 20px;
+            height: 20px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 180px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            padding: 8px 0;
+        }
+
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .dropdown-item:hover {
+            background-color: #F9FAFB;
+        }
+
+        .view-profile-item {
+            font-weight: 500;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        .dropdown-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+        }
+
+        .dark-mode-item {
+            cursor: default;
+        }
+
+        .logout-item {
+            color: #6B7280;
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-item:hover {
+            background-color: #F9FAFB;
+        }
+
+        .logout-icon {
+            font-size: 16px;
+            color: #6B7280;
+            margin-right: 8px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #E5E7EB;
+            margin: 8px 0;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input[type="checkbox"] {
+            display: none;
+        }
+
+        .slider {
+            width: 36px;
+            height: 20px;
+            background-color: #D1D5DB;
+            border-radius: 20px;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .slider:before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-switch input[type="checkbox"]:checked + .slider {
+            background-color: #3B82F6;
+        }
+
+        .toggle-switch input[type="checkbox"]:checked + .slider:before {
+            transform: translateX(16px);
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--light-blue), #E3F2FD);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            height: 120px;
+        }
+
+        .welcome-content h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .welcome-content p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .welcome-illustration {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 160px;
+            height: 80px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120"><rect x="20" y="40" width="80" height="60" rx="10" fill="%234A90A4"/><circle cx="60" cy="30" r="15" fill="%23333"/><rect x="50" y="45" width="20" height="30" rx="5" fill="white"/><circle cx="140" cy="90" r="20" fill="%235FA8D3"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .stat-unit {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            display: block;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Chart Section */
+        .chart-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            align-items: flex-end;
+        }
+
+        /* Custom Dropdown Styles */
+        .dropdown-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dropdown-container:nth-child(1) {
+            flex: 2;
+        }
+
+        .dropdown-container:nth-child(2) {
+            flex: 1.5;
+        }
+
+        .dropdown-container:nth-child(3) {
+            flex: 1.2;
+        }
+
+        .dropdown-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 3px;
+        }
+
+        .custom-dropdown {
+            background: white;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 13px;
+            color: #374151;
+            min-height: 36px;
+        }
+
+        .custom-dropdown:hover {
+            border-color: #9CA3AF;
+        }
+
+        .dropdown-arrow {
+            font-size: 11px;
+            color: #6B7280;
+            transition: transform 0.2s ease;
+            margin-left: 6px;
+        }
+
+        .custom-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: background-color 0.2s ease;
+        }
+
+        .dropdown-option:hover {
+            background-color: #F3F4F6;
+        }
+
+        .dropdown-option.selected {
+            color: #1F2937;
+            font-weight: 500;
+        }
+
+        /* Date Picker Styles */
+        .date-picker {
+            min-width: 240px;
+            padding: 8px;
+        }
+
+        .date-picker-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1F2937;
+            text-align: center;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .date-range-inputs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .date-input {
+            flex: 1;
+            padding: 4px 6px;
+            border: 1px solid #D1D5DB;
+            border-radius: 3px;
+            font-size: 10px;
+            background: white;
+            text-align: center;
+            color: #6B7280;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+
+        .all-time-btn {
+            width: 100%;
+            padding: 4px 8px;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 3px;
+            font-size: 10px;
+            color: #6B7280;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .all-time-btn:hover {
+            background: #F3F4F6;
+        }
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 1px 4px;
+            color: #374151;
+            border-radius: 2px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: #F3F4F6;
+        }
+
+        .month-year {
+            font-weight: 600;
+            color: #1F2937;
+            font-size: 11px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5px;
+        }
+
+        .day-header {
+            text-align: center;
+            padding: 2px 1px;
+            font-size: 9px;
+            font-weight: 500;
+            color: #6B7280;
+        }
+
+        .day {
+            text-align: center;
+            padding: 2px 1px;
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background-color 0.2s ease;
+            min-height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day:hover {
+            background: #F3F4F6;
+        }
+
+        .day.prev-month,
+        .day.next-month {
+            color: #D1D5DB;
+        }
+
+        .day.current-day {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .day.current-day:hover {
+            background: #2563EB;
+        }
+
+        /* Sidebar Right */
+        .sidebar-right {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.8rem;
+        }
+
+        .bmi-chart-container {
+            position: relative;
+            height: 160px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bmi-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .legend-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .legend-color.underweight {
+            background-color: #A8E6CF;
+        }
+
+        .legend-color.normal {
+            background-color: #4ECDC4;
+        }
+
+        .legend-color.overweight {
+            background-color: #45B7D1;
+        }
+
+        .legend-color.obese {
+            background-color: #2C5F7F;
+        }
+
+        .legend-text {
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .recent-update {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .recent-update:last-child {
+            border-bottom: none;
+        }
+
+        .update-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-right: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .maria-avatar {
+            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+        }
+
+        .john-avatar {
+            background: linear-gradient(135deg, #3B82F6, #60A5FA);
+        }
+
+        .alyssa-avatar {
+            background: linear-gradient(135deg, #8B5CF6, #C084FC);
+        }
+
+        .mark-avatar {
+            background: linear-gradient(135deg, #06B6D4, #67E8F9);
+        }
+
+        .update-info h6 {
+            margin: 0 0 2px 0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .update-info small {
+            color: var(--text-light);
+            font-size: 0.75rem;
+            display: block;
+            line-height: 1.3;
+        }
+
+        .time-stamp {
+            color: #9CA3AF !important;
+            font-size: 0.7rem !important;
+            margin-top: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand-section">
+                <div class="brand-logo"></div>
+                <span class="brand-name">TrakFit</span>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item">
+                    <a href="{% url 'teacher_dashboard' %}" class="nav-link active">Dashboard</a>
+                </div>
+                <div class="nav-item">
+                    <a href="{% url 'student_management' %}" class="nav-link">Student Management</a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Settings</a>
+                </div>
+            </div>
+
+            <div class="sidebar-illustration"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="user-section">
+                    <div class="notification-icon">🔔</div>
+                    <div class="user-avatar-container">
+                        <div class="user-avatar" onclick="toggleProfileDropdown()">
+                            <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
+                        </div>
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="dropdown-item view-profile-item" onclick="viewProfile()">
+                                <span>View Profile</span>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item dark-mode-item">
+                                <span>Dark mode</span>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                                    <label for="darkModeToggle" class="slider"></label>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item logout-item" onclick="logout()">
+                                <span>Logout ></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <div class="welcome-content">
+                    <h2>Welcome, John!</h2>
+                    <p>Track progress, monitor growth, and keep your students moving forward!</p>
+                </div>
+                <div class="welcome-illustration"></div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">111</div>
+                    <div class="stat-label">Total Students</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">Total Sections</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">+1.5</div>
+                    <div class="stat-label">Average BMI Change</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">42<span class="stat-unit">ml/kg/min</span></div>
+                    <div class="stat-label">Average VO₂ Max</div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Chart Section -->
+                <div class="chart-section">
+                    <!-- Filters -->
+                    <div class="filter-section">
+                        <!-- Section Dropdown -->
+                        <div class="dropdown-container">
+                            <label class="dropdown-label">Section</label>
+                            <div class="custom-dropdown" onclick="toggleDropdown('sectionDropdown')">
+                                <span id="sectionSelected">BSIT 1A-G1, BSIT 1A-G2, ...</span>
+                                <span class="dropdown-arrow">▼</span>
+                            </div>
+                            <div class="dropdown-menu" id="sectionDropdown">
+                                <div class="dropdown-option" onclick="selectSection('All Sections')">All Sections</div>
+                                <div class="dropdown-option selected" onclick="selectSection('BSIT 1A-G1')">✓ BSIT 1A-G1</div>
+                                <div class="dropdown-option selected" onclick="selectSection('BSIT 1A-G2')">✓ BSIT 1A-G2</div>
+                                <div class="dropdown-option selected" onclick="selectSection('BSIT 1B-G1')">✓ BSIT 1B-G1</div>
+                                <div class="dropdown-option selected" onclick="selectSection('BSIT 1B-G2')">✓ BSIT 1B-G2</div>
+                                <div class="dropdown-option" onclick="selectSection('BSIT 1C-G1')">BSIT 1C-G1</div>
+                                <div class="dropdown-option" onclick="selectSection('BSIT 1C-G2')">BSIT 1C-G2</div>
+                            </div>
+                        </div>
+
+                        <!-- Test Type Dropdown -->
+                        <div class="dropdown-container">
+                            <label class="dropdown-label">Test Type</label>
+                            <div class="custom-dropdown" onclick="toggleDropdown('testTypeDropdown')">
+                                <span id="testTypeSelected">Pre-test vs Post Test</span>
+                                <span class="dropdown-arrow">▼</span>
+                            </div>
+                            <div class="dropdown-menu" id="testTypeDropdown">
+                                <div class="dropdown-option selected" onclick="selectTestType('Pre-test vs Post-test')">✓ Pre-test vs Post-test</div>
+                                <div class="dropdown-option" onclick="selectTestType('Pre-test Only')">Pre-test Only</div>
+                                <div class="dropdown-option" onclick="selectTestType('Post-test Only')">Post-test Only</div>
+                            </div>
+                        </div>
+
+                        <!-- Date Range Dropdown -->
+                        <div class="dropdown-container">
+                            <label class="dropdown-label">Date Range</label>
+                            <div class="custom-dropdown" onclick="toggleDropdown('dateDropdown')">
+                                <span id="dateSelected">All Time</span>
+                                <span class="dropdown-arrow">▼</span>
+                            </div>
+                            <div class="dropdown-menu date-picker" id="dateDropdown">
+                                <!-- Date Range Header -->
+                                <div class="date-picker-header">Date Range</div>
+                                
+                                <!-- Date Range Inputs -->
+                                <div class="date-range-inputs">
+                                    <input type="text" placeholder="November 4, 2025" class="date-input" id="startDate" value="November 4, 2025">
+                                    <input type="text" placeholder="November 4, 2025" class="date-input" id="endDate" value="November 4, 2025">
+                                </div>
+                                
+                                <!-- Set to All Time Button -->
+                                <button class="all-time-btn" onclick="setAllTime()">Set Date to "All Time"</button>
+                                
+                                <!-- Calendar Header -->
+                                <div class="calendar-header">
+                                    <button class="nav-btn" onclick="previousMonth()">◀</button>
+                                    <span class="month-year">November, 2025</span>
+                                    <button class="nav-btn" onclick="nextMonth()">▶</button>
+                                </div>
+                                
+                                <!-- Calendar Grid -->
+                                <div class="calendar-grid">
+                                    <div class="day-header">Su</div>
+                                    <div class="day-header">Mo</div>
+                                    <div class="day-header">Tu</div>
+                                    <div class="day-header">We</div>
+                                    <div class="day-header">Th</div>
+                                    <div class="day-header">Fr</div>
+                                    <div class="day-header">Sa</div>
+                                    
+                                    <!-- Previous month days -->
+                                    <div class="day prev-month">26</div>
+                                    <div class="day prev-month">27</div>
+                                    <div class="day prev-month">28</div>
+                                    <div class="day prev-month">29</div>
+                                    <div class="day prev-month">30</div>
+                                    <div class="day prev-month">31</div>
+                                    
+                                    <!-- Current month days -->
+                                    <div class="day">1</div>
+                                    <div class="day">2</div>
+                                    <div class="day">3</div>
+                                    <div class="day">4</div>
+                                    <div class="day">5</div>
+                                    <div class="day">6</div>
+                                    <div class="day">7</div>
+                                    <div class="day">8</div>
+                                    <div class="day">9</div>
+                                    <div class="day">10</div>
+                                    <div class="day current-day">11</div>
+                                    <div class="day">12</div>
+                                    <div class="day">13</div>
+                                    <div class="day">14</div>
+                                    <div class="day">15</div>
+                                    <div class="day">16</div>
+                                    <div class="day">17</div>
+                                    <div class="day">18</div>
+                                    <div class="day">19</div>
+                                    <div class="day">20</div>
+                                    <div class="day">21</div>
+                                    <div class="day">22</div>
+                                    <div class="day">23</div>
+                                    <div class="day">24</div>
+                                    <div class="day">25</div>
+                                    <div class="day">26</div>
+                                    <div class="day">27</div>
+                                    <div class="day">28</div>
+                                    <div class="day">29</div>
+                                    <div class="day">30</div>
+                                    
+                                    <!-- Next month days -->
+                                    <div class="day next-month">1</div>
+                                    <div class="day next-month">2</div>
+                                    <div class="day next-month">3</div>
+                                    <div class="day next-month">4</div>
+                                    <div class="day next-month">5</div>
+                                    <div class="day next-month">6</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="chart-title">Average Fitness Component Comparison (Pre-Test vs Post-Test)</h3>
+                    <div style="position: relative; height: 350px;">
+                        <canvas id="fitnessChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="sidebar-right">
+                    <!-- BMI Distribution Card -->
+                    <div class="sidebar-card">
+                        <h4 class="section-title">BMI Category Distribution</h4>
+                        <div class="bmi-chart-container">
+                            <canvas id="bmiChart"></canvas>
+                        </div>
+                        <div class="bmi-legend">
+                            <div class="legend-row">
+                                <div class="legend-item">
+                                    <span class="legend-color underweight"></span>
+                                    <span class="legend-text">Underweight</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color overweight"></span>
+                                    <span class="legend-text">Overweight</span>
+                                </div>
+                            </div>
+                            <div class="legend-row">
+                                <div class="legend-item">
+                                    <span class="legend-color normal"></span>
+                                    <span class="legend-text">Normal</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color obese"></span>
+                                    <span class="legend-text">Obese</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Updates Card -->
+                    <div class="sidebar-card">
+                        <h4 class="section-title">Recent Updates</h4>
+                        
+                        <div class="recent-update">
+                            <div class="update-avatar maria-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
+                                </svg>
+                            </div>
+                            <div class="update-info">
+                                <h6>Maria Cruz</h6>
+                                <small>Submitted Post-Test Results</small>
+                                <small class="time-stamp">2 hours ago</small>
+                            </div>
+                        </div>
+
+                        <div class="recent-update">
+                            <div class="update-avatar john-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
+                                </svg>
+                            </div>
+                            <div class="update-info">
+                                <h6>John Dela Cruz</h6>
+                                <small>Updated BMI: 24.8 → 26.2</small>
+                                <small class="time-stamp">8 hours ago</small>
+                            </div>
+                        </div>
+
+                        <div class="recent-update">
+                            <div class="update-avatar alyssa-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
+                                </svg>
+                            </div>
+                            <div class="update-info">
+                                <h6>Alyssa Tan</h6>
+                                <small>Completed Strength Test (+10%)</small>
+                                <small class="time-stamp">9 hours ago</small>
+                            </div>
+                        </div>
+
+                        <div class="recent-update">
+                            <div class="update-avatar mark-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
+                                </svg>
+                            </div>
+                            <div class="update-info">
+                                <h6>Mark Villanueva</h6>
+                                <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
+                                <small class="time-stamp">Yesterday</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Fitness Component Comparison Chart
+        const fitnessCtx = document.getElementById('fitnessChart').getContext('2d');
+        new Chart(fitnessCtx, {
+            type: 'bar',
+            data: {
+                labels: ['BMI', 'VO₂ Max', 'Flexibility', 'Strength', 'Agility', 'Speed', 'Endurance'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [18, 25, 24, 20, 24, 30, 48],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4
+                }, {
+                    label: 'Post-Test',
+                    data: [19, 28, 27, 32, 42, 48, 55],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 60,
+                        ticks: {
+                            stepSize: 10
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                elements: {
+                    bar: {
+                        borderWidth: 0
+                    }
+                }
+            }
+        });
+
+        // BMI Distribution Pie Chart
+        const bmiCtx = document.getElementById('bmiChart').getContext('2d');
+        new Chart(bmiCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Underweight', 'Normal', 'Overweight', 'Obese'],
+                datasets: [{
+                    data: [15, 45, 25, 15],
+                    backgroundColor: ['#B7D7EA', '#4A90A4', '#5FA8D3', '#1976D2'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // Profile Dropdown Functions
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const userAvatar = document.querySelector('.user-avatar');
+            
+            if (!userAvatar.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function viewProfile() {
+            alert('View Profile clicked - This would navigate to profile page');
+            document.getElementById('profileDropdown').classList.remove('show');
+        }
+
+        function toggleDarkMode() {
+            const toggle = document.getElementById('darkModeToggle');
+            toggle.checked = !toggle.checked;
+            
+            if (toggle.checked) {
+                document.body.classList.add('dark-mode');
+                alert('Dark mode enabled - This would apply dark theme');
+            } else {
+                document.body.classList.remove('dark-mode');
+                alert('Dark mode disabled - This would apply light theme');
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                window.location.href = '/';
+            }
+        }
+
+        // Filter Dropdown Functions
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            const allButtons = document.querySelectorAll('.custom-dropdown');
+            
+            // Close all other dropdowns
+            allDropdowns.forEach(dd => {
+                if (dd.id !== dropdownId) {
+                    dd.classList.remove('show');
+                }
+            });
+            
+            // Remove active class from all buttons
+            allButtons.forEach(btn => {
+                if (btn.getAttribute('onclick') !== `toggleDropdown('${dropdownId}')`) {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Toggle current dropdown
+            dropdown.classList.toggle('show');
+            
+            // Toggle active class on button
+            const button = document.querySelector(`[onclick="toggleDropdown('${dropdownId}')"]`);
+            button.classList.toggle('active');
+        }
+
+        function selectSection(section) {
+            document.getElementById('sectionSelected').textContent = section;
+            document.getElementById('sectionDropdown').classList.remove('show');
+            document.querySelector(`[onclick="toggleDropdown('sectionDropdown')"]`).classList.remove('active');
+        }
+
+        function selectTestType(testType) {
+            document.getElementById('testTypeSelected').textContent = testType;
+            document.getElementById('testTypeDropdown').classList.remove('show');
+            document.querySelector(`[onclick="toggleDropdown('testTypeDropdown')"]`).classList.remove('active');
+        }
+
+        function selectDate(date) {
+            document.getElementById('dateSelected').textContent = date;
+            document.getElementById('dateDropdown').classList.remove('show');
+            document.querySelector(`[onclick="toggleDropdown('dateDropdown')"]`).classList.remove('active');
+        }
+
+        // Calendar Functions
+        let currentMonth = 10; // November (0-indexed)
+        let currentYear = 2025;
+
+        function setAllTime() {
+            document.getElementById('dateSelected').textContent = 'All Time';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('dateDropdown').classList.remove('show');
+            document.querySelector(`[onclick="toggleDropdown('dateDropdown')"]`).classList.remove('active');
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            updateCalendarHeader();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            updateCalendarHeader();
+        }
+
+        function updateCalendarHeader() {
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+            document.querySelector('.month-year').textContent = `${monthNames[currentMonth]}, ${currentYear}`;
+        }
+
+        // Add click events to calendar days
+        document.addEventListener('DOMContentLoaded', function() {
+            const days = document.querySelectorAll('.day:not(.prev-month):not(.next-month)');
+            days.forEach(day => {
+                day.addEventListener('click', function() {
+                    // Remove previous selection
+                    document.querySelectorAll('.day.selected').forEach(d => d.classList.remove('selected'));
+                    // Add selection to clicked day
+                    this.classList.add('selected');
+                    
+                    // Update date range (this is a simplified example)
+                    const selectedDay = this.textContent;
+                    const monthNames = [
+                        'January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
+                    const selectedDate = `${monthNames[currentMonth]} ${selectedDay}, ${currentYear}`;
+                    document.getElementById('dateSelected').textContent = selectedDate;
+                });
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdowns = document.querySelectorAll('.dropdown-menu');
+            const buttons = document.querySelectorAll('.custom-dropdown');
+            
+            let clickedInside = false;
+            buttons.forEach(button => {
+                if (button.contains(event.target)) {
+                    clickedInside = true;
+                }
+            });
+            
+            if (!clickedInside) {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+                buttons.forEach(button => {
+                    button.classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

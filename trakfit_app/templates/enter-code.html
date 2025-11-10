@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrakFit - Enter Code</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="container-fluid p-0 h-100">
+        <div class="row g-0 split-container">
+            <!-- Left Side (Blue Background) - Hidden on mobile -->
+            <div class="col-lg-6 left-side d-none d-lg-flex">
+                <img src="{% static 'login decor.png' %}" alt="TrakFit Illustration" class="img-fluid">
+            </div>
+
+            <!-- Right Side (Form Container) -->
+            <div class="col-lg-6 right-side">
+                <!-- Brand Header -->
+                <div class="brand-header">
+                    <div class="brand-logo"></div>
+                    <div class="brand-name brand-font">TrakFit</div>
+                </div>
+
+                <!-- Enter Code Form Container -->
+                <div class="form-content-container">
+                    <h1 class="welcome-text">Enter Code</h1>
+                    <p class="subtitle">We sent a 6-digit code to your email. Please enter it below.</p>
+
+                    <!-- OTP Verification Form -->
+                    <form class="w-100">
+                        <!-- Six OTP Input Boxes -->
+                        <div class="code-container">
+                            <input 
+                                type="text" 
+                                class="code-input" 
+                                maxlength="1" 
+                                placeholder="X"
+                                oninput="moveToNext(this, 1)"
+                                onkeydown="handleBackspace(this, event)"
+                                required
+                            >
+                            <input 
+                                type="text" 
+                                class="code-input" 
+                                maxlength="1" 
+                                placeholder="X"
+                                oninput="moveToNext(this, 2)"
+                                onkeydown="handleBackspace(this, event)"
+                                required
+                            >
+                            <input 
+                                type="text" 
+                                class="code-input" 
+                                maxlength="1" 
+                                placeholder="X"
+                                oninput="moveToNext(this, 3)"
+                                onkeydown="handleBackspace(this, event)"
+                                required
+                            >
+                            <input 
+                                type="text" 
+                                class="code-input" 
+                                maxlength="1" 
+                                placeholder="X"
+                                oninput="moveToNext(this, 4)"
+                                onkeydown="handleBackspace(this, event)"
+                                required
+                            >
+                            <input 
+                                type="text" 
+                                class="code-input" 
+                                maxlength="1" 
+                                placeholder="X"
+                                oninput="moveToNext(this, 5)"
+                                onkeydown="handleBackspace(this, event)"
+                                required
+                            >
+                            <input 
+                                type="text" 
+                                class="code-input" 
+                                maxlength="1" 
+                                placeholder="X"
+                                oninput="moveToNext(this, 6)"
+                                onkeydown="handleBackspace(this, event)"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-4">
+                            <button type="submit" class="btn-primary-custom">
+                                Continue
+                            </button>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <span>Didn't get the code? </span>
+                            <a href="#" class="cancel-link" onclick="resendCode()">Resend Code</a>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="{% url 'login' %}" class="cancel-link">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Auto-focus first input on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstInput = document.querySelector('.code-input');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        });
+
+        // Move to next input box automatically
+        function moveToNext(input, nextIndex) {
+            if (input.value.length === 1) {
+                const inputs = document.querySelectorAll('.code-input');
+                if (nextIndex < inputs.length) {
+                    inputs[nextIndex].focus();
+                }
+            }
+        }
+
+        // Handle backspace to move to previous input
+        function handleBackspace(input, event) {
+            if (event.key === 'Backspace' && input.value === '') {
+                const inputs = document.querySelectorAll('.code-input');
+                const currentIndex = Array.from(inputs).indexOf(input);
+                if (currentIndex > 0) {
+                    inputs[currentIndex - 1].focus();
+                    inputs[currentIndex - 1].value = '';
+                }
+            }
+        }
+
+        // Resend code functionality
+        function resendCode() {
+            // Clear all input fields
+            document.querySelectorAll('.code-input').forEach(input => {
+                input.value = '';
+            });
+            
+            // Focus first input
+            document.querySelector('.code-input').focus();
+            
+            alert('A new code has been sent to your email address.');
+        }
+
+        // Allow only numeric input
+        document.querySelectorAll('.code-input').forEach(input => {
+            input.addEventListener('input', function(e) {
+                // Replace any non-numeric characters
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        });
+    </script>
+</body>
+</html>

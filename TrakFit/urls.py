@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from trakfit_app import views
 
 urlpatterns = [
@@ -23,9 +25,14 @@ urlpatterns = [
     path('', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('register/', views.register, name='register'),
-    path('reset-password/', views.reset_password, name='reset-password'),
-    path('student-dashboard/', views.student_dashboard, name='student-dashboard'),
-    path('student-profile/view', views.student_profile, name='student-profile'),
-    path('student-profile/update/', views.student_profile_update, name='student-profile-update'),
-    path('student-settings/', views.student_settings, name='student-settings'),
+    path('reset-password/', views.resetPassword, name='resetPassword'),
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('enter-code/', views.enter_code, name='enter_code'),
+    path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
+    path('student-management/', views.student_management, name='student_management'),
+    path('student-profile/<int:student_id>/', views.student_profile, name='student_profile'),
+    path('change-password/', views.change_password, name='change_password'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
