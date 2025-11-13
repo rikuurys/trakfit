@@ -19,751 +19,797 @@
     />
     <!-- Custom Dashboard Styles -->
     <style>
-        :root {
-            --primary-blue: #4A90A4;
-            --sidebar-blue: #3A7CA5;
-            --light-blue: #9EC5E5;
-            --card-bg: #F3F3F3;
-            --text-dark: #2C3E50;
-            --text-light: #7F8C8D;
-        }
+      :root {
+        --primary-blue: #4a90a4;
+        --sidebar-blue: #3a7ca5;
+        --light-blue: #9ec5e5;
+        --card-bg: #ffffff;
+        --text-dark: #2c3e50;
+        --text-light: #7f8c8d;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #FAFAFA;
-            margin: 0;
-            padding: 0;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #fafafa;
+        margin: 0;
+        padding: 0;
+      }
 
+      .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 250px;
+        background: var(--sidebar-blue) 100%;
+        color: white;
+        padding: 2rem 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* keep content at the top */
+      }
+
+      /* Brand Section */
+      .brand-section {
+        display: flex;
+        align-items: center;
+        padding: 0 2rem;
+        margin-bottom: 3rem;
+      }
+
+      /* TrakFit logo */
+      .brand-logo {
+        width: 65px;
+        height: 65px;
+        background: white;
+        border-radius: 50%;
+        margin-right: 1rem;
+      }
+
+      /* Brand name */
+      .brand-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      /* Navigation */
+      .nav-menu {
+        padding: 0 1rem;
+      }
+
+      .nav-item {
+        margin-bottom: 0.5rem;
+      }
+
+      .nav-link {
+        display: block;
+        padding: 1rem 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+      }
+
+      /* Active and hover styles */
+      .nav-link:hover,
+      .nav-link.active {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        transform: translateX(5px);
+        border-radius: 30px;
+      }
+
+      /* Sidebar Illustration (bottom anchored) */
+      .sidebar-illustration {
+        position: absolute;
+        left: 50%;
+        bottom: 130px;
+        transform: translateX(-50%);
+        width: 250px;
+        height: 100px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.9;
+      }
+
+      .sidebar-illustration img {
+        width: 250px;
+      }
+
+      /* Main content offset */
+      .main-content {
+        flex: 1;
+        margin-left: 250px;
+        padding: 1.5rem;
+      }
+
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .page-title {
+        font-size: 3rem;
+        color: #2c3e50;
+        margin: 0;
+      }
+
+      .user-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .notification-icon {
+        width: 40px;
+        height: 40px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-light);
+        font-size: 1.2rem;
+      }
+
+      .user-avatar-container {
+        position: relative;
+      }
+
+      .user-avatar {
+        width: 60px;
+        height: 60px;
+        background: #d9d9d9;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
+
+      .profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      .dropdown-profile-image {
+        width: 20px;
+        height: 20px;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      /* Profile Dropdown */
+      .profile-dropdown {
+        position: absolute;
+        top: 50px;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 180px;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        padding: 8px 0;
+      }
+
+      .profile-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-item {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .dropdown-item:hover {
+        background-color: #f9fafb;
+      }
+
+      .view-profile-item {
+        font-weight: 500;
+        justify-content: flex-start;
+        gap: 12px;
+      }
+
+      .dropdown-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+      }
+
+      .dark-mode-item {
+        cursor: default;
+      }
+
+      .logout-item {
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+      }
+
+      .logout-item:hover {
+        background-color: #f9fafb;
+      }
+
+      .logout-icon {
+        font-size: 16px;
+        color: #6b7280;
+        margin-right: 8px;
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background-color: #e5e7eb;
+        margin: 8px 0;
+      }
+
+      /* Toggle Switch */
+      .toggle-switch {
+        flex-shrink: 0;
+      }
+
+      .toggle-switch input[type="checkbox"] {
+        display: none;
+      }
+
+      .slider {
+        width: 36px;
+        height: 20px;
+        background-color: #d1d5db;
+        border-radius: 20px;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .slider:before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background-color: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .toggle-switch input[type="checkbox"]:checked + .slider {
+        background-color: #3b82f6;
+      }
+
+      .toggle-switch input[type="checkbox"]:checked + .slider:before {
+        transform: translateX(16px);
+      }
+
+      /* Welcome Card */
+      .welcome-card {
+        background: linear-gradient(135deg, var(--light-blue), #e3f2fd);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        height: 120px;
+      }
+
+      .welcome-content h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.3rem;
+      }
+
+      .welcome-content p {
+        color: #2c3e50;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .welcome-illustration {
+        position: absolute;
+        right: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 160px;
+        height: 80px;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120"><rect x="20" y="40" width="80" height="60" rx="10" fill="%234A90A4"/><circle cx="60" cy="30" r="15" fill="%23333"/><rect x="50" y="45" width="20" height="30" rx="5" fill="white"/><circle cx="140" cy="90" r="20" fill="%235FA8D3"/></svg>');
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.2rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-bottom: 0.3rem;
+      }
+
+      .stat-label {
+        color: var(--text-light);
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .stat-unit {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        display: block;
+      }
+
+      /* Content Grid */
+      .content-grid {
+        display: grid;
+        grid-template-columns: 2.2fr 1fr;
+        gap: 1.5rem;
+      }
+
+      /* Chart Section */
+      .chart-section {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .chart-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .filter-section {
+        display: flex;
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+        align-items: flex-end;
+      }
+
+      /* Custom Dropdown Styles */
+      .dropdown-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dropdown-container:nth-child(1) {
+        flex: 1;
+      }
+
+      .dropdown-container:nth-child(2) {
+        flex: 1;
+      }
+
+      .dropdown-container:nth-child(3) {
+        flex: 1;
+      }
+
+      .dropdown-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 3px;
+      }
+
+      .custom-dropdown {
+        background: white;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 6px 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 13px;
+        color: #374151;
+        min-height: 36px;
+      }
+
+      .custom-dropdown:hover {
+        border-color: #9ca3af;
+      }
+
+      .dropdown-arrow {
+        font-size: 11px;
+        color: #6b7280;
+        transition: transform 0.2s ease;
+        margin-left: 6px;
+      }
+
+      .custom-dropdown.active .dropdown-arrow {
+        transform: rotate(180deg);
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s ease;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .dropdown-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-option {
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #374151;
+        transition: background-color 0.2s ease;
+      }
+
+      .dropdown-option:hover {
+        background-color: #f3f4f6;
+      }
+
+      .dropdown-option.selected {
+        color: #1f2937;
+        font-weight: 500;
+      }
+
+      /* Date Picker Styles */
+      .date-picker {
+        min-width: 240px;
+        padding: 8px;
+      }
+
+      .date-picker-header {
+        font-size: 12px;
+        font-weight: 600;
+        color: #1f2937;
+        text-align: center;
+        margin-bottom: 6px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .date-range-inputs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 6px;
+      }
+
+      .date-input {
+        flex: 1;
+        padding: 4px 6px;
+        border: 1px solid #d1d5db;
+        border-radius: 3px;
+        font-size: 10px;
+        background: white;
+        text-align: center;
+        color: #6b7280;
+      }
+
+      .date-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+      }
+
+      .all-time-btn {
+        width: 100%;
+        padding: 4px 8px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 3px;
+        font-size: 10px;
+        color: #6b7280;
+        cursor: pointer;
+        margin-bottom: 8px;
+        transition: background-color 0.2s ease;
+      }
+
+      .all-time-btn:hover {
+        background: #f3f4f6;
+      }
+
+      .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+
+      .nav-btn {
+        background: none;
+        border: none;
+        font-size: 10px;
+        cursor: pointer;
+        padding: 1px 4px;
+        color: #374151;
+        border-radius: 2px;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .nav-btn:hover {
+        background: #f3f4f6;
+      }
+
+      .month-year {
+        font-weight: 600;
+        color: #1f2937;
+        font-size: 11px;
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.5px;
+      }
+
+      .day-header {
+        text-align: center;
+        padding: 2px 1px;
+        font-size: 9px;
+        font-weight: 500;
+        color: #6b7280;
+      }
+
+      .day {
+        text-align: center;
+        padding: 2px 1px;
+        font-size: 10px;
+        cursor: pointer;
+        border-radius: 2px;
+        transition: background-color 0.2s ease;
+        min-height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .day:hover {
+        background: #f3f4f6;
+      }
+
+      .day.prev-month,
+      .day.next-month {
+        color: #d1d5db;
+      }
+
+      .day.current-day {
+        background: #3b82f6;
+        color: white;
+      }
+
+      .day.current-day:hover {
+        background: #2563eb;
+      }
+
+      /* Sidebar Right */
+      .sidebar-right {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .sidebar-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        overflow-y: scroll;
+      }
+
+      .sidebar-section {
+        margin-bottom: 1.5rem;
+      }
+
+      .section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.8rem;
+      }
+
+      .bmi-chart-container {
+        position: relative;
+        height: 160px;
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .bmi-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .legend-row {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+      }
+
+      .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        display: inline-block;
+      }
+
+      .legend-color.underweight {
+        background-color: #a8e6cf;
+      }
+
+      .legend-color.normal {
+        background-color: #4ecdc4;
+      }
+
+      .legend-color.overweight {
+        background-color: #45b7d1;
+      }
+
+      .legend-color.obese {
+        background-color: #2c5f7f;
+      }
+
+      .legend-text {
+        color: #6b7280;
+        font-weight: 500;
+      }
+
+      .recent-update {
+        display: flex;
+        align-items: center;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .recent-update:last-child {
+        border-bottom: none;
+      }
+
+      .update-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        margin-right: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+      }
+
+      .maria-avatar {
+        background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      }
+
+      .john-avatar {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+      }
+
+      .alyssa-avatar {
+        background: linear-gradient(135deg, #8b5cf6, #c084fc);
+      }
+
+      .mark-avatar {
+        background: linear-gradient(135deg, #06b6d4, #67e8f9);
+      }
+
+      .update-info h6 {
+        margin: 0 0 2px 0;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .update-info small {
+        color: var(--text-light);
+        font-size: 0.75rem;
+        display: block;
+        line-height: 1.3;
+      }
+
+      .time-stamp {
+        color: #9ca3af !important;
+        font-size: 0.7rem !important;
+        margin-top: 1px;
+      }
+
+      @media (max-width: 768px) {
         .dashboard-container {
           flex-direction: column;
         }
 
         .sidebar {
-            width: 250px;
-            background: var(--sidebar-blue) 100%;
-            color: white;
-            padding: 2rem 0;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start; /* keep content at the top */
-        }
-
-        /* Brand Section */
-        .brand-section {
-            display: flex;
-            align-items: center;
-            padding: 0 2rem;
-            margin-bottom: 3rem;
-        }
-
-        /* TrakFit logo */
-        .brand-logo {
-            width: 65px;
-            height: 65px;
-            background: white;
-            border-radius: 50%;
-            margin-right: 1rem;
-        }
-
-        /* Brand name */
-        .brand-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        /* Navigation */
-        .nav-menu {
-            padding: 0 1rem;
-        }
-
-        .nav-item {
-            margin-bottom: 0.5rem;
-        }
-
-        .nav-link {
-            display: block;
-            padding: 1rem 1rem;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        /* Active and hover styles */
-        .nav-link:hover,
-        .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            transform: translateX(5px);
-            border-radius: 30px;
-        }
-
-        /* Sidebar Illustration (bottom anchored) */
-        .sidebar-illustration {
-            position: absolute;
-            left: 50%;
-            bottom: 130px;
-            transform: translateX(-50%);
-            width: 250px;
-            height: 100px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            opacity: 0.9;
-        }
-
-        .sidebar-illustration img{
-            width: 250px;
-        }
-
-        /* Main content offset */
-        .main-content {
-            flex: 1;
-            margin-left: 250px;
-            padding: 1.5rem;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .page-title {
-            font-size: 3rem;
-            color: #2C3E50;
-            margin: 0;
-        }
-
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            background: #F8F9FA;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-light);
-            font-size: 1.2rem;
-        }
-
-        .user-avatar-container {
-            position: relative;
-        }
-
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            background: #D9D9D9;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .user-avatar:hover {
-            transform: scale(1.05);
-        }
-
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .dropdown-profile-image {
-            width: 20px;
-            height: 20px;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        /* Profile Dropdown */
-        .profile-dropdown {
-            position: absolute;
-            top: 50px;
-            right: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 180px;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            padding: 8px 0;
-        }
-
-        .profile-dropdown.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-item {
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            font-size: 14px;
-            color: #374151;
-        }
-
-        .dropdown-item:hover {
-            background-color: #F9FAFB;
-        }
-
-        .view-profile-item {
-            font-weight: 500;
-            justify-content: flex-start;
-            gap: 12px;
-        }
-
-        .dropdown-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-        }
-
-        .dark-mode-item {
-            cursor: default;
-        }
-
-        .logout-item {
-            color: #6B7280;
-            display: flex;
-            align-items: center;
-        }
-
-        .logout-item:hover {
-            background-color: #F9FAFB;
-        }
-
-        .logout-icon {
-            font-size: 16px;
-            color: #6B7280;
-            margin-right: 8px;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background-color: #E5E7EB;
-            margin: 8px 0;
-        }
-
-        /* Toggle Switch */
-        .toggle-switch {
-            flex-shrink: 0;
-        }
-
-        .toggle-switch input[type="checkbox"] {
-            display: none;
-        }
-
-        .slider {
-            width: 36px;
-            height: 20px;
-            background-color: #D1D5DB;
-            border-radius: 20px;
-            display: inline-block;
-            position: relative;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .slider:before {
-            content: '';
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            background-color: white;
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: transform 0.3s ease;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .toggle-switch input[type="checkbox"]:checked + .slider {
-            background-color: #3B82F6;
-        }
-
-        .toggle-switch input[type="checkbox"]:checked + .slider:before {
-            transform: translateX(16px);
-        }
-
-        /* Welcome Card */
-        .welcome-card {
-            background: linear-gradient(135deg, var(--light-blue), #E3F2FD);
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-            overflow: hidden;
-            height: 120px;
-            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+          width: 100%;
+          order: 2;
         }
 
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 1.2rem;
-            text-align: center;
-            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
-
+          grid-template-columns: repeat(2, 1fr);
         }
 
         .content-grid {
-            gap: 1.5rem;
-        }
-
-        /* Chart Section */
-        .chart-section {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .chart-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .filter-section {
-            display: flex;
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-            align-items: flex-end;
-        }
-
-        /* Custom Dropdown Styles */
-        .dropdown-container {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .dropdown-container:nth-child(1) {
-            flex: 1;
-        }
-
-        .dropdown-container:nth-child(2) {
-            flex: 1;
-        }
-
-        .dropdown-container:nth-child(3) {
-            flex: 1;
-        }
-
-        .dropdown-label {
-            font-size: 13px;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 3px;
-        }
-
-        .custom-dropdown {
-            background: white;
-            border: 1px solid #D1D5DB;
-            border-radius: 6px;
-            padding: 6px 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            font-size: 13px;
-            color: #374151;
-            min-height: 36px;
-        }
-
-        .custom-dropdown:hover {
-            border-color: #9CA3AF;
-        }
-
-        .dropdown-arrow {
-            font-size: 11px;
-            color: #6B7280;
-            transition: transform 0.2s ease;
-            margin-left: 6px;
-        }
-
-        .custom-dropdown.active .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #D1D5DB;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s ease;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .dropdown-menu.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-option {
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 14px;
-            color: #374151;
-            transition: background-color 0.2s ease;
-        }
-
-        .dropdown-option:hover {
-            background-color: #F3F4F6;
-        }
-
-        .dropdown-option.selected {
-            color: #1F2937;
-            font-weight: 500;
-        }
-
-        /* Date Picker Styles */
-        .date-picker {
-            min-width: 240px;
-            padding: 8px;
-        }
-
-        .date-picker-header {
-            font-size: 12px;
-            font-weight: 600;
-            color: #1F2937;
-            text-align: center;
-            margin-bottom: 6px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid #E5E7EB;
-        }
-
-        .date-range-inputs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 6px;
-        }
-
-        .date-input {
-            flex: 1;
-            padding: 4px 6px;
-            border: 1px solid #D1D5DB;
-            border-radius: 3px;
-            font-size: 10px;
-            background: white;
-            text-align: center;
-            color: #6B7280;
-        }
-
-        .date-input:focus {
-            outline: none;
-            border-color: #3B82F6;
-        }
-
-        .all-time-btn {
-            width: 100%;
-            padding: 4px 8px;
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 3px;
-            font-size: 10px;
-            color: #6B7280;
-            cursor: pointer;
-            margin-bottom: 8px;
-            transition: background-color 0.2s ease;
-        }
-
-        .all-time-btn:hover {
-            background: #F3F4F6;
-        }
-
-        .calendar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 4px;
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            font-size: 10px;
-            cursor: pointer;
-            padding: 1px 4px;
-            color: #374151;
-            border-radius: 2px;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-btn:hover {
-            background: #F3F4F6;
-        }
-
-        .month-year {
-            font-weight: 600;
-            color: #1F2937;
-            font-size: 11px;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0.5px;
-        }
-
-        .day-header {
-            text-align: center;
-            padding: 2px 1px;
-            font-size: 9px;
-            font-weight: 500;
-            color: #6B7280;
-        }
-
-        .day {
-            text-align: center;
-            padding: 2px 1px;
-            font-size: 10px;
-            cursor: pointer;
-            border-radius: 2px;
-            transition: background-color 0.2s ease;
-            min-height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .day:hover {
-            background: #F3F4F6;
-        }
-
-        .day.prev-month,
-        .day.next-month {
-            color: #D1D5DB;
-        }
-
-        .day.current-day {
-            background: #3B82F6;
-            color: white;
-        }
-
-        .day.current-day:hover {
-            background: #2563EB;
-        }
-
-        /* Sidebar Right */
-        .sidebar-right {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .sidebar-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 1.2rem;
-            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .sidebar-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .section-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.8rem;
-        }
-
-        .bmi-chart-container {
-            position: relative;
-            height: 160px;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .bmi-legend {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .legend-row {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-        }
-
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
-            display: inline-block;
-        }
-
-        .legend-color.underweight {
-            background-color: #A8E6CF;
-        }
-
-        .legend-color.normal {
-            background-color: #4ECDC4;
-        }
-
-        .legend-color.overweight {
-            background-color: #45B7D1;
-        }
-
-        .legend-color.obese {
-            background-color: #2C5F7F;
-        }
-
-        .legend-text {
-            color: #6B7280;
-            font-weight: 500;
-        }
-
-        .recent-update {
-            display: flex;
-            align-items: center;
-            padding: 0.6rem 1rem;
-            border-bottom: 1px solid #F0F0F0;
-            background-color: white;
-            border-radius: 20px;
-            margin: 10px 5px;
-        }
-
-        .recent-update:last-child {
-            border-bottom: none;
-        }
-
-        .update-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50px;
-            margin-right: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-        }
-
-        .maria-avatar {
-            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
-        }
-
-        .john-avatar {
-            background: linear-gradient(135deg, #3B82F6, #60A5FA);
-        }
-
-        .alyssa-avatar {
-            background: linear-gradient(135deg, #8B5CF6, #C084FC);
-        }
-
-        .mark-avatar {
-            background: linear-gradient(135deg, #06B6D4, #67E8F9);
-        }
-
-        .update-info h6 {
-            margin: 0 0 2px 0;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .update-info small {
-            color: var(--text-dark);
-            font-size: 0.8rem;
-            display: block;
-            line-height: 1.3;
-        }
-
-        .time-stamp {
-            color: #9CA3AF !important;
-            font-size: 0.7rem !important;
-            margin-top: 1px;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                order: 2;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -897,312 +943,258 @@
                   <span id="sectionSelected">All Sections</span>
                   <span class="dropdown-arrow">▼</span>
                 </div>
+                <div class="dropdown-menu" id="sectionDropdown">
+                  <div
+                    class="dropdown-option"
+                    onclick="selectSection('All Sections')"
+                  >
+                    All Sections
+                  </div>
+                  <div
+                    class="dropdown-option selected"
+                    onclick="selectSection('BSIT 1A-G1')"
+                  >
+                    ✓ BSIT 1A-G1
+                  </div>
+                  <div
+                    class="dropdown-option selected"
+                    onclick="selectSection('BSIT 1A-G2')"
+                  >
+                    ✓ BSIT 1A-G2
+                  </div>
+                  <div
+                    class="dropdown-option selected"
+                    onclick="selectSection('BSIT 1B-G1')"
+                  >
+                    ✓ BSIT 1B-G1
+                  </div>
+                  <div
+                    class="dropdown-option selected"
+                    onclick="selectSection('BSIT 1B-G2')"
+                  >
+                    ✓ BSIT 1B-G2
+                  </div>
+                  <div
+                    class="dropdown-option"
+                    onclick="selectSection('BSIT 1C-G1')"
+                  >
+                    BSIT 1C-G1
+                  </div>
+                  <div
+                    class="dropdown-option"
+                    onclick="selectSection('BSIT 1C-G2')"
+                  >
+                    BSIT 1C-G2
+                  </div>
+                </div>
+              </div>
+
+              <!-- Test Type Dropdown -->
+              <div class="dropdown-container">
+                <label class="dropdown-label">Test Type</label>
+                <div
+                  class="custom-dropdown"
+                  onclick="toggleDropdown('testTypeDropdown')"
+                >
+                  <span id="testTypeSelected">Pre-test vs Post Test</span>
+                  <span class="dropdown-arrow">▼</span>
+                </div>
+                <div class="dropdown-menu" id="testTypeDropdown">
+                  <div
+                    class="dropdown-option selected"
+                    onclick="selectTestType('Pre-test vs Post-test')"
+                  >
+                    ✓ Pre-test vs Post-test
+                  </div>
+                  <div
+                    class="dropdown-option"
+                    onclick="selectTestType('Pre-test Only')"
+                  >
+                    Pre-test Only
+                  </div>
+                  <div
+                    class="dropdown-option"
+                    onclick="selectTestType('Post-test Only')"
+                  >
+                    Post-test Only
+                  </div>
+                </div>
+              </div>
+
+              <!-- Date Range Dropdown -->
+              <div class="dropdown-container">
+                <label class="dropdown-label">Date Range</label>
+                <div
+                  class="custom-dropdown"
+                  onclick="toggleDropdown('dateDropdown')"
+                >
+                  <span id="dateSelected">All Time</span>
+                  <span class="dropdown-arrow">▼</span>
+                </div>
+                <div class="dropdown-menu date-picker" id="dateDropdown">
+                  <!-- Date Range Header -->
+                  <div class="date-picker-header">Date Range</div>
+
+                  <!-- Date Range Inputs -->
+                  <div class="date-range-inputs">
+                    <input
+                      type="text"
+                      placeholder="November 4, 2025"
+                      class="date-input"
+                      id="startDate"
+                      value="November 4, 2025"
+                    />
+                    <input
+                      type="text"
+                      placeholder="November 4, 2025"
+                      class="date-input"
+                      id="endDate"
+                      value="November 4, 2025"
+                    />
+                  </div>
+
+                  <!-- Set to All Time Button -->
+                  <button class="all-time-btn" onclick="setAllTime()">
+                    Set Date to "All Time"
+                  </button>
+
+                  <!-- Calendar Header -->
+                  <div class="calendar-header">
+                    <button class="nav-btn" onclick="previousMonth()">◀</button>
+                    <span class="month-year">November, 2025</span>
+                    <button class="nav-btn" onclick="nextMonth()">▶</button>
+                  </div>
+
+                  <!-- Calendar Grid -->
+                  <div class="calendar-grid">
+                    <div class="day-header">Su</div>
+                    <div class="day-header">Mo</div>
+                    <div class="day-header">Tu</div>
+                    <div class="day-header">We</div>
+                    <div class="day-header">Th</div>
+                    <div class="day-header">Fr</div>
+                    <div class="day-header">Sa</div>
+
+                    <!-- Previous month days -->
+                    <div class="day prev-month">26</div>
+                    <div class="day prev-month">27</div>
+                    <div class="day prev-month">28</div>
+                    <div class="day prev-month">29</div>
+                    <div class="day prev-month">30</div>
+                    <div class="day prev-month">31</div>
+
+                    <!-- Current month days -->
+                    <div class="day">1</div>
+                    <div class="day">2</div>
+                    <div class="day">3</div>
+                    <div class="day">4</div>
+                    <div class="day">5</div>
+                    <div class="day">6</div>
+                    <div class="day">7</div>
+                    <div class="day">8</div>
+                    <div class="day">9</div>
+                    <div class="day">10</div>
+                    <div class="day current-day">11</div>
+                    <div class="day">12</div>
+                    <div class="day">13</div>
+                    <div class="day">14</div>
+                    <div class="day">15</div>
+                    <div class="day">16</div>
+                    <div class="day">17</div>
+                    <div class="day">18</div>
+                    <div class="day">19</div>
+                    <div class="day">20</div>
+                    <div class="day">21</div>
+                    <div class="day">22</div>
+                    <div class="day">23</div>
+                    <div class="day">24</div>
+                    <div class="day">25</div>
+                    <div class="day">26</div>
+                    <div class="day">27</div>
+                    <div class="day">28</div>
+                    <div class="day">29</div>
+                    <div class="day">30</div>
+
+                    <!-- Next month days -->
+                    <div class="day next-month">1</div>
+                    <div class="day next-month">2</div>
+                    <div class="day next-month">3</div>
+                    <div class="day next-month">4</div>
+                    <div class="day next-month">5</div>
+                    <div class="day next-month">6</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div style="
-                display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem">
+            <h3 class="chart-title">
+              Average Fitness Component Comparison (Pre-Test vs Post-Test)
+            </h3>
+            <div style="position: relative; height: 350px">
+              <canvas id="fitnessChart"></canvas>
+            </div>
+          </div>
 
-                <div>
-                    <!-- Welcome Card -->
-                    <div class="welcome-card">
-                        <div class="welcome-content">
-                            <h2>Welcome, John!</h2>
-                            <p>Track progress, monitor growth, and keep your students moving forward!</p>
-                        </div>
-                        <div class="welcome-illustration"></div>
-                    </div>
-
-                    <!-- Stats Grid -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-number">111</div>
-                            <div class="stat-label">Total Students</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number">10</div>
-                            <div class="stat-label">Total Sections</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number">+1.5</div>
-                            <div class="stat-label">Average BMI Change</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number">42<span class="stat-unit">ml/kg/min</span></div>
-                            <div class="stat-label">Average VO₂ Max</div>
-                        </div>
-                    </div>
-
-                    <!-- Content Grid -->
-                    <div class="content-grid">
-                        <!-- Chart Section -->
-                        <div class="chart-section">
-                            <!-- Filters -->
-                            <div class="filter-section">
-                                <!-- Section Dropdown -->
-                                <div class="dropdown-container">
-                                    <label class="dropdown-label">Section</label>
-                                    <div class="custom-dropdown" onclick="toggleDropdown('sectionDropdown')">
-                                        <span id="sectionSelected">All Sections</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </div>
-                                    <div class="dropdown-menu" id="sectionDropdown">
-                                        <div class="dropdown-option" onclick="selectSection('All Sections')">All Sections</div>
-                                        <div class="dropdown-option selected" onclick="selectSection('BSIT 1A-G1')">✓ BSIT 1A-G1</div>
-                                        <div class="dropdown-option selected" onclick="selectSection('BSIT 1A-G2')">✓ BSIT 1A-G2</div>
-                                        <div class="dropdown-option selected" onclick="selectSection('BSIT 1B-G1')">✓ BSIT 1B-G1</div>
-                                        <div class="dropdown-option selected" onclick="selectSection('BSIT 1B-G2')">✓ BSIT 1B-G2</div>
-                                        <div class="dropdown-option" onclick="selectSection('BSIT 1C-G1')">BSIT 1C-G1</div>
-                                        <div class="dropdown-option" onclick="selectSection('BSIT 1C-G2')">BSIT 1C-G2</div>
-                                    </div>
-                                </div>
-
-                                <!-- Test Type Dropdown -->
-                                <div class="dropdown-container">
-                                    <label class="dropdown-label">Test Type</label>
-                                    <div class="custom-dropdown" onclick="toggleDropdown('testTypeDropdown')">
-                                        <span id="testTypeSelected">Pre-test vs Post Test</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </div>
-                                    <div class="dropdown-menu" id="testTypeDropdown">
-                                        <div class="dropdown-option selected" onclick="selectTestType('Pre-test vs Post-test')">✓ Pre-test vs Post-test</div>
-                                        <div class="dropdown-option" onclick="selectTestType('Pre-test Only')">Pre-test Only</div>
-                                        <div class="dropdown-option" onclick="selectTestType('Post-test Only')">Post-test Only</div>
-                                    </div>
-                                </div>
-
-                                <!-- Date Range Dropdown -->
-                                <div class="dropdown-container">
-                                    <label class="dropdown-label">Date Range</label>
-                                    <div class="custom-dropdown" onclick="toggleDropdown('dateDropdown')">
-                                        <span id="dateSelected">All Time</span>
-                                        <span class="dropdown-arrow">▼</span>
-                                    </div>
-                                    <div class="dropdown-menu date-picker" id="dateDropdown">
-                                        <!-- Date Range Header -->
-                                        <div class="date-picker-header">Date Range</div>
-
-                                        <!-- Date Range Inputs -->
-                                        <div class="date-range-inputs">
-                                            <input type="text" placeholder="November 4, 2025" class="date-input" id="startDate" value="November 4, 2025">
-                                            <input type="text" placeholder="November 4, 2025" class="date-input" id="endDate" value="November 4, 2025">
-                                        </div>
-
-                                        <!-- Set to All Time Button -->
-                                        <button class="all-time-btn" onclick="setAllTime()">Set Date to "All Time"</button>
-
-                                        <!-- Calendar Header -->
-                                        <div class="calendar-header">
-                                            <button class="nav-btn" onclick="previousMonth()">◀</button>
-                                            <span class="month-year">November, 2025</span>
-                                            <button class="nav-btn" onclick="nextMonth()">▶</button>
-                                        </div>
-
-                                        <!-- Calendar Grid -->
-                                        <div class="calendar-grid">
-                                            <div class="day-header">Su</div>
-                                            <div class="day-header">Mo</div>
-                                            <div class="day-header">Tu</div>
-                                            <div class="day-header">We</div>
-                                            <div class="day-header">Th</div>
-                                            <div class="day-header">Fr</div>
-                                            <div class="day-header">Sa</div>
-
-                                            <!-- Previous month days -->
-                                            <div class="day prev-month">26</div>
-                                            <div class="day prev-month">27</div>
-                                            <div class="day prev-month">28</div>
-                                            <div class="day prev-month">29</div>
-                                            <div class="day prev-month">30</div>
-                                            <div class="day prev-month">31</div>
-
-                                            <!-- Current month days -->
-                                            <div class="day">1</div>
-                                            <div class="day">2</div>
-                                            <div class="day">3</div>
-                                            <div class="day">4</div>
-                                            <div class="day">5</div>
-                                            <div class="day">6</div>
-                                            <div class="day">7</div>
-                                            <div class="day">8</div>
-                                            <div class="day">9</div>
-                                            <div class="day">10</div>
-                                            <div class="day current-day">11</div>
-                                            <div class="day">12</div>
-                                            <div class="day">13</div>
-                                            <div class="day">14</div>
-                                            <div class="day">15</div>
-                                            <div class="day">16</div>
-                                            <div class="day">17</div>
-                                            <div class="day">18</div>
-                                            <div class="day">19</div>
-                                            <div class="day">20</div>
-                                            <div class="day">21</div>
-                                            <div class="day">22</div>
-                                            <div class="day">23</div>
-                                            <div class="day">24</div>
-                                            <div class="day">25</div>
-                                            <div class="day">26</div>
-                                            <div class="day">27</div>
-                                            <div class="day">28</div>
-                                            <div class="day">29</div>
-                                            <div class="day">30</div>
-
-                                            <!-- Next month days -->
-                                            <div class="day next-month">1</div>
-                                            <div class="day next-month">2</div>
-                                            <div class="day next-month">3</div>
-                                            <div class="day next-month">4</div>
-                                            <div class="day next-month">5</div>
-                                            <div class="day next-month">6</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <h3 class="chart-title">Average Fitness Component Comparison (Pre-Test vs Post-Test)</h3>
-                            <div style="position: relative; height: 350px;">
-                                <canvas id="fitnessChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
+          <!-- Right Sidebar -->
+          <div class="sidebar-right">
+            <!-- BMI Distribution Card -->
+            <div class="sidebar-card">
+              <h4 class="section-title">BMI Category Distribution</h4>
+              <div class="bmi-chart-container">
+                <canvas id="bmiChart"></canvas>
+              </div>
+              <div class="bmi-legend">
+                <div class="legend-row">
+                  <div class="legend-item">
+                    <span class="legend-color underweight"></span>
+                    <span class="legend-text">Underweight</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-color overweight"></span>
+                    <span class="legend-text">Overweight</span>
+                  </div>
                 </div>
-                <!-- Right Sidebar -->
-                <div class="sidebar-right">
-                    <!-- BMI Distribution Card -->
-                    <div class="sidebar-card">
-                        <h4 class="section-title">BMI Category Distribution</h4>
-                        <div class="bmi-chart-container">
-                            <canvas id="bmiChart"></canvas>
-                        </div>
-                        <div class="bmi-legend">
-                            <div class="legend-row">
-                                <div class="legend-item">
-                                    <span class="legend-color underweight"></span>
-                                    <span class="legend-text">Underweight</span>
-                                </div>
-                                <div class="legend-item">
-                                    <span class="legend-color overweight"></span>
-                                    <span class="legend-text">Overweight</span>
-                                </div>
-                            </div>
-                            <div class="legend-row">
-                                <div class="legend-item">
-                                    <span class="legend-color normal"></span>
-                                    <span class="legend-text">Normal</span>
-                                </div>
-                                <div class="legend-item">
-                                    <span class="legend-color obese"></span>
-                                    <span class="legend-text">Obese</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="legend-row">
+                  <div class="legend-item">
+                    <span class="legend-color normal"></span>
+                    <span class="legend-text">Normal</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-color obese"></span>
+                    <span class="legend-text">Obese</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                    <!-- Recent Updates Card -->
-                    <div class="sidebar-card" style="height: 51.5vh;overflow-y: auto;">
-                        <h4 class="section-title" style="margin: 0 0.5rem 1rem 0.5rem; font-size: 1.5rem">Recent Updates</h4>
-                        <div style="border-bottom: solid 1px rgba(0, 0, 0, 0.20)"></div>
+            <!-- Recent Updates Card -->
+            <div class="sidebar-card" style="height: 23vh">
+              <h4 class="section-title">Recent Updates</h4>
 
-                        <div class="recent-update">
-                            <div class="update-avatar maria-avatar">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div class="update-info">
-                                <h6>Maria Cruz</h6>
-                                <small>Submitted Post-Test Results</small>
-                                <small class="time-stamp">2 hours ago</small>
-                            </div>
-                        </div>
+              <div class="recent-update">
+                <div class="update-avatar maria-avatar">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                      fill="white"
+                    />
+                  </svg>
+                </div>
+                <div class="update-info">
+                  <h6>Maria Cruz</h6>
+                  <small>Submitted Post-Test Results</small>
+                  <small class="time-stamp">2 hours ago</small>
+                </div>
+              </div>
 
-                        <div class="recent-update">
-                            <div class="update-avatar john-avatar">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div class="update-info">
-                                <h6>John Dela Cruz</h6>
-                                <small>Updated BMI: 24.8 → 26.2</small>
-                                <small class="time-stamp">8 hours ago</small>
-                            </div>
-                        </div>
-
-                        <div class="recent-update">
-                            <div class="update-avatar alyssa-avatar">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div class="update-info">
-                                <h6>Alyssa Tan</h6>
-                                <small>Completed Strength Test (+10%)</small>
-                                <small class="time-stamp">9 hours ago</small>
-                            </div>
-                        </div>
-
-                        <div class="recent-update">
-                            <div class="update-avatar mark-avatar">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div class="update-info">
-                                <h6>Mark Villanueva</h6>
-                                <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                                <small class="time-stamp">Yesterday</small>
-                            </div>
-                        </div>
-                        <div class="recent-update">
-                            <div class="update-avatar mark-avatar">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div class="update-info">
-                                <h6>Mark Villanueva</h6>
-                                <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                                <small class="time-stamp">Yesterday</small>
-                            </div>
-                        </div>
-                        <div class="recent-update">
-                            <div class="update-avatar mark-avatar">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div class="update-info">
-                                <h6>Mark Villanueva</h6>
-                                <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                                <small class="time-stamp">Yesterday</small>
-                            </div>
-                        </div>
-                        <div class="recent-update">
-                            <div class="update-avatar mark-avatar">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div class="update-info">
-                                <h6>Mark Villanueva</h6>
-                                <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                                <small class="time-stamp">Yesterday</small>
-                            </div>
-                        </div>
-                        <div class="recent-update">
-                            <div class="update-avatar mark-avatar">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div class="update-info">
-                                <h6>Mark Villanueva</h6>
-                                <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                                <small class="time-stamp">Yesterday</small>
-                            </div>
-                        </div>
-                    </div>
+              <div class="recent-update">
+                <div class="update-avatar john-avatar">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                      fill="white"
+                    />
+                  </svg>
                 </div>
                 <div class="update-info">
                   <h6>John Dela Cruz</h6>
@@ -1245,9 +1237,7 @@
             </div>
           </div>
         </div>
-
-
-        </div>
+      </div>
     </div>
 
     <!-- Bootstrap JS -->
