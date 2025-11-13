@@ -148,11 +148,69 @@ def student_dashboard(request):
 
 @login_required
 def student_profile_view(request):
-    return render(request, 'student/profile.html')
+    student = request.user.student_profile
+    latest_test = student.fitness_tests.order_by('-taken_at').first()
+    
+    context = {
+        'student': student,
+        'latest_test': latest_test,
+        'full_name': f"{student.first_name} {student.last_name}",
+    }
+    return render(request, 'student/profile.html', context)
 
 @login_required
 def student_profile_update_view(request):
-    return render(request, 'student/profile_update.html')
+    from .models import FitnessTest
+    from django.utils import timezone
+    
+    student = request.user.student_profile
+    pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    
+    if request.method == 'POST':
+        test_type = request.POST.get('test_type', 'post')  # Default to post, but allow pre
+        
+        # Parse form data
+        height_cm = request.POST.get('height_cm')
+        weight_kg = request.POST.get('weight_kg')
+        vo2_distance_m = request.POST.get('vo2_distance_m')
+        flexibility_cm = request.POST.get('flexibility_cm')
+        strength_reps = request.POST.get('strength_reps')
+        agility_sec = request.POST.get('agility_sec')
+        speed_sec = request.POST.get('speed_sec')
+        endurance_time = request.POST.get('endurance_time')  # mm:ss format
+        
+        try:
+            # Create fitness test
+            fitness_test = FitnessTest.objects.create(
+                student=student,
+                test_type=test_type,
+                height_cm=height_cm if height_cm else None,
+                weight_kg=weight_kg if weight_kg else None,
+                vo2_distance_m=vo2_distance_m if vo2_distance_m else None,
+                flexibility_cm=flexibility_cm if flexibility_cm else None,
+                strength_reps=int(strength_reps) if strength_reps else None,
+                agility_sec=agility_sec if agility_sec else None,
+                speed_sec=speed_sec if speed_sec else None,
+                taken_at=timezone.now()
+            )
+            
+            # Parse and set endurance time
+            if endurance_time:
+                fitness_test.set_endurance_from_string(endurance_time)
+                fitness_test.save()
+            
+            messages.success(request, f'{test_type.capitalize()} test saved successfully!')
+            return redirect('student-profile')
+            
+        except Exception as e:
+            messages.error(request, f'Error saving test: {str(e)}')
+    
+    context = {
+        'student': student,
+        'pre_test': pre_test,
+        'full_name': f"{student.first_name} {student.last_name}",
+    }
+    return render(request, 'student/profile_update.html', context)
 
 @login_required
 def student_settings_view(request):

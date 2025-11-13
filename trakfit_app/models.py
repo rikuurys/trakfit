@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.core.exceptions import ValidationError
 from django.utils import timezone
+from decimal import Decimal
 
 
 class UserManager(BaseUserManager):
@@ -99,20 +101,58 @@ class FitnessTest(models.Model):
     test_type = models.CharField(max_length=10, choices=TEST_TYPE_CHOICES)
     height_cm = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     weight_kg = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    bmi = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     vo2_distance_m = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    vo2_max = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     flexibility_cm = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     strength_reps = models.IntegerField(null=True, blank=True)
     agility_sec = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     speed_sec = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    endurance_min = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    endurance_minutes = models.IntegerField(null=True, blank=True)
+    endurance_seconds = models.IntegerField(null=True, blank=True)
     taken_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
         db_table = 'fitness_tests'
+    
+    def clean(self):
+        """Validate endurance seconds is between 0-59."""
+        super().clean()
+        if self.endurance_seconds is not None and (self.endurance_seconds < 0 or self.endurance_seconds > 59):
+            raise ValidationError({'endurance_seconds': 'Seconds must be between 0 and 59.'})
+    
+    @property
+    def bmi(self):
+        """Calculate BMI from height and weight. Returns None if data is missing."""
+        if self.height_cm and self.weight_kg:
+            height_m = float(self.height_cm) / 100
+            weight = float(self.weight_kg)
+            return weight / (height_m ** 2)
+        return None
+    
+    @property
+    def vo2_max(self):
+        """Calculate VO2 Max using Cooper formula. Returns None if distance is missing."""
+        if self.vo2_distance_m:
+            return (float(self.vo2_distance_m) - 504.9) / 44.73
+        return None
+    
+    def get_endurance_display(self):
+        """Return endurance formatted as mm:ss string."""
+        if self.endurance_minutes is not None and self.endurance_seconds is not None:
+            return f"{self.endurance_minutes:02d}:{self.endurance_seconds:02d}"
+        return None
+    
+    def set_endurance_from_string(self, time_str):
+        """Parse mm:ss string and set endurance_minutes and endurance_seconds."""
+        if time_str and ':' in time_str:
+            parts = time_str.split(':')
+            if len(parts) == 2:
+                try:
+                    self.endurance_minutes = int(parts[0])
+                    self.endurance_seconds = int(parts[1])
+                except ValueError:
+                    raise ValidationError('Invalid time format. Use mm:ss.')
     
     def __str__(self):
         return f"{self.student.student_no} - {self.test_type} ({self.taken_at})"
