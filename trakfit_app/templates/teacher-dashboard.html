@@ -1,22 +1,16 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrakFit - Teacher Dashboard</title>
     <!-- Bootstrap -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Fonts -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Custom Dashboard Styles -->
     <style>
         :root {
@@ -36,9 +30,11 @@
         }
 
         .dashboard-container {
-          flex-direction: column;
+            display: flex;
+            min-height: 100vh;
         }
 
+        /* Sidebar */
         .sidebar {
             width: 250px;
             background: var(--sidebar-blue) 100%;
@@ -327,6 +323,33 @@
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
         }
 
+        .welcome-content h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2C3E50;
+            margin-bottom: 0.3rem;
+        }
+
+        .welcome-content p {
+            color: #2C3E50;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .welcome-illustration {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 160px;
+            height: 80px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120"><rect x="20" y="40" width="80" height="60" rx="10" fill="%234A90A4"/><circle cx="60" cy="30" r="15" fill="%23333"/><rect x="50" y="45" width="20" height="30" rx="5" fill="white"/><circle cx="140" cy="90" r="20" fill="%235FA8D3"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -343,6 +366,26 @@
 
         }
 
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .stat-unit {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            display: block;
+        }
+
+        /* Content Grid */
         .content-grid {
             gap: 1.5rem;
         }
@@ -765,137 +808,66 @@
                 grid-template-columns: 1fr;
             }
         }
-      }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="dashboard-container">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <div class="brand-section">
-          <div class="brand-logo"></div>
-          <span class="brand-name">TrakFit</span>
-        </div>
-
-        <div class="nav-menu">
-          <div class="nav-item">
-            <a href="{% url 'teacher_dashboard' %}" class="nav-link active"
-              >Dashboard</a
-            >
-          </div>
-          <div class="nav-item">
-            <a href="{% url 'student_management' %}" class="nav-link"
-              >Student Management</a
-            >
-          </div>
-          <div class="nav-item">
-            <a href="#" class="nav-link">Settings</a>
-          </div>
-        </div>
-
-        <div class="sidebar-illustration">
-          <img src="{% static 'sidebar.png' %}" />
-        </div>
-      </div>
-
-      <!-- Main Content -->
-      <div class="main-content">
-        <!-- Top Bar -->
-        <div class="top-bar">
-          <h1 class="page-title">Dashboard</h1>
-          <div class="user-section">
-            <div class="notification-icon">
-              <i
-                class="fa-regular fa-bell"
-                style="font-size: 2rem; padding-right: 1rem"
-              ></i>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand-section">
+                <div class="brand-logo"></div>
+                <span class="brand-name">TrakFit</span>
             </div>
-            <div class="user-avatar-container">
-              <div class="user-avatar" onclick="toggleProfileDropdown()">
-                <img
-                  src="{% static 'profile.png' %}"
-                  alt="Profile"
-                  class="profile-image"
-                />
-              </div>
-              <!-- Profile Dropdown -->
-              <div class="profile-dropdown" id="profileDropdown">
-                <div
-                  class="dropdown-item view-profile-item"
-                  onclick="viewProfile()"
-                >
-                  <span>View Profile</span>
+            
+            <div class="nav-menu">
+                <div class="nav-item">
+                    <a href="{% url 'teacher_dashboard' %}" class="nav-link active">Dashboard</a>
                 </div>
-                <div class="dropdown-divider"></div>
-                <div class="dropdown-item dark-mode-item">
-                  <span>Dark mode</span>
-                  <div class="toggle-switch">
-                    <input
-                      type="checkbox"
-                      id="darkModeToggle"
-                      onchange="toggleDarkMode()"
-                    />
-                    <label for="darkModeToggle" class="slider"></label>
-                  </div>
+                <div class="nav-item">
+                    <a href="{% url 'student_management' %}" class="nav-link">Student Management</a>
                 </div>
-                <div class="dropdown-divider"></div>
-                <div class="dropdown-item logout-item" onclick="logout()">
-                  <span>Logout ></span>
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Settings</a>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Welcome Card -->
-        <div class="welcome-card">
-          <div class="welcome-content">
-            <h2>Welcome, John!</h2>
-            <p>
-              Track progress, monitor growth, and keep your students moving
-              forward!
-            </p>
-          </div>
-          <div class="welcome-illustration"></div>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-number">111</div>
-            <div class="stat-label">Total Students</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number">10</div>
-            <div class="stat-label">Total Sections</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number">+1.5</div>
-            <div class="stat-label">Average BMI Change</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number">
-              42<span class="stat-unit">ml/kg/min</span>
+            <div class="sidebar-illustration">
+                <img src="{% static 'sidebar.png' %}">
             </div>
-            <div class="stat-label">Average VO₂ Max</div>
-          </div>
         </div>
 
-        <!-- Content Grid -->
-        <div class="content-grid">
-          <!-- Chart Section -->
-          <div class="chart-section">
-            <!-- Filters -->
-            <div class="filter-section">
-              <!-- Section Dropdown -->
-              <div class="dropdown-container">
-                <label class="dropdown-label">Section</label>
-                <div
-                  class="custom-dropdown"
-                  onclick="toggleDropdown('sectionDropdown')"
-                >
-                  <span id="sectionSelected">All Sections</span>
-                  <span class="dropdown-arrow">▼</span>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="user-section">
+                    <div class="notification-icon">
+                        <i class="fa-regular fa-bell" style="font-size: 2rem; padding-right: 1rem"></i>
+                    </div>
+                    <div class="user-avatar-container">
+                        <div class="user-avatar" onclick="toggleProfileDropdown()">
+                            <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
+                        </div>
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="dropdown-item view-profile-item" onclick="viewProfile()">
+                                <span>View Profile</span>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item dark-mode-item">
+                                <span>Dark mode</span>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                                    <label for="darkModeToggle" class="slider"></label>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item logout-item" onclick="logout()">
+                                <span>Logout ></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1204,46 +1176,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="update-info">
-                  <h6>John Dela Cruz</h6>
-                  <small>Updated BMI: 24.8 → 26.2</small>
-                  <small class="time-stamp">8 hours ago</small>
-                </div>
-              </div>
-
-              <div class="recent-update">
-                <div class="update-avatar alyssa-avatar">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                      fill="white"
-                    />
-                  </svg>
-                </div>
-                <div class="update-info">
-                  <h6>Alyssa Tan</h6>
-                  <small>Completed Strength Test (+10%)</small>
-                  <small class="time-stamp">9 hours ago</small>
-                </div>
-              </div>
-
-              <div class="recent-update">
-                <div class="update-avatar mark-avatar">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                      fill="white"
-                    />
-                  </svg>
-                </div>
-                <div class="update-info">
-                  <h6>Mark Villanueva</h6>
-                  <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                  <small class="time-stamp">Yesterday</small>
-                </div>
-              </div>
             </div>
-          </div>
         </div>
 
 
@@ -1252,307 +1185,251 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
+    
     <script>
-      // Fitness Component Comparison Chart
-      const fitnessCtx = document
-        .getElementById("fitnessChart")
-        .getContext("2d");
-      new Chart(fitnessCtx, {
-        type: "bar",
-        data: {
-          labels: [
-            "BMI",
-            "VO₂ Max",
-            "Flexibility",
-            "Strength",
-            "Agility",
-            "Speed",
-            "Endurance",
-          ],
-          datasets: [
-            {
-              label: "Pre-Test",
-              data: [18, 25, 24, 20, 24, 30, 48],
-              backgroundColor: "#4A90A4",
-              borderRadius: 4,
+        // Fitness Component Comparison Chart
+        const fitnessCtx = document.getElementById('fitnessChart').getContext('2d');
+        new Chart(fitnessCtx, {
+            type: 'bar',
+            data: {
+                labels: ['BMI', 'VO₂ Max', 'Flexibility', 'Strength', 'Agility', 'Speed', 'Endurance'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [18, 25, 24, 20, 24, 30, 48],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4
+                }, {
+                    label: 'Post-Test',
+                    data: [19, 28, 27, 32, 42, 48, 55],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4
+                }]
             },
-            {
-              label: "Post-Test",
-              data: [19, 28, 27, 32, 42, 48, 55],
-              backgroundColor: "#2C3E50",
-              borderRadius: 4,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: "top",
-              align: "end",
-            },
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              max: 60,
-              ticks: {
-                stepSize: 10,
-              },
-              grid: {
-                color: "rgba(0,0,0,0.05)",
-              },
-            },
-            x: {
-              grid: {
-                display: false,
-              },
-            },
-          },
-          elements: {
-            bar: {
-              borderWidth: 0,
-            },
-          },
-        },
-      });
-
-      // BMI Distribution Pie Chart
-      const bmiCtx = document.getElementById("bmiChart").getContext("2d");
-      new Chart(bmiCtx, {
-        type: "doughnut",
-        data: {
-          labels: ["Underweight", "Normal", "Overweight", "Obese"],
-          datasets: [
-            {
-              data: [15, 45, 25, 15],
-              backgroundColor: ["#B7D7EA", "#4A90A4", "#5FA8D3", "#1976D2"],
-              borderWidth: 0,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-          cutout: "60%",
-        },
-      });
-
-      // Profile Dropdown Functions
-      function toggleProfileDropdown() {
-        const dropdown = document.getElementById("profileDropdown");
-        dropdown.classList.toggle("show");
-      }
-
-      // Close dropdown when clicking outside
-      document.addEventListener("click", function (event) {
-        const dropdown = document.getElementById("profileDropdown");
-        const userAvatar = document.querySelector(".user-avatar");
-
-        if (
-          !userAvatar.contains(event.target) &&
-          !dropdown.contains(event.target)
-        ) {
-          dropdown.classList.remove("show");
-        }
-      });
-
-      function viewProfile() {
-        alert("View Profile clicked - This would navigate to profile page");
-        document.getElementById("profileDropdown").classList.remove("show");
-      }
-
-      function toggleDarkMode() {
-        const toggle = document.getElementById("darkModeToggle");
-        toggle.checked = !toggle.checked;
-
-        if (toggle.checked) {
-          document.body.classList.add("dark-mode");
-          alert("Dark mode enabled - This would apply dark theme");
-        } else {
-          document.body.classList.remove("dark-mode");
-          alert("Dark mode disabled - This would apply light theme");
-        }
-      }
-
-      function logout() {
-        if (confirm("Are you sure you want to log out?")) {
-          window.location.href = "/";
-        }
-      }
-
-      // Filter Dropdown Functions
-      function toggleDropdown(dropdownId) {
-        const dropdown = document.getElementById(dropdownId);
-        const allDropdowns = document.querySelectorAll(".dropdown-menu");
-        const allButtons = document.querySelectorAll(".custom-dropdown");
-
-        // Close all other dropdowns
-        allDropdowns.forEach((dd) => {
-          if (dd.id !== dropdownId) {
-            dd.classList.remove("show");
-          }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 60,
+                        ticks: {
+                            stepSize: 10
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                elements: {
+                    bar: {
+                        borderWidth: 0
+                    }
+                }
+            }
         });
 
-        // Remove active class from all buttons
-        allButtons.forEach((btn) => {
-          if (
-            btn.getAttribute("onclick") !== `toggleDropdown('${dropdownId}')`
-          ) {
-            btn.classList.remove("active");
-          }
+        // BMI Distribution Pie Chart
+        const bmiCtx = document.getElementById('bmiChart').getContext('2d');
+        new Chart(bmiCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Underweight', 'Normal', 'Overweight', 'Obese'],
+                datasets: [{
+                    data: [15, 45, 25, 15],
+                    backgroundColor: ['#B7D7EA', '#4A90A4', '#5FA8D3', '#1976D2'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                cutout: '60%'
+            }
         });
 
-        // Toggle current dropdown
-        dropdown.classList.toggle("show");
-
-        // Toggle active class on button
-        const button = document.querySelector(
-          `[onclick="toggleDropdown('${dropdownId}')"]`
-        );
-        button.classList.toggle("active");
-      }
-
-      function selectSection(section) {
-        document.getElementById("sectionSelected").textContent = section;
-        document.getElementById("sectionDropdown").classList.remove("show");
-        document
-          .querySelector(`[onclick="toggleDropdown('sectionDropdown')"]`)
-          .classList.remove("active");
-      }
-
-      function selectTestType(testType) {
-        document.getElementById("testTypeSelected").textContent = testType;
-        document.getElementById("testTypeDropdown").classList.remove("show");
-        document
-          .querySelector(`[onclick="toggleDropdown('testTypeDropdown')"]`)
-          .classList.remove("active");
-      }
-
-      function selectDate(date) {
-        document.getElementById("dateSelected").textContent = date;
-        document.getElementById("dateDropdown").classList.remove("show");
-        document
-          .querySelector(`[onclick="toggleDropdown('dateDropdown')"]`)
-          .classList.remove("active");
-      }
-
-      // Calendar Functions
-      let currentMonth = 10; // November (0-indexed)
-      let currentYear = 2025;
-
-      function setAllTime() {
-        document.getElementById("dateSelected").textContent = "All Time";
-        document.getElementById("startDate").value = "";
-        document.getElementById("endDate").value = "";
-        document.getElementById("dateDropdown").classList.remove("show");
-        document
-          .querySelector(`[onclick="toggleDropdown('dateDropdown')"]`)
-          .classList.remove("active");
-      }
-
-      function previousMonth() {
-        currentMonth--;
-        if (currentMonth < 0) {
-          currentMonth = 11;
-          currentYear--;
+        // Profile Dropdown Functions
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
         }
-        updateCalendarHeader();
-      }
 
-      function nextMonth() {
-        currentMonth++;
-        if (currentMonth > 11) {
-          currentMonth = 0;
-          currentYear++;
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const userAvatar = document.querySelector('.user-avatar');
+            
+            if (!userAvatar.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function viewProfile() {
+            alert('View Profile clicked - This would navigate to profile page');
+            document.getElementById('profileDropdown').classList.remove('show');
         }
-        updateCalendarHeader();
-      }
 
-      function updateCalendarHeader() {
-        const monthNames = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ];
-        document.querySelector(
-          ".month-year"
-        ).textContent = `${monthNames[currentMonth]}, ${currentYear}`;
-      }
+        function toggleDarkMode() {
+            const toggle = document.getElementById('darkModeToggle');
+            toggle.checked = !toggle.checked;
+            
+            if (toggle.checked) {
+                document.body.classList.add('dark-mode');
+                alert('Dark mode enabled - This would apply dark theme');
+            } else {
+                document.body.classList.remove('dark-mode');
+                alert('Dark mode disabled - This would apply light theme');
+            }
+        }
 
-      // Add click events to calendar days
-      document.addEventListener("DOMContentLoaded", function () {
-        const days = document.querySelectorAll(
-          ".day:not(.prev-month):not(.next-month)"
-        );
-        days.forEach((day) => {
-          day.addEventListener("click", function () {
-            // Remove previous selection
-            document
-              .querySelectorAll(".day.selected")
-              .forEach((d) => d.classList.remove("selected"));
-            // Add selection to clicked day
-            this.classList.add("selected");
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                window.location.href = '/';
+            }
+        }
 
-            // Update date range (this is a simplified example)
-            const selectedDay = this.textContent;
+        // Filter Dropdown Functions
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            const allButtons = document.querySelectorAll('.custom-dropdown');
+            
+            // Close all other dropdowns
+            allDropdowns.forEach(dd => {
+                if (dd.id !== dropdownId) {
+                    dd.classList.remove('show');
+                }
+            });
+            
+            // Remove active class from all buttons
+            allButtons.forEach(btn => {
+                if (btn.getAttribute('onclick') !== `toggleDropdown('${dropdownId}')`) {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Toggle current dropdown
+            dropdown.classList.toggle('show');
+            
+            // Toggle active class on button
+            const button = document.querySelector(`[onclick="toggleDropdown('${dropdownId}')"]`);
+            button.classList.toggle('active');
+        }
+
+        function selectSection(section) {
+            document.getElementById('sectionSelected').textContent = section;
+            document.getElementById('sectionDropdown').classList.remove('show');
+            document.querySelector(`[onclick="toggleDropdown('sectionDropdown')"]`).classList.remove('active');
+        }
+
+        function selectTestType(testType) {
+            document.getElementById('testTypeSelected').textContent = testType;
+            document.getElementById('testTypeDropdown').classList.remove('show');
+            document.querySelector(`[onclick="toggleDropdown('testTypeDropdown')"]`).classList.remove('active');
+        }
+
+        function selectDate(date) {
+            document.getElementById('dateSelected').textContent = date;
+            document.getElementById('dateDropdown').classList.remove('show');
+            document.querySelector(`[onclick="toggleDropdown('dateDropdown')"]`).classList.remove('active');
+        }
+
+        // Calendar Functions
+        let currentMonth = 10; // November (0-indexed)
+        let currentYear = 2025;
+
+        function setAllTime() {
+            document.getElementById('dateSelected').textContent = 'All Time';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('dateDropdown').classList.remove('show');
+            document.querySelector(`[onclick="toggleDropdown('dateDropdown')"]`).classList.remove('active');
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            updateCalendarHeader();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            updateCalendarHeader();
+        }
+
+        function updateCalendarHeader() {
             const monthNames = [
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December",
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
             ];
-            const selectedDate = `${monthNames[currentMonth]} ${selectedDay}, ${currentYear}`;
-            document.getElementById("dateSelected").textContent = selectedDate;
-          });
-        });
-      });
-
-      // Close dropdowns when clicking outside
-      document.addEventListener("click", function (event) {
-        const dropdowns = document.querySelectorAll(".dropdown-menu");
-        const buttons = document.querySelectorAll(".custom-dropdown");
-
-        let clickedInside = false;
-        buttons.forEach((button) => {
-          if (button.contains(event.target)) {
-            clickedInside = true;
-          }
-        });
-
-        if (!clickedInside) {
-          dropdowns.forEach((dropdown) => {
-            dropdown.classList.remove("show");
-          });
-          buttons.forEach((button) => {
-            button.classList.remove("active");
-          });
+            document.querySelector('.month-year').textContent = `${monthNames[currentMonth]}, ${currentYear}`;
         }
-      });
+
+        // Add click events to calendar days
+        document.addEventListener('DOMContentLoaded', function() {
+            const days = document.querySelectorAll('.day:not(.prev-month):not(.next-month)');
+            days.forEach(day => {
+                day.addEventListener('click', function() {
+                    // Remove previous selection
+                    document.querySelectorAll('.day.selected').forEach(d => d.classList.remove('selected'));
+                    // Add selection to clicked day
+                    this.classList.add('selected');
+                    
+                    // Update date range (this is a simplified example)
+                    const selectedDay = this.textContent;
+                    const monthNames = [
+                        'January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
+                    const selectedDate = `${monthNames[currentMonth]} ${selectedDay}, ${currentYear}`;
+                    document.getElementById('dateSelected').textContent = selectedDate;
+                });
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdowns = document.querySelectorAll('.dropdown-menu');
+            const buttons = document.querySelectorAll('.custom-dropdown');
+            
+            let clickedInside = false;
+            buttons.forEach(button => {
+                if (button.contains(event.target)) {
+                    clickedInside = true;
+                }
+            });
+            
+            if (!clickedInside) {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+                buttons.forEach(button => {
+                    button.classList.remove('active');
+                });
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
