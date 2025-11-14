@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TrakFit - Pre-Test Entry</title>
+    <title>TrakFit - My Profile</title>
     <!-- Bootstrap -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
@@ -12,7 +12,11 @@
     />
     <!-- Fonts -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&family=Albert+Sans:wght@400;600&family=Atkinson+Hyperlegible:wght@400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Albert+Sans:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
     <!-- Custom CSS -->
@@ -23,6 +27,8 @@
         --dark-text: #2c3e50;
         --light-bg: #fafafa;
         --input-bg: #f3f3f3;
+        --pre-test-color: #e3f2fd;
+        --post-test-color: #e8f5e8;
       }
 
       body {
@@ -32,8 +38,8 @@
       }
 
       .main-content {
-        margin-left: 400px;
-        padding: 20px;
+        margin-left: 250px;
+        padding: 1.5rem;
         min-height: 100vh;
       }
 
@@ -41,96 +47,238 @@
         font-family: "Albert Sans", sans-serif;
       }
 
-      .form-container {
-        background: #fafafa;
-        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-        border-radius: 54px;
-        padding: 40px;
+      .page-title {
+        font-size: 3rem;
+        color: #2c3e50;
+        margin: 0;
       }
 
-      .form-section-title {
-        color: black;
-        font-size: 1.5rem;
-        font-family: "Albert Sans", sans-serif;
-        font-weight: 400;
-        margin-bottom: 1.5rem;
-      }
-
-      .form-label {
-        color: black;
-        font-size: 1.25rem;
-        font-family: "Sarabun", sans-serif;
-        font-weight: 300;
-        margin-bottom: 0.5rem;
-      }
-
-      .form-input {
-        background: #f3f3f3;
-        border-radius: 15px;
-        border: 1px solid #a2c4d9;
-        height: 57px;
-        font-size: 1.25rem;
-        padding: 0 20px;
-        padding-right: 110px; /* Increased slightly for better clearance */
-      }
-
-      .form-input:read-only {
-        background: #f3f3f3;
-        cursor: default;
-      }
-
-      .form-input::placeholder {
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.25rem;
-        font-family: "Sarabun", sans-serif;
-        font-weight: 400;
-      }
-
-      .unit-badge {
-        background: #9ec5e5;
-        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-        border-radius: 15px;
-        padding: 8px 18px; /* Reduced padding for better fit */
-        color: black;
-        font-size: 1.1rem;
-        font-family: "Sarabun", sans-serif;
-        font-weight: 800;
-        white-space: nowrap;
-        line-height: 1.5; /* Better text vertical alignment */
-        display: inline-flex; /* Use flexbox for better centering */
-        align-items: center; /* Vertically center the text */
-        height: 38px; /* Fixed height for consistent sizing */
-      }
-
-      .save-btn {
-        background: #3a7ca5;
-        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-        border-radius: 40px;
-        color: white;
-        font-size: 1.4rem;
-        font-family: "Albert Sans", sans-serif;
-        font-weight: 600;
-        padding: 12px 40px;
+      .test-card {
+        background: #ffffff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
         border: none;
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+
+      .test-card:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .test-card.expanded {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .notification-icon {
+        width: 40px;
+        height: 40px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #7f8c8d;
+        font-size: 1.2rem;
+      }
+
+      .user-avatar-container {
+        position: relative;
       }
 
       .user-avatar {
-        width: 80px;
-        height: 80px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
         object-fit: cover;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
+
+      .profile-dropdown {
+        position: absolute;
+        top: 50px;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 180px;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        padding: 8px 0;
+      }
+
+      .profile-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-item {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .dropdown-item:hover {
+        background-color: #f9fafb;
+      }
+
+      .view-profile-item {
+        font-weight: 500;
+        justify-content: flex-start;
+        gap: 12px;
+      }
+
+      .dark-mode-item {
+        cursor: default;
+      }
+
+      .logout-item {
+        color: #6b7280;
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background-color: #e5e7eb;
+        margin: 8px 0;
+      }
+
+      .toggle-switch {
+        flex-shrink: 0;
+      }
+
+      .toggle-switch input[type="checkbox"] {
+        display: none;
+      }
+
+      .slider {
+        width: 36px;
+        height: 20px;
+        background-color: #d1d5db;
+        border-radius: 20px;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .slider:before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background-color: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .toggle-switch input[type="checkbox"]:checked + .slider {
+        background-color: #3b82f6;
+      }
+
+      .toggle-switch input[type="checkbox"]:checked + .slider:before {
+        transform: translateX(16px);
+      }
+
+      .test-badge {
+        color: #2c3e50;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 20px;
+      }
+
+      .test-badge.pre-test {
+        background: var(--pre-test-color);
+        border: 1px solid #90caf9;
+      }
+
+      .test-badge.post-test {
+        background: var(--post-test-color);
+        border: 1px solid #a5d6a7;
+      }
+
+      .metric-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .metric-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+      }
+
+      .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        padding: 1.5rem;
+      }
+
+      .detail-section {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .detail-section h6 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 0.5rem;
+      }
+
+      .detail-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0;
+      }
+
+      .detail-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .detail-label {
+        color: #6c757d;
+        font-weight: 500;
+      }
+
+      .detail-value {
+        color: #2c3e50;
+        font-weight: 600;
       }
 
       .info-text {
-        color: black;
-        font-size: 1.5rem;
-        font-family: "Atkinson Hyperlegible", sans-serif;
+        color: #6c757d;
+        font-size: 1rem;
+        font-family: "Sarabun", sans-serif;
         font-weight: 400;
       }
 
       @media (max-width: 1400px) {
         .main-content {
-          margin-left: 350px;
+          margin-left: 250px;
         }
       }
 
@@ -138,20 +286,20 @@
         .main-content {
           margin-left: 300px;
         }
+      }
 
-        @media (max-width: 992px) {
-          .sidebar-illustration img {
-            max-width: 200px !important;
-          }
+      @media (max-width: 992px) {
+        .sidebar-illustration img {
+          max-width: 200px !important;
+        }
 
-          .main-content {
-            margin-left: 0;
-          }
+        .main-content {
+          margin-left: 0;
+        }
 
-          .form-container {
-            padding: 20px;
-            border-radius: 30px;
-          }
+        .details-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
         }
       }
     </style>
@@ -164,224 +312,237 @@
     <div class="main-content">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h1
-            class="brand-font mb-2"
-            style="
-              font-size: 2.5rem;
-              font-weight: 700;
-              color: var(--primary-color);
-            "
-          >
-            Fitness Test Results
-          </h1>
-          {% if latest_test %}
-          <p class="info-text mb-0">
-            <span class="badge bg-primary me-2"
-              >{{ latest_test.get_test_type_display }}</span
-            >
-            Taken on: {{ latest_test.taken_at|date:"F d, Y" }}
-          </p>
-          {% else %}
-          <p class="info-text mb-0">No fitness test recorded yet</p>
-          {% endif %}
-        </div>
+        <h1 class="page-title">My Profile</h1>
         <div class="d-flex align-items-center">
-          <div class="me-3" style="opacity: 0.5">
-            <div
-              style="width: 33.33px; height: 41.67px; background: #1d1b20"
-            ></div>
+          <a href="{% url 'student-post-test' %}" class="btn btn-primary me-3" style="background: #3a7ca5; border: none; border-radius: 10px; color: white; font-size: 0.9rem; font-weight: 600; padding: 8px 20px; text-decoration: none;"><i class="fa-solid fa-plus me-2"></i>Post-Test</a>
+          <div class="notification-icon me-3">
+            <i class="fa-regular fa-bell" style="font-size: 1.5rem"></i>
           </div>
-          <img src="{% static '' %}" alt="User Avatar" class="user-avatar" />
+          <div class="user-avatar-container">
+            <img
+              src="{% static 'profile.png' %}"
+              alt="User Avatar"
+              class="user-avatar"
+              onclick="toggleProfileDropdown()"
+            />
+            <div class="profile-dropdown" id="profileDropdown">
+              <div
+                class="dropdown-item view-profile-item"
+                onclick="viewProfile()"
+              >
+                <span>View Profile</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item dark-mode-item">
+                <span>Dark mode</span>
+                <div class="toggle-switch">
+                  <input
+                    type="checkbox"
+                    id="darkModeToggle"
+                    onchange="toggleDarkMode()"
+                  />
+                  <label for="darkModeToggle" class="slider"></label>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item logout-item" onclick="logout()">
+                <span>Logout ></span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Form Container -->
-      <div class="form-container">
-        <!-- Body Metrics Section -->
-        <div class="mb-5">
-          <h3 class="form-section-title">Body Metrics</h3>
-
-          <div class="row mb-4">
-            <div class="col-md-6">
-              <label class="form-label">Height</label>
-              <div class="position-relative">
-                <input
-                  type="text"
-                  class="form-control form-input"
-                  value="{{ latest_test.height_cm|default:'N/A' }}"
-                  readonly
-                />
-                <div
-                  class="position-absolute top-50 end-0 translate-middle-y me-3"
-                >
-                  <span class="unit-badge">cm</span>
-                </div>
-              </div>
+      <!-- Personal & Academic Information -->
+      <div class="row">
+        <!-- Personal Information Card -->
+        <div class="col-md-6 mb-3">
+          <div class="test-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0" style="color: #2c3e50; font-weight: 600; font-size: 1.25rem;">
+                <i class="fa-solid fa-user me-2" style="color: #3a7ca5;"></i>
+                Personal Information
+              </h5>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Weight</label>
-              <div class="position-relative">
-                <input
-                  type="text"
-                  class="form-control form-input"
-                  value="{{ latest_test.weight_kg|default:'N/A' }}"
-                  readonly
-                />
-                <div
-                  class="position-absolute top-50 end-0 translate-middle-y me-3"
-                >
-                  <span class="unit-badge">kg</span>
-                </div>
+            <div class="details-grid" style="grid-template-columns: 1fr; gap: 0.75rem; padding: 0;">
+              <div class="detail-item">
+                <span class="detail-label">Full Name:</span>
+                <span class="detail-value">{{ student.first_name }} {% if student.middle_initial %}{{ student.middle_initial }}.{% endif %} {{ student.last_name }}</span>
               </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-12">
-              <label class="form-label">BMI (computed)</label>
-              <input
-                type="text"
-                class="form-control form-input"
-                value="{% if latest_test.bmi %}{{ latest_test.bmi|floatformat:2 }}{% else %}N/A{% endif %}"
-                readonly
-              />
+              <div class="detail-item">
+                <span class="detail-label">Age:</span>
+                <span class="detail-value">{{ student.age }} years old</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Gender:</span>
+                <span class="detail-value">{{ student.gender|default:"N/A" }}</span>
+              </div>
+              {% if student.last_data_update_at %}
+              <div class="detail-item">
+                <span class="detail-label">Last Updated:</span>
+                <span class="detail-value">{{ student.last_data_update_at|date:"F d, Y g:i A" }}</span>
+              </div>
+              {% endif %}
             </div>
           </div>
         </div>
 
-        <!-- VO2 Max Section -->
-        <div class="mb-5">
-          <h3 class="form-section-title">VO<sub>2</sub> Max (Cooper 12-min)</h3>
+        <!-- Academic Information Card -->
+        <div class="col-md-6 mb-3">
+          <div class="test-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0" style="color: #2c3e50; font-weight: 600; font-size: 1.25rem;">
+                <i class="fa-solid fa-graduation-cap me-2" style="color: #3a7ca5;"></i>
+                Academic Information
+              </h5>
+            </div>
+            <div class="details-grid" style="grid-template-columns: 1fr; gap: 0.75rem; padding: 0;">
+              <div class="detail-item">
+                <span class="detail-label">Student Number:</span>
+                <span class="detail-value">{{ student.student_no }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Section Code:</span>
+                <span class="detail-value">{{ student.section_code }}</span>
+              </div>
+              {% if student.group_code %}
+              <div class="detail-item">
+                <span class="detail-label">Group Code:</span>
+                <span class="detail-value">{{ student.group_code }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
 
-          <div class="row mb-4">
-            <div class="col-md-6">
-              <label class="form-label">Distance Covered</label>
-              <div class="position-relative">
-                <input
-                  type="text"
-                  class="form-control form-input"
-                  value="{{ latest_test.vo2_distance_m|default:'N/A' }}"
-                  readonly
-                />
-                <div
-                  class="position-absolute top-50 end-0 translate-middle-y me-3"
-                >
-                  <span class="unit-badge">m</span>
+      <!-- Fitness Statistics -->
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="test-card p-4 mb-3">
+            <div class="d-flex align-items-center mb-3">
+              <i class="fa-solid fa-dumbbell me-2" style="color: #3a7ca5; font-size: 1.5rem;"></i>
+              <h5 class="mb-0" style="color: #2c3e50; font-weight: 600; font-size: 1.25rem;">
+                Fitness Statistics
+              </h5>
+            </div>
+            <div class="row text-center">
+              <div class="col-md-4 mb-3 mb-md-0">
+                <div class="p-3" style="background: #f8f9fa; border-radius: 12px;">
+                  <div style="font-size: 3rem; font-weight: 700; color: #3a7ca5;">{{ student.fitness_tests.count }}</div>
+                  <div class="metric-label" style="font-size: 1rem; margin-top: 0.5rem;">Total Tests</div>
                 </div>
               </div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">VO<sub>2</sub> Max (computed)</label>
-              <div class="position-relative">
-                <input
-                  type="text"
-                  class="form-control form-input"
-                  value="{% if latest_test.vo2_max %}{{ latest_test.vo2_max|floatformat:2 }}{% else %}N/A{% endif %}"
-                  readonly
-                />
-                <div
-                  class="position-absolute top-50 end-0 translate-middle-y me-3"
-                >
-                  <span class="unit-badge">ml/kg/min</span>
+              <div class="col-md-4 mb-3 mb-md-0">
+                <div class="p-3" style="background: #f8f9fa; border-radius: 12px;">
+                  <div style="font-size: 3rem; font-weight: 700; color: #3a7ca5;">{{ pre_test_count }}</div>
+                  <div class="metric-label" style="font-size: 1rem; margin-top: 0.5rem;">Pre-Tests</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="p-3" style="background: #f8f9fa; border-radius: 12px;">
+                  <div style="font-size: 3rem; font-weight: 700; color: #3a7ca5;">{{ post_test_count }}</div>
+                  <div class="metric-label" style="font-size: 1rem; margin-top: 0.5rem;">Post-Tests</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Fitness Profile Section -->
-        <div class="mb-5">
-          <h3 class="form-section-title">Fitness Profile</h3>
-
-          <div class="row mb-4">
-            <div class="col-md-6">
-              <label class="form-label">Flexibility</label>
-              <div class="position-relative">
-                <input
-                  type="text"
-                  class="form-control form-input"
-                  value="{{ latest_test.flexibility_cm|default:'N/A' }}"
-                  readonly
-                />
-                <div
-                  class="position-absolute top-50 end-0 translate-middle-y me-3"
-                >
-                  <span class="unit-badge">cm</span>
+      <!-- Latest Test Card -->
+      <div class="row mt-4">
+        <div class="col-12">
+          {% if latest_test %}
+            <div class="test-card p-4 mb-3" id="latest-test-card">
+              <div class="d-flex align-items-center mb-3">
+                <i class="fa-solid fa-clipboard-list me-2" style="color: #3a7ca5; font-size: 1.5rem;"></i>
+                <h5 class="mb-0" style="color: #2c3e50; font-weight: 600; font-size: 1.25rem;">
+                  Latest Test
+                </h5>
+              </div>
+              <div class="details-grid" style="padding: 0;">
+                  <div class="detail-section">
+                    <h6>Test Information</h6>
+                    <div class="detail-item">
+                      <span class="detail-label">Type:</span>
+                      <span class="detail-value">{{ latest_test.get_test_type_display }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Date:</span>
+                      <span class="detail-value">{{ latest_test.taken_at|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Time:</span>
+                      <span class="detail-value">{{ latest_test.taken_at|date:"g:i A" }}</span>
+                    </div>
+                  </div>
+                  <div class="detail-section">
+                    <h6>Body Metrics</h6>
+                    <div class="detail-item">
+                      <span class="detail-label">Height:</span>
+                      <span class="detail-value">{{ latest_test.height_cm|default:"N/A" }} {% if latest_test.height_cm %}cm{% endif %}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Weight:</span>
+                      <span class="detail-value">{{ latest_test.weight_kg|default:"N/A" }} {% if latest_test.weight_kg %}kg{% endif %}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">BMI:</span>
+                      <span class="detail-value">
+                        {% if latest_test.bmi %}
+                          {{ latest_test.bmi|floatformat:1 }} ({{ latest_test.bmi_status }})
+                        {% else %}
+                          N/A
+                        {% endif %}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="detail-section">
+                    <h6>Fitness Results</h6>
+                    <div class="detail-item">
+                      <span class="detail-label">Flexibility:</span>
+                      <span class="detail-value">{{ latest_test.flexibility_cm|default:"N/A" }} {% if latest_test.flexibility_cm %}cm{% endif %}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Strength:</span>
+                      <span class="detail-value">{{ latest_test.strength_reps|default:"N/A" }} {% if latest_test.strength_reps %}reps{% endif %}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Agility:</span>
+                      <span class="detail-value">{{ latest_test.agility_sec|default:"N/A" }} {% if latest_test.agility_sec %}sec{% endif %}</span>
+                    </div>
+                  </div>
+                  <div class="detail-section">
+                    <h6>Performance Metrics</h6>
+                    <div class="detail-item">
+                      <span class="detail-label">Speed (40m):</span>
+                      <span class="detail-value">{{ latest_test.speed_sec|default:"N/A" }} {% if latest_test.speed_sec %}sec{% endif %}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Endurance (1.5km):</span>
+                      <span class="detail-value">{{ latest_test.get_endurance_display|default:"N/A" }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">VO₂ Max:</span>
+                      <span class="detail-value">
+                        {% if latest_test.vo2_max %}
+                          {{ latest_test.vo2_max|floatformat:1 }} ml/kg/min
+                        {% else %}
+                          N/A
+                        {% endif %}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Strength (push-ups)</label>
-              <div class="position-relative">
-                <input
-                  type="text"
-                  class="form-control form-input"
-                  value="{{ latest_test.strength_reps|default:'N/A' }}"
-                  readonly
-                />
-                <div
-                  class="position-absolute top-50 end-0 translate-middle-y me-3"
-                >
-                  <span class="unit-badge">reps</span>
-                </div>
-              </div>
+          {% else %}
+            <div class="alert alert-info text-center" role="alert" style="border-radius: 15px;">
+              <h5 class="mb-0">No fitness tests found</h5>
+              <p class="mb-0 mt-2">Start by creating your first test using the button above.</p>
             </div>
-          </div>
-
-          <div class="row mb-4">
-            <div class="col-md-6">
-              <label class="form-label">Agility Test</label>
-              <div class="position-relative">
-                <input
-                  type="text"
-                  class="form-control form-input"
-                  value="{{ latest_test.agility_sec|default:'N/A' }}"
-                  readonly
-                />
-                <div
-                  class="position-absolute top-50 end-0 translate-middle-y me-3"
-                >
-                  <span class="unit-badge">sec</span>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Speed (40m)</label>
-              <div class="position-relative">
-                <input
-                  type="text"
-                  class="form-control form-input"
-                  value="{{ latest_test.speed_sec|default:'N/A' }}"
-                  readonly
-                />
-                <div
-                  class="position-absolute top-50 end-0 translate-middle-y me-3"
-                >
-                  <span class="unit-badge">sec</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-12">
-              <label class="form-label">Endurance (1.5km)</label>
-              <div class="position-relative">
-                <input
-                  type="text"
-                  class="form-control form-input"
-                  value="{{ latest_test.get_endurance_display|default:'N/A' }}"
-                  readonly
-                />
-                <div
-                  class="position-absolute top-50 end-0 translate-middle-y me-3"
-                >
-                  <span class="unit-badge">mm:ss</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -390,6 +551,57 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+      // Profile Dropdown Functions
+      function toggleProfileDropdown() {
+        const dropdown = document.getElementById("profileDropdown");
+        dropdown.classList.toggle("show");
+      }
+
+      document.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("profileDropdown");
+        const userAvatarContainer = document.querySelector(
+          ".user-avatar-container"
+        );
+
+        if (
+          userAvatarContainer &&
+          !userAvatarContainer.contains(event.target)
+        ) {
+          dropdown.classList.remove("show");
+        }
+      });
+
+      function viewProfile() {
+        window.location.href = "{% url 'student-profile' %}";
+      }
+
+      function toggleDarkMode() {
+        const toggle = document.getElementById("darkModeToggle");
+        if (toggle.checked) {
+          document.body.classList.add("dark-mode");
+        } else {
+          document.body.classList.remove("dark-mode");
+        }
+      }
+
+      function logout() {
+        if (confirm("Are you sure you want to log out?")) {
+          // Create a form to POST to logout endpoint with CSRF token
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = "{% url 'logout' %}";
+
+          const csrfInput = document.createElement("input");
+          csrfInput.type = "hidden";
+          csrfInput.name = "csrfmiddlewaretoken";
+          csrfInput.value = "{{ csrf_token }}";
+          form.appendChild(csrfInput);
+
+          document.body.appendChild(form);
+          form.submit();
+        }
+      }
+
       // Navigation active state
       document.addEventListener("DOMContentLoaded", function () {
         const navItems = document.querySelectorAll(".nav-item");

@@ -20,13 +20,6 @@
       <a class="nav-link" href="{% url 'student-profile' %}">My Profile</a>
     </div>
     <div
-      class="nav-item {% if request.resolver_match.url_name == 'student-profile-update' %}active{% endif %}"
-    >
-      <a class="nav-link" href="{% url 'student-profile-update' %}"
-        >Update Profile</a
-      >
-    </div>
-    <div
       class="nav-item {% if request.resolver_match.url_name == 'student-history' %}active{% endif %}"
     >
       <a class="nav-link" href="{% url 'student-history' %}">History</a>
@@ -35,9 +28,6 @@
       class="nav-item {% if request.resolver_match.url_name == 'student-settings' %}active{% endif %}"
     >
       <a class="nav-link" href="{% url 'student-settings' %}">Settings</a>
-    </div>
-    <div class="nav-item">
-      <a class="nav-link" href="{% url 'login' %}">Logout</a>
     </div>
   </div>
 
@@ -260,4 +250,24 @@
       });
     });
   });
+
+  // Logout function for sidebar
+  function logoutFromSidebar(event) {
+    event.preventDefault();
+    if (confirm("Are you sure you want to log out?")) {
+      // Create a form to POST to logout endpoint with CSRF token
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "{% url 'logout' %}";
+
+      const csrfInput = document.createElement("input");
+      csrfInput.type = "hidden";
+      csrfInput.name = "csrfmiddlewaretoken";
+      csrfInput.value = "{{ csrf_token }}";
+      form.appendChild(csrfInput);
+
+      document.body.appendChild(form);
+      form.submit();
+    }
+  }
 </script>

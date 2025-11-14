@@ -15,6 +15,10 @@
       href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Albert+Sans:wght@500;600&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <!-- Custom CSS -->
     <style>
       :root {
@@ -80,11 +84,130 @@
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
       }
 
+      .notification-icon {
+        width: 40px;
+        height: 40px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #7f8c8d;
+        font-size: 1.2rem;
+      }
+
+      .user-avatar-container {
+        position: relative;
+      }
+
       .user-avatar {
         width: 60px;
         height: 60px;
         border-radius: 50%;
         object-fit: cover;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
+
+      .profile-dropdown {
+        position: absolute;
+        top: 50px;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 180px;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        padding: 8px 0;
+      }
+
+      .profile-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-item {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .dropdown-item:hover {
+        background-color: #f9fafb;
+      }
+
+      .view-profile-item {
+        font-weight: 500;
+        justify-content: flex-start;
+        gap: 12px;
+      }
+
+      .dark-mode-item {
+        cursor: default;
+      }
+
+      .logout-item {
+        color: #6b7280;
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background-color: #e5e7eb;
+        margin: 8px 0;
+      }
+
+      .toggle-switch {
+        flex-shrink: 0;
+      }
+
+      .toggle-switch input[type="checkbox"] {
+        display: none;
+      }
+
+      .slider {
+        width: 36px;
+        height: 20px;
+        background-color: #d1d5db;
+        border-radius: 20px;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .slider:before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background-color: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .toggle-switch input[type="checkbox"]:checked + .slider {
+        background-color: #3b82f6;
+      }
+
+      .toggle-switch input[type="checkbox"]:checked + .slider:before {
+        transform: translateX(16px);
       }
 
       .filter-select {
@@ -323,43 +446,29 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="page-title">Fitness Profile History</h1>
         <div class="d-flex align-items-center">
-          <div class="me-3" style="opacity: 0.5">
-            <div
-              style="width: 33.33px; height: 41.67px; background: #1d1b20"
-            ></div>
+          <a href="{% url 'student-post-test' %}" class="btn btn-primary me-3" style="background: #3a7ca5; border: none; border-radius: 10px; color: white; font-size: 0.9rem; font-weight: 600; padding: 8px 20px; text-decoration: none;"><i class="fa-solid fa-plus me-2"></i>Post-Test</a>
+          <div class="notification-icon me-3">
+            <i class="fa-regular fa-bell" style="font-size: 1.5rem"></i>
           </div>
-          <img src="{% static '' %}" alt="User Avatar" class="user-avatar" />
-        </div>
-      </div>
-
-      <!-- Filters and Actions -->
-      <div class="filter-card p-4 mb-4">
-        <div class="row filter-row">
-          <div class="col-md-2">
-            <label class="form-label metric-label mb-2">Test Type</label>
-            <select class="form-select filter-select" id="testTypeFilter">
-              <option value="all">All Tests</option>
-              <option value="pre">Pre-Tests</option>
-              <option value="post">Post-Tests</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label metric-label mb-2">Date Range</label>
-            <div class="date-range-container">
-              <input type="date" class="date-input" id="startDate">
-              <span class="date-separator">to</span>
-              <input type="date" class="date-input" id="endDate">
+          <div class="user-avatar-container">
+            <img src="{% static 'profile.png' %}" alt="User Avatar" class="user-avatar" onclick="toggleProfileDropdown()" />
+            <div class="profile-dropdown" id="profileDropdown">
+              <div class="dropdown-item view-profile-item" onclick="viewProfile()">
+                <span>View Profile</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item dark-mode-item">
+                <span>Dark mode</span>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()"/>
+                  <label for="darkModeToggle" class="slider"></label>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item logout-item" onclick="logout()">
+                <span>Logout ></span>
+              </div>
             </div>
-          </div>
-          <div class="col-md-3">
-            <button class="btn btn-primary-custom w-100">
-              Create Pre-Test
-            </button>
-          </div>
-          <div class="col-md-3">
-            <button class="btn btn-outline-custom w-100">
-              Create Post-Test
-            </button>
           </div>
         </div>
       </div>
@@ -369,184 +478,151 @@
         <div class="col-12">
           <!-- Mixed Tests Section -->
           <div class="mb-4">
-            <h4 class="mb-3" style="color: #2c3e50; font-weight: 600;">
-              All Tests
-            </h4>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="mb-0" style="color: #2c3e50; font-weight: 600;">
+                All Tests
+              </h4>
+              <div class="d-flex gap-3 align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                  <label class="form-label metric-label mb-0">Test Type:</label>
+                  <select class="form-select filter-select" id="testTypeFilter" style="width: auto; min-width: 150px;">
+                    <option value="all" {% if test_type_filter == 'all' %}selected{% endif %}>All Tests</option>
+                    <option value="pre" {% if test_type_filter == 'pre' %}selected{% endif %}>Pre-Tests</option>
+                    <option value="post" {% if test_type_filter == 'post' %}selected{% endif %}>Post-Tests</option>
+                  </select>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <label class="form-label metric-label mb-0">Date Range:</label>
+                  <div class="date-range-container">
+                    <input type="date" class="date-input" id="startDate" value="{{ start_date_filter }}" style="width: 160px;">
+                    <span class="date-separator">to</span>
+                    <input type="date" class="date-input" id="endDate" value="{{ end_date_filter }}" style="width: 160px;">
+                  </div>
+                </div>
+              </div>
+            </div>
             <div id="tests-container">
-              <!-- Test cards will be dynamically inserted here -->
-              <div class="test-card p-4 mb-3" id="post-test-1">
-                <div class="row align-items-center">
-                  <div class="col-md-3">
-                    <span class="test-badge post-test">POST-TEST</span>
-                    <div class="metric-label mt-1">Nov 15, 2024</div>
-                    <div class="metric-label">10:30 AM</div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="metric-label">VO₂ Max</div>
-                    <div class="metric-value">45.8 ml/kg/min</div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="metric-label">BMI</div>
-                    <div class="metric-value">21.9 (Normal)</div>
-                  </div>
-                  <div class="col-md-3 text-end">
-                    <button class="toggle-details-btn" onclick="toggleTestDetails('post-test-1')">
-                      View Details
-                    </button>
-                  </div>
-                </div>
-                <div class="test-details" id="post-test-1-details">
-                  <div class="details-grid">
-                    <div class="detail-section">
-                      <h6>Test Information</h6>
-                      <div class="detail-item">
-                        <span class="detail-label">Type:</span>
-                        <span class="detail-value">Post-Test</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Date:</span>
-                        <span class="detail-value">November 15, 2024</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Time:</span>
-                        <span class="detail-value">10:30 AM</span>
+              {% if tests %}
+                {% for test in tests %}
+                <div class="test-card p-4 mb-3" id="test-{{ test.test_id }}">
+                  <div class="row align-items-center">
+                    <div class="col-md-3">
+                      <span class="test-badge {% if test.test_type == 'pre' %}pre-test{% else %}post-test{% endif %}">
+                        {{ test.get_test_type_display|upper }}
+                      </span>
+                      <div class="metric-label mt-1">{{ test.taken_at|date:"M d, Y" }}</div>
+                      <div class="metric-label">{{ test.taken_at|date:"g:i A" }}</div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="metric-label">VO₂ Max</div>
+                      <div class="metric-value">
+                        {% if test.vo2_max %}
+                          {{ test.vo2_max|floatformat:1 }} ml/kg/min
+                        {% else %}
+                          N/A
+                        {% endif %}
                       </div>
                     </div>
-                    <div class="detail-section">
-                      <h6>Body Metrics</h6>
-                      <div class="detail-item">
-                        <span class="detail-label">Height:</span>
-                        <span class="detail-value">170 cm</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Weight:</span>
-                        <span class="detail-value">64.5 kg</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">BMI:</span>
-                        <span class="detail-value">21.9 (Normal)</span>
+                    <div class="col-md-3">
+                      <div class="metric-label">BMI</div>
+                      <div class="metric-value">
+                        {% if test.bmi %}
+                          {{ test.bmi|floatformat:1 }} ({{ test.bmi_status }})
+                        {% else %}
+                          N/A
+                        {% endif %}
                       </div>
                     </div>
-                    <div class="detail-section">
-                      <h6>Fitness Results</h6>
-                      <div class="detail-item">
-                        <span class="detail-label">Flexibility:</span>
-                        <span class="detail-value">28 cm</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Strength:</span>
-                        <span class="detail-value">35 reps</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Agility:</span>
-                        <span class="detail-value">7.8 sec</span>
-                      </div>
-                    </div>
-                    <div class="detail-section">
-                      <h6>Performance Metrics</h6>
-                      <div class="detail-item">
-                        <span class="detail-label">Speed (40m):</span>
-                        <span class="detail-value">5.9 sec</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Endurance (1.5km):</span>
-                        <span class="detail-value">6:15</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">VO₂ Max:</span>
-                        <span class="detail-value">45.8 ml/kg/min</span>
-                      </div>
+                    <div class="col-md-3 text-end">
+                      <button class="toggle-details-btn" onclick="toggleTestDetails('test-{{ test.test_id }}')">
+                        View Details
+                      </button>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <div class="test-card p-4 mb-3" id="pre-test-1">
-                <div class="row align-items-center">
-                  <div class="col-md-3">
-                    <span class="test-badge pre-test">PRE-TEST</span>
-                    <div class="metric-label mt-1">Nov 15, 2024</div>
-                    <div class="metric-label">10:30 AM</div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="metric-label">VO₂ Max</div>
-                    <div class="metric-value">42.5 ml/kg/min</div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="metric-label">BMI</div>
-                    <div class="metric-value">22.1 (Normal)</div>
-                  </div>
-                  <div class="col-md-3 text-end">
-                    <button class="toggle-details-btn" onclick="toggleTestDetails('pre-test-1')">
-                      View Details
-                    </button>
-                  </div>
-                </div>
-                <div class="test-details" id="pre-test-1-details">
-                  <div class="details-grid">
-                    <div class="detail-section">
-                      <h6>Test Information</h6>
-                      <div class="detail-item">
-                        <span class="detail-label">Type:</span>
-                        <span class="detail-value">Pre-Test</span>
+                  <div class="test-details" id="test-{{ test.test_id }}-details">
+                    <div class="details-grid">
+                      <div class="detail-section">
+                        <h6>Test Information</h6>
+                        <div class="detail-item">
+                          <span class="detail-label">Type:</span>
+                          <span class="detail-value">{{ test.get_test_type_display }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Date:</span>
+                          <span class="detail-value">{{ test.taken_at|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Time:</span>
+                          <span class="detail-value">{{ test.taken_at|date:"g:i A" }}</span>
+                        </div>
                       </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Date:</span>
-                        <span class="detail-value">November 15, 2024</span>
+                      <div class="detail-section">
+                        <h6>Body Metrics</h6>
+                        <div class="detail-item">
+                          <span class="detail-label">Height:</span>
+                          <span class="detail-value">{{ test.height_cm|default:"N/A" }} {% if test.height_cm %}cm{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Weight:</span>
+                          <span class="detail-value">{{ test.weight_kg|default:"N/A" }} {% if test.weight_kg %}kg{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">BMI:</span>
+                          <span class="detail-value">
+                            {% if test.bmi %}
+                              {{ test.bmi|floatformat:1 }} ({{ test.bmi_status }})
+                            {% else %}
+                              N/A
+                            {% endif %}
+                          </span>
+                        </div>
                       </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Time:</span>
-                        <span class="detail-value">10:30 AM</span>
+                      <div class="detail-section">
+                        <h6>Fitness Results</h6>
+                        <div class="detail-item">
+                          <span class="detail-label">Flexibility:</span>
+                          <span class="detail-value">{{ test.flexibility_cm|default:"N/A" }} {% if test.flexibility_cm %}cm{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Strength:</span>
+                          <span class="detail-value">{{ test.strength_reps|default:"N/A" }} {% if test.strength_reps %}reps{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Agility:</span>
+                          <span class="detail-value">{{ test.agility_sec|default:"N/A" }} {% if test.agility_sec %}sec{% endif %}</span>
+                        </div>
                       </div>
-                    </div>
-                    <div class="detail-section">
-                      <h6>Body Metrics</h6>
-                      <div class="detail-item">
-                        <span class="detail-label">Height:</span>
-                        <span class="detail-value">170 cm</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Weight:</span>
-                        <span class="detail-value">65 kg</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">BMI:</span>
-                        <span class="detail-value">22.1 (Normal)</span>
-                      </div>
-                    </div>
-                    <div class="detail-section">
-                      <h6>Fitness Results</h6>
-                      <div class="detail-item">
-                        <span class="detail-label">Flexibility:</span>
-                        <span class="detail-value">25 cm</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Strength:</span>
-                        <span class="detail-value">28 reps</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Agility:</span>
-                        <span class="detail-value">8.5 sec</span>
-                      </div>
-                    </div>
-                    <div class="detail-section">
-                      <h6>Performance Metrics</h6>
-                      <div class="detail-item">
-                        <span class="detail-label">Speed (40m):</span>
-                        <span class="detail-value">6.2 sec</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">Endurance (1.5km):</span>
-                        <span class="detail-value">6:45</span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="detail-label">VO₂ Max:</span>
-                        <span class="detail-value">42.5 ml/kg/min</span>
+                      <div class="detail-section">
+                        <h6>Performance Metrics</h6>
+                        <div class="detail-item">
+                          <span class="detail-label">Speed (40m):</span>
+                          <span class="detail-value">{{ test.speed_sec|default:"N/A" }} {% if test.speed_sec %}sec{% endif %}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">Endurance (1.5km):</span>
+                          <span class="detail-value">{{ test.get_endurance_display|default:"N/A" }}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="detail-label">VO₂ Max:</span>
+                          <span class="detail-value">
+                            {% if test.vo2_max %}
+                              {{ test.vo2_max|floatformat:1 }} ml/kg/min
+                            {% else %}
+                              N/A
+                            {% endif %}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+                {% endfor %}
+              {% else %}
+                <div class="alert alert-info text-center" role="alert" style="border-radius: 15px;">
+                  <h5 class="mb-0">No fitness tests found</h5>
+                  <p class="mb-0 mt-2">Start by creating your first test using the button above.</p>
+                </div>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -557,21 +633,25 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-      // Set default date range (last 30 days)
+      // Set default date range (last 30 days) only if not already set
       document.addEventListener("DOMContentLoaded", function () {
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 30);
-
-        document.getElementById('startDate').valueAsDate = startDate;
-        document.getElementById('endDate').valueAsDate = endDate;
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        
+        // Only set default dates if both are empty
+        if (!startDateInput.value && !endDateInput.value) {
+          const endDate = new Date();
+          const startDate = new Date();
+          startDate.setDate(startDate.getDate() - 30);
+          
+          startDateInput.valueAsDate = startDate;
+          endDateInput.valueAsDate = endDate;
+        }
 
         // Add event listeners for filtering
         document.getElementById('testTypeFilter').addEventListener('change', filterTests);
-        document.getElementById('startDate').addEventListener('change', filterTests);
-        document.getElementById('endDate').addEventListener('change', filterTests);
-
-        filterTests(); // Initial filter
+        startDateInput.addEventListener('change', filterTests);
+        endDateInput.addEventListener('change', filterTests);
       });
 
       function toggleTestDetails(testId) {
@@ -609,10 +689,72 @@
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
 
-        // Filter logic would go here
-        console.log('Filtering by:', { testType, startDate, endDate });
-        // In a real implementation, you would filter the testData and re-render the test cards
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (testType && testType !== 'all') {
+          params.append('test_type', testType);
+        }
+        if (startDate) {
+          params.append('start_date', startDate);
+        }
+        if (endDate) {
+          params.append('end_date', endDate);
+        }
+
+        // Redirect with query parameters
+        const queryString = params.toString();
+        if (queryString) {
+          window.location.href = window.location.pathname + '?' + queryString;
+        } else {
+          window.location.href = window.location.pathname;
+        }
       }
+
+      // Profile Dropdown Functions
+      function toggleProfileDropdown() {
+        const dropdown = document.getElementById("profileDropdown");
+        dropdown.classList.toggle("show");
+      }
+
+      function viewProfile() {
+        window.location.href = "{% url 'student-profile' %}";
+      }
+
+      function toggleDarkMode() {
+        const toggle = document.getElementById("darkModeToggle");
+        if (toggle.checked) {
+          document.body.classList.add("dark-mode");
+        } else {
+          document.body.classList.remove("dark-mode");
+        }
+      }
+
+      function logout() {
+        if (confirm("Are you sure you want to log out?")) {
+          // Create a form to POST to logout endpoint with CSRF token
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = "{% url 'logout' %}";
+          
+          const csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = 'csrfmiddlewaretoken';
+          csrfInput.value = '{{ csrf_token }}';
+          form.appendChild(csrfInput);
+          
+          document.body.appendChild(form);
+          form.submit();
+        }
+      }
+
+      document.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("profileDropdown");
+        const userAvatarContainer = document.querySelector(".user-avatar-container");
+
+        if (userAvatarContainer && !userAvatarContainer.contains(event.target)) {
+          dropdown.classList.remove("show");
+        }
+      });
 
       // Navigation active state
       document.addEventListener("DOMContentLoaded", function () {

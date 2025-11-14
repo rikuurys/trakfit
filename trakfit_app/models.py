@@ -70,6 +70,7 @@ class Student(models.Model):
     middle_initial = models.CharField(max_length=5, blank=True, null=True)
     last_name = models.CharField(max_length=100)
     age = models.IntegerField()
+    gender = models.CharField(max_length=10, blank=True, null=True)
     section_code = models.CharField(max_length=20)
     group_code = models.CharField(max_length=20, blank=True, null=True)
     last_data_update_at = models.DateTimeField(null=True, blank=True)

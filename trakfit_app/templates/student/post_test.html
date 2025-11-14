@@ -1,0 +1,697 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrakFit - Fitness Test Entry</title>
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&family=Albert+Sans:wght@400;600&family=Atkinson+Hyperlegible:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+      :root {
+        --primary-color: #3a7ca5;
+        --light-blue: #9ec5e5;
+        --dark-text: #2c3e50;
+        --light-bg: #fafafa;
+        --input-bg: #f3f3f3;
+      }
+
+      body {
+        font-family: "Sarabun", sans-serif;
+        background-color: var(--light-bg);
+        overflow-x: hidden;
+      }
+
+      .main-content {
+        margin-left: 400px;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .brand-font {
+        font-family: "Albert Sans", sans-serif;
+      }
+
+      .form-container {
+        background: #fafafa;
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 54px;
+        padding: 40px;
+      }
+
+      .form-section-title {
+        color: black;
+        font-size: 1.5rem;
+        font-family: "Albert Sans", sans-serif;
+        font-weight: 400;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        color: black;
+        font-size: 1.25rem;
+        font-family: "Sarabun", sans-serif;
+        font-weight: 300;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-input {
+        background: #f3f3f3;
+        border-radius: 20px;
+        border: 1px solid #a2c4d9;
+        height: 57px;
+        font-size: 1.25rem;
+        padding: 0 20px;
+      }
+
+      .form-input::placeholder {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.25rem;
+        font-family: "Sarabun", sans-serif;
+        font-weight: 400;
+      }
+
+      .unit-badge {
+        background: #9ec5e5;
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 15px;
+        padding: 8px 16px;
+        color: black;
+        font-size: 1.25rem;
+        font-family: "Sarabun", sans-serif;
+        font-weight: 800;
+      }
+
+      .pre-value-badge {
+        background: #2c3e50;
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 15px;
+        padding: 6px 12px;
+        color: white;
+        font-size: 0.875rem;
+        font-family: "Sarabun", sans-serif;
+        font-style: italic;
+        font-weight: 500;
+        margin-top: 5px;
+      }
+
+      .save-btn {
+        background: #3a7ca5;
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 40px;
+        color: white;
+        font-size: 1.4rem;
+        font-family: "Albert Sans", sans-serif;
+        font-weight: 600;
+        padding: 12px 40px;
+        border: none;
+      }
+
+      .draft-btn {
+        background: #f3f3f3;
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 40px;
+        color: black;
+        font-size: 1.4rem;
+        font-family: "Sarabun", sans-serif;
+        font-weight: 600;
+        padding: 12px 40px;
+        border: none;
+      }
+
+      .notification-icon {
+        width: 40px;
+        height: 40px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #7f8c8d;
+        font-size: 1.2rem;
+      }
+
+      .user-avatar-container {
+        position: relative;
+      }
+
+      .user-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
+
+      .profile-dropdown {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 180px;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        padding: 8px 0;
+      }
+
+      .profile-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-item {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .dropdown-item:hover {
+        background-color: #f9fafb;
+      }
+
+      .view-profile-item {
+        font-weight: 500;
+        justify-content: flex-start;
+        gap: 12px;
+      }
+
+      .dark-mode-item {
+        cursor: default;
+      }
+
+      .logout-item {
+        color: #6b7280;
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background-color: #e5e7eb;
+        margin: 8px 0;
+      }
+
+      .toggle-switch {
+        flex-shrink: 0;
+      }
+
+      .toggle-switch input[type="checkbox"] {
+        display: none;
+      }
+
+      .slider {
+        width: 36px;
+        height: 20px;
+        background-color: #d1d5db;
+        border-radius: 20px;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .slider:before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background-color: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .toggle-switch input[type="checkbox"]:checked + .slider {
+        background-color: #3b82f6;
+      }
+
+      .toggle-switch input[type="checkbox"]:checked + .slider:before {
+        transform: translateX(16px);
+      }
+
+      .info-text {
+        color: black;
+        font-size: 1.5rem;
+        font-family: "Atkinson Hyperlegible", sans-serif;
+        font-weight: 400;
+      }
+
+      .input-with-prevalue {
+        position: relative;
+      }
+
+      @media (max-width: 1400px) {
+        .main-content {
+          margin-left: 350px;
+        }
+      }
+
+      @media (max-width: 1200px) {
+        .main-content {
+          margin-left: 300px;
+        }
+      }
+
+      @media (max-width: 992px) {
+        .main-content {
+          margin-left: 0;
+        }
+
+        .form-container {
+          padding: 20px;
+          border-radius: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    {% include 'student/sidebar.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1
+            class="brand-font mb-2"
+            style="
+              font-size: 2.5rem;
+              font-weight: 700;
+              color: var(--primary-color);
+            "
+          >
+            Fitness Test Entry
+          </h1>
+          <p class="info-text mb-0">
+            Enter your fitness test data (Pre-Test or Post-Test)
+          </p>
+        </div>
+        <div class="d-flex align-items-center">
+          <div class="notification-icon me-3">
+            <i class="fa-regular fa-bell" style="font-size: 1.5rem"></i>
+          </div>
+          <div class="user-avatar-container">
+            <img
+              src="{% static 'profile.png' %}"
+              alt="User Avatar"
+              class="user-avatar"
+              onclick="toggleProfileDropdown()"
+            />
+            <div class="profile-dropdown" id="profileDropdown">
+              <div
+                class="dropdown-item view-profile-item"
+                onclick="viewProfile()"
+              >
+                <span>View Profile</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item dark-mode-item">
+                <span>Dark mode</span>
+                <div class="toggle-switch">
+                  <input
+                    type="checkbox"
+                    id="darkModeToggle"
+                    onchange="toggleDarkMode()"
+                  />
+                  <label for="darkModeToggle" class="slider"></label>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item logout-item" onclick="logout()">
+                <span>Logout ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Container -->
+      <div class="form-container">
+        <form method="POST" action="{% url 'student-post-test' %}">
+          {% csrf_token %}
+
+          <!-- Body Metrics Section -->
+          <div class="mb-5">
+            <h3 class="form-section-title">Body Metrics</h3>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label">Height</label>
+                <div class="input-with-prevalue">
+                  <div class="position-relative">
+                    <input
+                      type="text"
+                      class="form-control form-input"
+                      name="height_cm"
+                      placeholder="Enter value..."
+                    />
+                    <div
+                      class="position-absolute top-50 end-0 translate-middle-y me-3"
+                    >
+                      <span class="unit-badge">cm</span>
+                    </div>
+                  </div>
+                  <div class="pre-value-badge">Pre : 170</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Weight</label>
+                <div class="input-with-prevalue">
+                  <div class="position-relative">
+                    <input
+                      type="text"
+                      class="form-control form-input"
+                      name="weight_kg"
+                      placeholder="Enter value..."
+                    />
+                    <div
+                      class="position-absolute top-50 end-0 translate-middle-y me-3"
+                    >
+                      <span class="unit-badge">kg</span>
+                    </div>
+                  </div>
+                  <div class="pre-value-badge">Pre : 65</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12">
+                <label class="form-label">BMI (auto)</label>
+                <div class="input-with-prevalue">
+                  <input
+                    type="text"
+                    class="form-control form-input"
+                    placeholder="Auto"
+                    readonly
+                  />
+                  <div class="pre-value-badge">Pre : 22.5</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VO2 Max Section -->
+          <div class="mb-5">
+            <h3 class="form-section-title">
+              VO<sub>2</sub> Max (Copper 12-min)
+            </h3>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label">Distance Covered</label>
+                <div class="input-with-prevalue">
+                  <div class="position-relative">
+                    <input
+                      type="text"
+                      class="form-control form-input"
+                      name="vo2_distance_m"
+                      placeholder="Enter value..."
+                    />
+                    <div
+                      class="position-absolute top-50 end-0 translate-middle-y me-3"
+                    >
+                      <span class="unit-badge">m</span>
+                    </div>
+                  </div>
+                  <div class="pre-value-badge">Pre : 2200</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">VO<sub>2</sub> Max (computed)</label>
+                <div class="input-with-prevalue">
+                  <div class="position-relative">
+                    <input
+                      type="text"
+                      class="form-control form-input"
+                      id="vo2MaxInput"
+                      placeholder="Auto"
+                      readonly
+                    />
+                    <div
+                      class="position-absolute top-50 end-0 translate-middle-y me-3"
+                    >
+                      <span class="unit-badge">ml/kg/min</span>
+                    </div>
+                  </div>
+                  <div class="pre-value-badge">Pre : 42.1</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fitness Profile Section -->
+          <div class="mb-5">
+            <h3 class="form-section-title">Fitness Profile (Post-Test)</h3>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label">Flexibility</label>
+                <div class="input-with-prevalue">
+                  <div class="position-relative">
+                    <input
+                      type="text"
+                      class="form-control form-input"
+                      name="flexibility_cm"
+                      placeholder="Enter value..."
+                    />
+                    <div
+                      class="position-absolute top-50 end-0 translate-middle-y me-3"
+                    >
+                      <span class="unit-badge">cm</span>
+                    </div>
+                  </div>
+                  <div class="pre-value-badge">Pre : 25</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Strength (push-ups)</label>
+                <div class="input-with-prevalue">
+                  <div class="position-relative">
+                    <input
+                      type="text"
+                      class="form-control form-input"
+                      name="strength_reps"
+                      placeholder="Enter value..."
+                    />
+                    <div
+                      class="position-absolute top-50 end-0 translate-middle-y me-3"
+                    >
+                      <span class="unit-badge">reps</span>
+                    </div>
+                  </div>
+                  <div class="pre-value-badge">Pre : 30</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label">Agility Test</label>
+                <div class="input-with-prevalue">
+                  <div class="position-relative">
+                    <input
+                      type="text"
+                      class="form-control form-input"
+                      name="agility_sec"
+                      placeholder="Enter value..."
+                    />
+                    <div
+                      class="position-absolute top-50 end-0 translate-middle-y me-3"
+                    >
+                      <span class="unit-badge">sec</span>
+                    </div>
+                  </div>
+                  <div class="pre-value-badge">Pre : 12.8</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Speed (40m)</label>
+                <div class="input-with-prevalue">
+                  <div class="position-relative">
+                    <input
+                      type="text"
+                      class="form-control form-input"
+                      name="speed_sec"
+                      placeholder="Enter value..."
+                    />
+                    <div
+                      class="position-absolute top-50 end-0 translate-middle-y me-3"
+                    >
+                      <span class="unit-badge">sec</span>
+                    </div>
+                  </div>
+                  <div class="pre-value-badge">Pre : 14.6</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12">
+                <label class="form-label">Endurance (1.5km)</label>
+                <div class="input-with-prevalue">
+                  <div class="position-relative">
+                    <input
+                      type="text"
+                      class="form-control form-input"
+                      name="endurance_time"
+                      placeholder="mm:ss (e.g., 12:30)"
+                    />
+                    <div
+                      class="position-absolute top-50 end-0 translate-middle-y me-3"
+                    >
+                      <span class="unit-badge">mm : ss</span>
+                    </div>
+                  </div>
+                  <div class="pre-value-badge">Pre : 03 : 45</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save Buttons -->
+          <div class="text-center mt-5">
+            <button type="submit" class="save-btn">Save Test</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Navigation active state
+      document.addEventListener("DOMContentLoaded", function () {
+        const navItems = document.querySelectorAll(".nav-item");
+
+        navItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            navItems.forEach((nav) => nav.classList.remove("active"));
+            this.classList.add("active");
+          });
+        });
+
+        // Auto-calculate BMI when height and weight are entered
+        const heightInput = document.querySelector('input[name="height_cm"]');
+        const weightInput = document.querySelector('input[name="weight_kg"]');
+        const bmiInput = document.querySelector('input[placeholder="Auto"]');
+
+        function calculateBMI() {
+          const height = parseFloat(heightInput.value) / 100; // Convert cm to m
+          const weight = parseFloat(weightInput.value);
+
+          if (height && weight) {
+            const bmi = (weight / (height * height)).toFixed(2);
+            bmiInput.value = bmi;
+          } else {
+            bmiInput.value = "";
+          }
+        }
+
+        heightInput.addEventListener("input", calculateBMI);
+        weightInput.addEventListener("input", calculateBMI);
+
+        // Auto-calculate VO2 Max when distance is entered
+        const distanceInput = document.querySelector(
+          'input[name="vo2_distance_m"]'
+        );
+        const vo2MaxInput = document.getElementById("vo2MaxInput");
+
+        function calculateVO2Max() {
+          const distance = parseFloat(distanceInput.value);
+
+          if (distance) {
+            const vo2Max = ((distance - 504.9) / 44.73).toFixed(2);
+            vo2MaxInput.value = vo2Max;
+          } else {
+            vo2MaxInput.value = "";
+          }
+        }
+
+        distanceInput.addEventListener("input", calculateVO2Max);
+
+        // Profile Dropdown Functions
+        function toggleProfileDropdown() {
+          const dropdown = document.getElementById("profileDropdown");
+          dropdown.classList.toggle("show");
+        }
+
+        document.addEventListener("click", function (event) {
+          const dropdown = document.getElementById("profileDropdown");
+          const userAvatarContainer = document.querySelector(
+            ".user-avatar-container"
+          );
+
+          if (
+            userAvatarContainer &&
+            !userAvatarContainer.contains(event.target)
+          ) {
+            dropdown.classList.remove("show");
+          }
+        });
+
+        function viewProfile() {
+          window.location.href = "{% url 'student-profile' %}";
+        }
+
+        function toggleDarkMode() {
+          const toggle = document.getElementById("darkModeToggle");
+          if (toggle.checked) {
+            document.body.classList.add("dark-mode");
+          } else {
+            document.body.classList.remove("dark-mode");
+          }
+        }
+
+        function logout() {
+          if (confirm("Are you sure you want to log out?")) {
+            // Create a form to POST to logout endpoint with CSRF token
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "{% url 'logout' %}";
+
+            const csrfInput = document.createElement("input");
+            csrfInput.type = "hidden";
+            csrfInput.name = "csrfmiddlewaretoken";
+            csrfInput.value = "{{ csrf_token }}";
+            form.appendChild(csrfInput);
+
+            document.body.appendChild(form);
+            form.submit();
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

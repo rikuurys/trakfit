@@ -17,6 +17,10 @@
       href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Albert+Sans:wght@500;600&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <!-- Custom CSS -->
     <style>
       :root {
@@ -143,11 +147,86 @@
         margin-bottom: 0.8rem;
       }
 
+      .notification-icon {
+        width: 40px;
+        height: 40px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #7f8c8d;
+        font-size: 1.2rem;
+      }
+
+      .user-avatar-container {
+        position: relative;
+      }
+
       .user-avatar {
         width: 60px;
         height: 60px;
         border-radius: 50%;
         object-fit: cover;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
+
+      .profile-dropdown {
+        position: absolute;
+        top: 50px;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 180px;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        padding: 8px 0;
+      }
+
+      .profile-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-item {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .dropdown-item:hover {
+        background-color: #f9fafb;
+      }
+
+      .view-profile-item {
+        font-weight: 500;
+        justify-content: flex-start;
+        gap: 12px;
+      }
+
+      .logout-item {
+        color: #6b7280;
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background-color: #e5e7eb;
+        margin: 8px 0;
       }
 
       .chart-container {
@@ -189,12 +268,30 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="page-title">Personal Progress Dashboard</h1>
         <div class="d-flex align-items-center">
-          <div class="me-3" style="opacity: 0.5">
-            <div
-              style="width: 33.33px; height: 41.67px; background: #1d1b20"
-            ></div>
+          <a href="{% url 'student-post-test' %}" class="btn btn-primary me-3" style="background: #3a7ca5; border: none; border-radius: 10px; color: white; font-size: 0.9rem; font-weight: 600; padding: 8px 20px; text-decoration: none;"><i class="fa-solid fa-plus me-2"></i>Post-Test</a>
+          <div class="notification-icon me-3">
+            <i class="fa-regular fa-bell" style="font-size: 1.5rem"></i>
           </div>
-          <img src="{% static '' %}" alt="User Avatar" class="user-avatar" />
+          <div class="user-avatar-container">
+            <img
+              src="{% static 'profile.png' %}"
+              alt="User Avatar"
+              class="user-avatar"
+              onclick="toggleProfileDropdown()"
+            />
+            <div class="profile-dropdown" id="profileDropdown">
+              <div
+                class="dropdown-item view-profile-item"
+                onclick="viewProfile()"
+              >
+                <span>View Profile</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item logout-item" onclick="logout()">
+                <span>Logout ></span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -236,20 +333,22 @@
         <div class="col-lg-4">
           <!-- BMI Card -->
           <div class="bmi-card p-4 mb-4">
-            <h5 class="text-dark mb-3"">Body Mass Index (BMI)</h5>
+            <h5 class="text-dark mb-3">Body Mass Index (BMI)</h5>
             <div class="mb-2">
               <small class="text-dark">Height:</small>
-              <span class="text-dark float-end" id="height-value">170 cm</span>
+              <span class="text-dark float-end"
+                >{% if latest_test and latest_test.height_cm %}{{ latest_test.height_cm }} cm{% else %}N/A{% endif %}</span
+              >
             </div>
             <div class="mb-2">
               <small class="text-dark">Weight:</small>
-              <span class="text-dark float-end" id="weight-value">65 kgs</span>
+              <span class="text-dark float-end"
+                >{% if latest_test and latest_test.weight_kg %}{{ latest_test.weight_kg }} kg{% else %}N/A{% endif %}</span
+              >
             </div>
             <div>
               <small class="text-dark">BMI:</small>
-              <span class="text-dark float-end" id="bmi-value"
-                >22.5 (Normal)</span
-              >
+              <span class="text-dark float-end">{% if latest_test and latest_test.bmi %}{{ latest_test.bmi|floatformat:1 }} ({{ latest_test.bmi_status }}){% else %}N/A{% endif %}</span>
             </div>
           </div>
 
@@ -340,47 +439,37 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-      // Sample data
+      // Student data from backend
       const studentData = {
         studentName: "{{ first_name }}",
         bmi: {
-          height: 170,
-          weight: 65,
-          bmi: 22.5,
-          status: "Normal",
+          height: {% if latest_test and latest_test.height_cm %}{{ latest_test.height_cm }}{% else %}null{% endif %},
+          weight: {% if latest_test and latest_test.weight_kg %}{{ latest_test.weight_kg }}{% else %}null{% endif %},
+          bmi: {% if latest_test and latest_test.bmi %}{{ latest_test.bmi }}{% else %}null{% endif %},
+          status: "{% if latest_test and latest_test.bmi_status %}{{ latest_test.bmi_status }}{% else %}N/A{% endif %}",
         },
         fitnessComponents: {
           labels: ["Flexibility", "Strength", "Agility", "Speed", "Endurance"],
-          preTest: [47.5, 42.5, 47.5, 55, 80],
-          postTest: [52.5, 57.5, 77.5, 77.5, 87.5],
+          preTest: [
+            {% if pre_test and pre_test.flexibility_cm %}{{ pre_test.flexibility_cm }}{% else %}null{% endif %},
+            {% if pre_test and pre_test.strength_reps %}{{ pre_test.strength_reps }}{% else %}null{% endif %},
+            {% if pre_test and pre_test.agility_sec %}{{ pre_test.agility_sec }}{% else %}null{% endif %},
+            {% if pre_test and pre_test.speed_sec %}{{ pre_test.speed_sec }}{% else %}null{% endif %},
+            {% if pre_test and pre_test.endurance_minutes %}{{ pre_test.endurance_minutes }}{% else %}null{% endif %}
+          ],
+          postTest: [
+            {% if post_test and post_test.flexibility_cm %}{{ post_test.flexibility_cm }}{% else %}null{% endif %},
+            {% if post_test and post_test.strength_reps %}{{ post_test.strength_reps }}{% else %}null{% endif %},
+            {% if post_test and post_test.agility_sec %}{{ post_test.agility_sec }}{% else %}null{% endif %},
+            {% if post_test and post_test.speed_sec %}{{ post_test.speed_sec }}{% else %}null{% endif %},
+            {% if post_test and post_test.endurance_minutes %}{{ post_test.endurance_minutes }}{% else %}null{% endif %}
+          ],
         },
         vo2Trend: {
-          dates: ["Jan", "Feb", "Mar", "Apr", "May"],
-          values: [40, 41, 42, 43, 44],
+          dates: {{ vo2_dates_json|safe }},
+          values: {{ vo2_values_json|safe }},
         },
-        remarks: [
-          {
-            date: "2025-11-04",
-            metric: "Strength (Push-ups)",
-            pre: 30,
-            post: 38,
-            remark: "Great form - keep improving technique",
-          },
-          {
-            date: "2025-11-04",
-            metric: "VO₂ Max",
-            pre: 42.1,
-            post: 43.0,
-            remark: "Aerobic base improving steadily",
-          },
-          {
-            date: "2025-10-28",
-            metric: "Flexibility (Sit & Reach)",
-            pre: 25,
-            post: 28,
-            remark: "Good progress in hamstring flexibility",
-          },
-        ],
+        remarks: {{ remarks_json|safe }},
       };
 
       // Initialize charts and data when page loads
@@ -390,7 +479,6 @@
 
       function initializeDashboard() {
         updateWelcomeMessage();
-        updateBMIData();
         renderRemarks();
         initializeCharts();
         setupNavigation();
@@ -400,18 +488,6 @@
         document.getElementById(
           "welcome-message"
         ).textContent = `Welcome, ${studentData.studentName}!`;
-      }
-
-      function updateBMIData() {
-        document.getElementById(
-          "height-value"
-        ).textContent = `${studentData.bmi.height} cm`;
-        document.getElementById(
-          "weight-value"
-        ).textContent = `${studentData.bmi.weight} kgs`;
-        document.getElementById(
-          "bmi-value"
-        ).textContent = `${studentData.bmi.bmi} (${studentData.bmi.status})`;
       }
 
       function renderRemarks() {
@@ -442,10 +518,24 @@
       }
 
       function initializeCharts() {
+        // Check if we have any data to display
+        const hasPreTest = studentData.fitnessComponents.preTest.some(val => val !== null);
+        const hasPostTest = studentData.fitnessComponents.postTest.some(val => val !== null);
+
+        // Replace null values with 0 for chart display
+        const preTestData = studentData.fitnessComponents.preTest.map(val => val === null ? 0 : val);
+        const postTestData = studentData.fitnessComponents.postTest.map(val => val === null ? 0 : val);
+
         // Fitness Comparison Chart
         const fitnessCtx = document
           .getElementById("fitnessComparisonChart")
-          .getContext("2d");
+          ?.getContext("2d");
+
+        if (!fitnessCtx) {
+          console.error('Fitness chart canvas not found');
+          return;
+        }
+
         new Chart(fitnessCtx, {
           type: "bar",
           data: {
@@ -453,14 +543,14 @@
             datasets: [
               {
                 label: "Pre-Test",
-                data: studentData.fitnessComponents.preTest,
+                data: preTestData,
                 backgroundColor: "#3A7CA5",
                 borderColor: "#3A7CA5",
                 borderWidth: 1,
               },
               {
                 label: "Post-Test",
-                data: studentData.fitnessComponents.postTest,
+                data: postTestData,
                 backgroundColor: "#2C3E50",
                 borderColor: "#2C3E50",
                 borderWidth: 1,
@@ -473,18 +563,37 @@
             scales: {
               y: {
                 beginAtZero: true,
-                max: 100,
-                ticks: {
-                  callback: function (value) {
-                    return value + "%";
-                  },
-                },
               },
             },
             plugins: {
               legend: {
                 position: "top",
               },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                      label += ': ';
+                    }
+                    const value = context.parsed.y;
+                    const metricLabel = context.label;
+
+                    // Add appropriate units
+                    if (metricLabel === 'Flexibility') {
+                      label += value + ' cm';
+                    } else if (metricLabel === 'Strength') {
+                      label += value + ' reps';
+                    } else if (metricLabel === 'Agility' || metricLabel === 'Speed') {
+                      label += value + ' sec';
+                    } else if (metricLabel === 'Endurance') {
+                      label += value + ' min';
+                    }
+
+                    return label;
+                  }
+                }
+              }
             },
           },
         });
@@ -492,7 +601,13 @@
         // VO2 Max Trend Chart
         const vo2Ctx = document
           .getElementById("vo2TrendChart")
-          .getContext("2d");
+          ?.getContext("2d");
+
+        if (!vo2Ctx) {
+          console.error('VO2 chart canvas not found');
+          return;
+        }
+
         new Chart(vo2Ctx, {
           type: "line",
           data: {
@@ -550,6 +665,43 @@
 
         // Re-initialize charts
         initializeCharts();
+      }
+
+      // Profile Dropdown Functions
+      function toggleProfileDropdown() {
+        const dropdown = document.getElementById("profileDropdown");
+        dropdown.classList.toggle("show");
+      }
+
+      document.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("profileDropdown");
+        const userAvatarContainer = document.querySelector(".user-avatar-container");
+
+        if (userAvatarContainer && !userAvatarContainer.contains(event.target)) {
+          dropdown.classList.remove("show");
+        }
+      });
+
+      function viewProfile() {
+        window.location.href = "{% url 'student-profile' %}";
+      }
+
+      function logout() {
+        if (confirm("Are you sure you want to log out?")) {
+          // Create a form to POST to logout endpoint with CSRF token
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = "{% url 'logout' %}";
+
+          const csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = 'csrfmiddlewaretoken';
+          csrfInput.value = '{{ csrf_token }}';
+          form.appendChild(csrfInput);
+
+          document.body.appendChild(form);
+          form.submit();
+        }
       }
     </script>
   </body>
