@@ -27,6 +27,11 @@
       >
     </div>
     <div
+      class="nav-item {% if request.resolver_match.url_name == 'student-history' %}active{% endif %}"
+    >
+      <a class="nav-link" href="{% url 'student-history' %}">History</a>
+    </div>
+    <div
       class="nav-item {% if request.resolver_match.url_name == 'student-settings' %}active{% endif %}"
     >
       <a class="nav-link" href="{% url 'student-settings' %}">Settings</a>

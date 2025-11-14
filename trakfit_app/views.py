@@ -227,3 +227,6 @@ def student_profile(request, student_id):
 
 def change_password(request):
     return render(request, 'change-password.html')
+
+def student_history(request):
+    return render(request, 'student/history.html')

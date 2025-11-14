@@ -36,6 +36,7 @@ urlpatterns = [
     path('student-management/', views.student_management, name='student_management'),
     path('student-profile/<int:student_id>/', views.student_profile, name='student_profile'),
     path('change-password/', views.change_password, name='change_password'),
+    path('student-history', views.student_history, name='student-history'),
 ]
 
 if settings.DEBUG:
