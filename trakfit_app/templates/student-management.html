@@ -21,15 +21,20 @@
         }
 
 
-        body {
+        html, body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #FAFAFA;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .dashboard-container {
             display: flex;
-            min-height: 100vh;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
         }
 
         /* Sidebar Styles */
@@ -112,6 +117,10 @@
             flex: 1;
             margin-left: 250px;
             padding: 1.5rem;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .top-bar {
@@ -119,10 +128,11 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            flex-shrink: 0;
         }
 
         .page-title {
-            font-size: 3rem;
+            font-size: clamp(1.5rem, 3vw, 3rem);
             color: #2C3E50;
             margin: 0;
         }
@@ -134,20 +144,20 @@
         }
 
         .notification-icon {
-            width: 40px;
-            height: 40px;
+            width: clamp(30px, 2.5vw, 40px);
+            height: clamp(30px, 2.5vw, 40px);
             background: #F8F9FA;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-light);
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
         }
 
         .user-avatar {
-            width: 60px;
-            height: 60px;
+            width: clamp(40px, 3.5vw, 60px);
+            height: clamp(40px, 3.5vw, 60px);
             background: #D9D9D9;
             border-radius: 50%;
             display: flex;
@@ -170,20 +180,21 @@
         .controls-section {
             margin-bottom: 10px;
             margin-left: 1rem;
+            flex-shrink: 0;
         }
 
         .search-container {
             position: relative;
-            width: 20vw;
+            width: clamp(150px, 20vw, 300px);
         }
 
         .search-input {
-            height: 4vh;
+            height: clamp(32px, 4vh, 48px);
             width: 100%;
             padding: 0.75rem 1rem 0.75rem 2.5rem;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: clamp(0.8rem, 0.9vw, 0.95rem);
             background: #F9FAFB;
         }
 
@@ -200,6 +211,7 @@
             justify-content: space-between;
             align-items: center;
             font-weight: 500;
+            font-size: clamp(0.8rem, 0.9vw, 1rem);
         }
 
         .left-controls {
@@ -214,7 +226,7 @@
             border: 1px solid var(--border-color);
             border-radius: 6px;
             background: white;
-            font-size: 0.9rem;
+            font-size: clamp(0.75rem, 0.85vw, 0.9rem);
             cursor: pointer;
         }
 
@@ -234,7 +246,7 @@
             background: white;
             color: var(--text-dark);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: clamp(0.75rem, 0.85vw, 0.9rem);
             transition: all 0.2s ease;
         }
 
@@ -244,7 +256,7 @@
         }
 
         .pagination-info {
-            font-size: 0.9rem;
+            font-size: clamp(0.75rem, 0.85vw, 0.9rem);
         }
 
         /* Student Table */
@@ -253,8 +265,9 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            height: 82vh;
-            overflow-y: scroll;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
         }
 
         .student-table {
@@ -268,13 +281,14 @@
             font-weight: 600;
             color: var(--text-dark);
             border-bottom: 1px solid var(--border-color);
-            font-size: 0.85rem;
+            font-size: clamp(0.75rem, 0.85vw, 0.85rem);
         }
 
         .student-table td {
             padding: 1rem;
             border-bottom: 1px solid #F0F0F0;
             vertical-align: middle;
+            font-size: clamp(0.75rem, 0.85vw, 0.9rem);
         }
 
         .student-table tr:hover {
@@ -297,8 +311,8 @@
         }
 
         .student-avatar {
-            width: 40px;
-            height: 40px;
+            width: clamp(30px, 2.5vw, 40px);
+            height: clamp(30px, 2.5vw, 40px);
             border-radius: 50%;
             background: #E5E7EB;
         }
@@ -326,12 +340,12 @@
 
         .student-email {
             color: var(--text-light);
-            font-size: 0.9rem;
+            font-size: clamp(0.75rem, 0.85vw, 0.9rem);
         }
 
         .student-label{
             display: block;
-            font-size: 0.75rem;
+            font-size: clamp(0.65rem, 0.75vw, 0.75rem);
             color: var(--text-light);
             margin-bottom: 2px;
         }
@@ -380,7 +394,7 @@
                 <h1 class="page-title">Student Management</h1>
                 <div class="user-section">
                     <div class="notification-icon">
-                        <i class="fa-regular fa-bell" style="font-size: 2rem; padding-right: 1rem"></i>
+                        <i class="fa-regular fa-bell" style="font-size: clamp(1.2rem, 1.5vw, 2rem); padding-right: 0.5vw;"></i>
                     </div>
                     <div class="user-avatar">
                         <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">

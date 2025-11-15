@@ -21,15 +21,20 @@
             --border-color: #E5E7EB;
         }
 
-        body {
+        html, body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #FAFAFA;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .dashboard-container {
             display: flex;
-            min-height: 100vh;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
         }
 
         /* Sidebar Styles */
@@ -111,6 +116,10 @@
             flex: 1;
             margin-left: 250px;
             padding: 1.5rem;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         .top-bar {
@@ -118,6 +127,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            flex-shrink: 0;
         }
 
         .page-title-section {
@@ -127,8 +137,8 @@
         }
 
         .back-button {
-            width: 40px;
-            height: 40px;
+            width: clamp(35px, 2.5vw, 40px);
+            height: clamp(35px, 2.5vw, 40px);
             border: none;
             background: #EBEBEB;
             border-radius: 50px;
@@ -146,7 +156,7 @@
         }
 
         .page-title {
-            font-size: 3rem;
+            font-size: clamp(1.5rem, 3vw, 3rem);
             color: #2C3E50;
             margin: 0;
         }
@@ -158,20 +168,20 @@
         }
 
         .notification-icon {
-            width: 40px;
-            height: 40px;
+            width: clamp(30px, 2.5vw, 40px);
+            height: clamp(30px, 2.5vw, 40px);
             background: #F8F9FA;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-light);
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
         }
 
         .user-avatar {
-            width: 60px;
-            height: 60px;
+            width: clamp(40px, 3.5vw, 60px);
+            height: clamp(40px, 3.5vw, 60px);
             background: #D9D9D9;
             border-radius: 50%;
             display: flex;
@@ -199,11 +209,12 @@
             display: flex;
             align-items: center;
             gap: 1.5rem;
+            flex-shrink: 0;
         }
 
         .student-avatar-large {
-            width: 80px;
-            height: 80px;
+            width: clamp(60px, 5vw, 80px);
+            height: clamp(60px, 5vw, 80px);
             border-radius: 50%;
             background: #D1D5DB;
             flex-shrink: 0;
@@ -222,11 +233,12 @@
             font-weight: 700;
             color: var(--text-dark);
             margin: 0;
+            font-size: clamp(1.2rem, 1.8vw, 2rem);
         }
 
         .student-section {
             color: var(--text-dark);
-            font-size: 1.2rem;
+            font-size: clamp(0.9rem, 1.1vw, 1.2rem);
             font-weight: 500;
             margin: 0;
         }
@@ -243,14 +255,14 @@
         }
 
         .info-label {
-            font-size: 1.2rem;
+            font-size: clamp(0.9rem, 1.1vw, 1.2rem);
             color: var(--text-dark);
             margin: 0;
             font-weight: 500;
         }
 
         .info-value {
-            font-size: 0.9rem;
+            font-size: clamp(0.8rem, 0.9vw, 0.9rem);
             font-weight: 600;
             color: var(--text-dark);
         }
@@ -262,6 +274,7 @@
             overflow: hidden;
             margin-bottom: 2rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
         }
 
         .fitness-table {
@@ -278,7 +291,7 @@
             text-align: center;
             font-weight: 600;
             color: var(--text-dark);
-            font-size: 1.2rem;
+            font-size: clamp(0.9rem, 1.1vw, 1.2rem);
         }
 
         .fitness-table td {
@@ -287,7 +300,7 @@
             border-bottom: 1px solid #F0F0F0;
             vertical-align: middle;
             font-weight: 500;
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 0.95vw, 1rem);
         }
 
 
@@ -313,11 +326,12 @@
             border-radius: 16px;
             padding: 2rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
         }
 
         .chart-title {
             text-align: center;
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 1.05vw, 1.1rem);
             font-weight: 600;
             color: var(--text-dark);
             margin-bottom: 1.5rem;
@@ -325,7 +339,7 @@
 
         .chart-canvas {
             position: relative;
-            height: 400px;
+            height: clamp(250px, 30vh, 400px);
         }
 
         .chart-grid {
@@ -336,11 +350,12 @@
             overflow-x: auto;
             margin-top: 1.5rem;
             padding-bottom: 1rem;
+            flex-shrink: 0;
         }
 
         .chart-card {
             flex: 1;
-            min-width: 160px;
+            min-width: clamp(120px, 12vw, 160px);
             max-width: 220px;
             background: #FFFFFF;
             border-radius: 20px;
@@ -353,11 +368,11 @@
 
         .chart-card canvas {
             width: 100% !important;
-            height: 20vh !important;
+            height: clamp(120px, 15vh, 20vh) !important;
         }
 
         .chart-label {
-            font-size: 0.9rem;
+            font-size: clamp(0.75rem, 0.85vw, 0.9rem);
             font-weight: 600;
             color: #2C3E50;
             margin-bottom: 0.5rem;
@@ -423,7 +438,7 @@
                 </div>
                 <div class="user-section">
                     <div class="notification-icon">
-                        <i class="fa-regular fa-bell" style="font-size: 2rem; padding-right: 1rem"></i>
+                        <i class="fa-regular fa-bell" style="font-size: clamp(1.2rem, 1.5vw, 2rem); padding-right: 0.5vw;"></i>
                     </div>
                     <div class="user-avatar">
                         <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
