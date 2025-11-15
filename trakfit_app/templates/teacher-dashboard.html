@@ -22,16 +22,21 @@
             --text-light: #7F8C8D;
         }
 
-        body {
+        html, body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #FAFAFA;
             margin: 0;
             padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .dashboard-container {
             display: flex;
-            min-height: 100vh;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
         }
 
         /* Sidebar */
@@ -45,7 +50,7 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* keep content at the top */
+            justify-content: flex-start;
         }
 
         /* Brand Section */
@@ -122,6 +127,10 @@
             flex: 1;
             margin-left: 250px;
             padding: 1.5rem;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .top-bar {
@@ -129,10 +138,11 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            flex-shrink: 0;
         }
 
         .page-title {
-            font-size: 3rem;
+            font-size: clamp(1.5rem, 3vw, 3rem);
             color: #2C3E50;
             margin: 0;
         }
@@ -144,15 +154,15 @@
         }
 
         .notification-icon {
-            width: 40px;
-            height: 40px;
+            width: clamp(30px, 2.5vw, 40px);
+            height: clamp(30px, 2.5vw, 40px);
             background: #F8F9FA;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-light);
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
         }
 
         .user-avatar-container {
@@ -160,8 +170,8 @@
         }
 
         .user-avatar {
-            width: 60px;
-            height: 60px;
+            width: clamp(40px, 3.5vw, 60px);
+            height: clamp(40px, 3.5vw, 60px);
             background: #D9D9D9;
             border-radius: 50%;
             display: flex;
@@ -319,12 +329,13 @@
             margin-bottom: 1.5rem;
             position: relative;
             overflow: hidden;
-            height: 120px;
+            height: clamp(80px, 10vh, 120px);
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
         }
 
         .welcome-content h2 {
-            font-size: 2rem;
+            font-size: clamp(1.2rem, 2vw, 2rem);
             font-weight: 700;
             color: #2C3E50;
             margin-bottom: 0.3rem;
@@ -332,7 +343,7 @@
 
         .welcome-content p {
             color: #2C3E50;
-            font-size: 0.95rem;
+            font-size: clamp(0.7rem, 0.9vw, 0.95rem);
             font-weight: 500;
             margin: 0;
         }
@@ -342,8 +353,8 @@
             right: 1.5rem;
             top: 50%;
             transform: translateY(-50%);
-            width: 160px;
-            height: 80px;
+            width: clamp(100px, 10vw, 160px);
+            height: clamp(50px, 5vh, 80px);
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120"><rect x="20" y="40" width="80" height="60" rx="10" fill="%234A90A4"/><circle cx="60" cy="30" r="15" fill="%23333"/><rect x="50" y="45" width="20" height="30" rx="5" fill="white"/><circle cx="140" cy="90" r="20" fill="%235FA8D3"/></svg>');
             background-size: contain;
             background-repeat: no-repeat;
@@ -355,19 +366,19 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
             margin-bottom: 1.5rem;
+            flex-shrink: 0;
         }
 
         .stat-card {
             background: var(--card-bg);
             border-radius: 12px;
-            padding: 1.2rem;
+            padding: clamp(0.5rem, 1vh, 1.2rem) clamp(0.5rem, 0.8vw, 1.2rem);
             text-align: center;
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
-
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: clamp(1.2rem, 2vw, 2rem);
             font-weight: 800;
             color: var(--text-dark);
             margin-bottom: 0.3rem;
@@ -375,12 +386,12 @@
 
         .stat-label {
             color: var(--text-light);
-            font-size: 0.85rem;
+            font-size: clamp(0.65rem, 0.85vw, 0.85rem);
             font-weight: 500;
         }
 
         .stat-unit {
-            font-size: 0.8rem;
+            font-size: clamp(0.6rem, 0.8vw, 0.8rem);
             color: var(--text-light);
             display: block;
         }
@@ -388,6 +399,8 @@
         /* Content Grid */
         .content-grid {
             gap: 1.5rem;
+            flex: 1;
+            overflow: hidden;
         }
 
         /* Chart Section */
@@ -396,6 +409,10 @@
             border-radius: 15px;
             padding: 1.5rem;
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .chart-header {
@@ -406,7 +423,7 @@
         }
 
         .chart-title {
-            font-size: 1.2rem;
+            font-size: clamp(0.9rem, 1.2vw, 1.2rem);
             font-weight: 600;
             color: var(--text-dark);
         }
@@ -416,6 +433,7 @@
             gap: 0.8rem;
             margin-bottom: 1rem;
             align-items: flex-end;
+            flex-shrink: 0;
         }
 
         /* Custom Dropdown Styles */
@@ -438,7 +456,7 @@
         }
 
         .dropdown-label {
-            font-size: 13px;
+            font-size: clamp(11px, 0.85vw, 13px);
             font-weight: 500;
             color: #374151;
             margin-bottom: 3px;
@@ -454,9 +472,9 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            font-size: 13px;
+            font-size: clamp(11px, 0.85vw, 13px);
             color: #374151;
-            min-height: 36px;
+            min-height: clamp(28px, 3vh, 36px);
         }
 
         .custom-dropdown:hover {
@@ -652,6 +670,8 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            height: 100%;
+            overflow: hidden;
         }
 
         .sidebar-card {
@@ -659,6 +679,9 @@
             border-radius: 12px;
             padding: 1.2rem;
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar-section {
@@ -666,7 +689,7 @@
         }
 
         .section-title {
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 1vw, 1rem);
             font-weight: 600;
             color: var(--text-dark);
             margin-bottom: 0.8rem;
@@ -674,11 +697,12 @@
 
         .bmi-chart-container {
             position: relative;
-            height: 160px;
+            height: clamp(100px, 12vh, 160px);
             margin-bottom: 1rem;
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .bmi-legend {
@@ -697,12 +721,12 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 11px;
+            font-size: clamp(9px, 0.7vw, 11px);
         }
 
         .legend-color {
-            width: 12px;
-            height: 12px;
+            width: clamp(8px, 0.8vw, 12px);
+            height: clamp(8px, 0.8vw, 12px);
             border-radius: 2px;
             display: inline-block;
         }
@@ -743,15 +767,16 @@
         }
 
         .update-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50px;
+            width: clamp(35px, 3vw, 50px);
+            height: clamp(35px, 3vw, 50px);
+            border-radius: 50%;
             margin-right: 0.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
+            flex-shrink: 0;
         }
 
         .maria-avatar {
@@ -772,22 +797,51 @@
 
         .update-info h6 {
             margin: 0 0 2px 0;
-            font-size: 1rem;
+            font-size: clamp(0.75rem, 0.9vw, 1rem);
             font-weight: 700;
             color: var(--text-dark);
         }
 
         .update-info small {
             color: var(--text-dark);
-            font-size: 0.8rem;
+            font-size: clamp(0.65rem, 0.75vw, 0.8rem);
             display: block;
             line-height: 1.3;
         }
 
         .time-stamp {
             color: #9CA3AF !important;
-            font-size: 0.7rem !important;
+            font-size: clamp(0.6rem, 0.65vw, 0.7rem) !important;
             margin-top: 1px;
+        }
+
+        .update-avatar svg {
+            width: clamp(14px, 1.2vw, 20px);
+            height: clamp(14px, 1.2vw, 20px);
+        }
+
+        /* Custom Scrollbar for Recent Updates */
+        .sidebar-card > div:last-child::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-card > div:last-child::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .sidebar-card > div:last-child::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .sidebar-card > div:last-child::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Ensure dropdowns don't cause overflow */
+        .dropdown-menu {
+            max-height: 25vh;
         }
 
         @media (max-width: 768px) {
@@ -839,11 +893,11 @@
         <!-- Main Content -->
         <div class="main-content">
             <!-- Top Bar -->
-            <div class="top-bar" style="height: 10vh">
+            <div class="top-bar">
                 <h1 class="page-title">Dashboard</h1>
                 <div class="user-section">
                     <div class="notification-icon">
-                        <i class="fa-regular fa-bell" style="font-size: 2rem; padding-right: 1rem"></i>
+                        <i class="fa-regular fa-bell" style="font-size: clamp(1.2rem, 1.5vw, 2rem); padding-right: 0.5vw;"></i>
                     </div>
                     <div class="user-avatar-container">
                         <div class="user-avatar" onclick="toggleProfileDropdown()">
@@ -871,10 +925,9 @@
                 </div>
             </div>
 
-            <div style="
-                display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem; height: 80vh">
+            <div style="display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem; flex: 1; overflow: hidden; min-height: 0;">
 
-                <div>
+                <div style="display: flex; flex-direction: column; overflow: hidden; min-height: 0;">
                     <!-- Welcome Card -->
                     <div class="welcome-card">
                         <div class="welcome-content">
@@ -1032,7 +1085,7 @@
                             </div>
 
                             <h3 class="chart-title">Average Fitness Component Comparison (Pre-Test vs Post-Test)</h3>
-                            <div style="position: relative; height: 350px;">
+                            <div style="position: relative; flex: 1; min-height: 0;">
                                 <canvas id="fitnessChart"></canvas>
                             </div>
                         </div>
@@ -1041,7 +1094,7 @@
                 <!-- Right Sidebar -->
                 <div class="sidebar-right">
                     <!-- BMI Distribution Card -->
-                    <div class="sidebar-card">
+                    <div class="sidebar-card" style="flex-shrink: 0;">
                         <h4 class="section-title">BMI Category Distribution</h4>
                         <div class="bmi-chart-container">
                             <canvas id="bmiChart"></canvas>
@@ -1071,9 +1124,10 @@
                     </div>
 
                     <!-- Recent Updates Card -->
-                    <div class="sidebar-card" style="height: 51.5vh;overflow-y: auto;">
-                        <h4 class="section-title" style="margin: 0 0.5rem 1rem 0.5rem; font-size: 1.5rem">Recent Updates</h4>
-                        <div style="border-bottom: solid 1px rgba(0, 0, 0, 0.20)"></div>
+                    <div class="sidebar-card" style="flex: 1; min-height: 0; overflow: hidden;">
+                        <h4 class="section-title" style="margin: 0 0.5rem 1rem 0.5rem; font-size: clamp(1rem, 1.2vw, 1.5rem); flex-shrink: 0;">Recent Updates</h4>
+                        <div style="border-bottom: solid 1px rgba(0, 0, 0, 0.20); flex-shrink: 0;"></div>
+                        <div style="overflow-y: auto; flex: 1; min-height: 0;">
 
                         <div class="recent-update">
                             <div class="update-avatar maria-avatar">
@@ -1174,6 +1228,7 @@
                                 <small class="time-stamp">Yesterday</small>
                             </div>
                         </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1181,9 +1236,7 @@
 
 
         </div>
-    </div>
-
-    <!-- Bootstrap JS -->
+    </div>    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
