@@ -109,7 +109,7 @@
             margin-left: 250px;
             padding: 1.5rem;
             height: 100vh;
-            overflow: hidden;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
         }
@@ -221,8 +221,7 @@
         .tab-content {
             display: none;
             flex: 1;
-            overflow: hidden;
-            min-height: 0;
+            overflow-y: auto;
         }
 
         .tab-content.active {
@@ -342,7 +341,6 @@
             padding: 0;
             box-shadow: none;
             overflow-y: auto;
-            max-height: 100%;
         }
 
         .test-list-title {
@@ -449,7 +447,6 @@
 
         .table-wrapper {
             flex: 1;
-            overflow: hidden;
             overflow-y: auto;
             min-height: 0;
         }
