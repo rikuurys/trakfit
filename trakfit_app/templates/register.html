@@ -182,6 +182,38 @@
         padding: 0.5rem 0;
       }
 
+      .step-indicator {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 1.5rem;
+      }
+
+      .step-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #D9D9D9;
+        transition: all 0.3s ease;
+      }
+
+      .step-dot.active {
+        background-color: var(--primary-color);
+        transform: scale(1.2);
+      }
+
+      .step-dot.completed {
+        background-color: var(--primary-color);
+        opacity: 0.6;
+      }
+
+      .step-content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
       /* Compact form layout */
       .form-row {
         display: flex;
@@ -484,162 +516,267 @@
           <div class="brand-name brand-font">TrakFit</div>
         </div>
 
-        <!-- Registration Form Container -->
-        <div class="form-content-container">
-          <h1 class="welcome-text">Create an account</h1>
-          <p class="subtitle">
-            Your progress, your data, your motivation — all in one place.
-          </p>
+        <!-- Registration Form Container - Step 1: Personal Information -->
+        <div class="form-content-container" id="step1">
+          <div class="step-indicator">
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+          </div>
 
-          <!-- Registration Form -->
-          <form class="w-100" method="POST" action="{% url 'register' %}">
-            {% csrf_token %}
+          <div class="step-content">
+            <h1 class="welcome-text">Personal Information</h1>
+            <p class="subtitle">
+              Let's start with your basic information
+            </p>
 
-            <!-- Student Number (Full Width) -->
-            <div class="form-row">
-              <div class="form-group form-full-width">
-                <input
-                  type="text"
-                  name="student_no"
-                  class="form-control form-control-custom"
-                  placeholder="Student Number"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Full Name Section -->
-            <div class="form-row">
-              <div class="form-group form-full-width">
-                <div class="form-label-custom">Full Name</div>
-              </div>
-            </div>
-
-            <!-- First Name & Last Name (Side by Side) -->
-            <div class="form-row">
-              <div class="form-group form-half">
-                <input
-                  type="text"
-                  name="first_name"
-                  class="form-control form-control-custom"
-                  placeholder="First Name"
-                  required
-                />
-              </div>
-              <div class="form-group form-half">
-                <input
-                  type="text"
-                  name="last_name"
-                  class="form-control form-control-custom"
-                  placeholder="Last Name"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Birthday (Full Width) -->
-            <div class="form-row">
-              <div class="form-group form-full-width">
-                <input
-                  type="date"
-                  name="birthday"
-                  class="form-control form-control-custom"
-                  placeholder="Birthday"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Section Code & Group Code (Side by Side) -->
-            <div class="form-row">
-              <div class="form-group form-half">
-                <input
-                  type="text"
-                  name="section_code"
-                  class="form-control form-control-custom"
-                  placeholder="Section Code"
-                  required
-                />
-              </div>
-              <div class="form-group form-half">
-                <input
-                  type="text"
-                  name="group_code"
-                  class="form-control form-control-custom"
-                  placeholder="Group Code (Optional)"
-                />
-              </div>
-            </div>
-
-            <!-- Email & Gender (Side by Side - Email takes 2/3, Gender 1/3) -->
-            <div class="form-row">
-              <div class="form-group form-two-thirds">
-                <input
-                  type="email"
-                  name="email"
-                  class="form-control form-control-custom"
-                  placeholder="Email Address"
-                  required
-                />
-              </div>
-              <div class="form-group form-one-third">
-                <select
-                  name="gender"
-                  class="form-select form-select-custom"
-                  required
-                >
-                  <option value="" disabled selected>Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Password Fields (Side by Side) -->
-            <div class="form-row">
-              <div class="form-group form-half">
-                <input
-                  type="password"
-                  name="password"
-                  class="form-control form-control-custom"
-                  placeholder="Password"
-                  required
-                />
-              </div>
-              <div class="form-group form-half">
-                <input
-                  type="password"
-                  name="confirm_password"
-                  class="form-control form-control-custom"
-                  placeholder="Confirm Password"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Sign Up Button (Full Width) -->
-            <div class="form-row">
-              <div class="form-group form-full-width">
-                <button
-                  type="submit"
-                  class="btn btn-signup d-flex align-items-center justify-content-center"
-                >
-                  Sign Up
-                </button>
-              </div>
-            </div>
-
-            <!-- Sign In Link (Full Width) -->
-            <div class="form-row">
-              <div class="form-group form-full-width">
-                <div class="text-center signin-text">
-                  <span>Already a member? </span>
-                  <a href="{% url 'login' %}" class="signin-link">Sign in</a>
+            <!-- Step 1 Form -->
+            <form class="w-100" id="form-step1">
+              <!-- First Name & Last Name (Side by Side) -->
+              <div class="form-row">
+                <div class="form-group form-half">
+                  <div class="form-label-custom">First Name</div>
+                  <input
+                    type="text"
+                    id="first_name"
+                    class="form-control form-control-custom"
+                    placeholder="First Name"
+                    required
+                  />
+                </div>
+                <div class="form-group form-half">
+                  <div class="form-label-custom">Last Name</div>
+                  <input
+                    type="text"
+                    id="last_name"
+                    class="form-control form-control-custom"
+                    placeholder="Last Name"
+                    required
+                  />
                 </div>
               </div>
-            </div>
-          </form>
+
+              <!-- Birthday & Gender (Side by Side - Each 50%) -->
+              <div class="form-row">
+                <div class="form-group form-half">
+                  <div class="form-label-custom">Birthday</div>
+                  <input
+                    type="date"
+                    id="birthday"
+                    class="form-control form-control-custom"
+                    placeholder="Birthday"
+                    required
+                  />
+                </div>
+                <div class="form-group form-half">
+                  <div class="form-label-custom">Gender</div>
+                  <select
+                    id="gender"
+                    class="form-select form-select-custom"
+                    required
+                  >
+                    <option value="" disabled selected>Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Continue Button -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <button
+                    type="submit"
+                    class="btn btn-signup d-flex align-items-center justify-content-center"
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
+
+              <!-- Sign In Link (Full Width) -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <div class="text-center signin-text">
+                    <span>Already a member? </span>
+                    <a href="{% url 'login' %}" class="signin-link">Sign in</a>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Registration Form Container - Step 2: Academic Information -->
+        <div class="form-content-container" id="step2" style="display: none;">
+          <div class="step-indicator">
+            <div class="step-dot completed"></div>
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+          </div>
+
+          <div class="step-content">
+            <h1 class="welcome-text">Academic Information</h1>
+            <p class="subtitle">
+              Enter your student and course details
+            </p>
+
+            <!-- Step 2 Form -->
+            <form class="w-100" id="form-step2">
+              <!-- Student Number (Full Width) -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <div class="form-label-custom">Student Number</div>
+                  <input
+                    type="text"
+                    id="student_no"
+                    class="form-control form-control-custom"
+                    placeholder="Student Number"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Section Code & Group Code (Side by Side) -->
+              <div class="form-row">
+                <div class="form-group form-half">
+                  <div class="form-label-custom">Section Code</div>
+                  <input
+                    type="text"
+                    id="section_code"
+                    class="form-control form-control-custom"
+                    placeholder="Section Code"
+                    required
+                  />
+                </div>
+                <div class="form-group form-half">
+                  <div class="form-label-custom">Group Code (Optional)</div>
+                  <input
+                    type="text"
+                    id="group_code"
+                    class="form-control form-control-custom"
+                    placeholder="Group Code (Optional)"
+                  />
+                </div>
+              </div>
+
+              <!-- Continue Button -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <button
+                    type="submit"
+                    class="btn btn-signup d-flex align-items-center justify-content-center"
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
+
+              <!-- Back Link -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <div class="text-center signin-text">
+                    <a href="#" class="signin-link" onclick="goBack(1); return false;">Go Back</a>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Registration Form Container - Step 3: Account Information -->
+        <div class="form-content-container" id="step3" style="display: none;">
+          <div class="step-indicator">
+            <div class="step-dot completed"></div>
+            <div class="step-dot completed"></div>
+            <div class="step-dot active"></div>
+          </div>
+
+          <div class="step-content">
+            <h1 class="welcome-text">Create Password</h1>
+            <p class="subtitle">
+              Almost done! Set up your account password
+            </p>
+
+            <!-- Step 3 Form (Final Submit) -->
+            <form class="w-100" method="POST" action="{% url 'register' %}" id="form-step3">
+              {% csrf_token %}
+              
+              <!-- Hidden fields from Step 1 -->
+              <input type="hidden" name="first_name" id="hidden_first_name" />
+              <input type="hidden" name="last_name" id="hidden_last_name" />
+              <input type="hidden" name="birthday" id="hidden_birthday" />
+              <input type="hidden" name="gender" id="hidden_gender" />
+              
+              <!-- Hidden fields from Step 2 -->
+              <input type="hidden" name="student_no" id="hidden_student_no" />
+              <input type="hidden" name="section_code" id="hidden_section_code" />
+              <input type="hidden" name="group_code" id="hidden_group_code" />
+
+              <!-- Email Address (Full Width) -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <div class="form-label-custom">Email Address</div>
+                  <input
+                    type="email"
+                    name="email"
+                    class="form-control form-control-custom"
+                    placeholder="Email Address"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Password Fields (Full Width) -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <div class="form-label-custom">Password</div>
+                  <input
+                    type="password"
+                    name="password"
+                    class="form-control form-control-custom"
+                    placeholder="Password"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <div class="form-label-custom">Confirm Password</div>
+                  <input
+                    type="password"
+                    name="confirm_password"
+                    class="form-control form-control-custom"
+                    placeholder="Confirm Password"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Sign Up Button (Full Width) -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <button
+                    type="submit"
+                    class="btn btn-signup d-flex align-items-center justify-content-center"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+              </div>
+
+              <!-- Back Link -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <div class="text-center signin-text">
+                    <a href="#" class="signin-link" onclick="goBack(2); return false;">Go Back</a>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -672,6 +809,49 @@
           closeMessage();
         }
       });
+
+      // Multi-step form logic
+      function showStep(stepNumber) {
+        // Hide all steps
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('step3').style.display = 'none';
+
+        // Show selected step
+        document.getElementById('step' + stepNumber).style.display = 'flex';
+      }
+
+      // Handle Step 1 form submission
+      document.getElementById('form-step1').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Save Step 1 data to hidden fields in step 3
+        document.getElementById('hidden_first_name').value = document.getElementById('first_name').value;
+        document.getElementById('hidden_last_name').value = document.getElementById('last_name').value;
+        document.getElementById('hidden_birthday').value = document.getElementById('birthday').value;
+        document.getElementById('hidden_gender').value = document.getElementById('gender').value;
+        
+        // Move to Step 2
+        showStep(2);
+      });
+
+      // Handle Step 2 form submission
+      document.getElementById('form-step2').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Save Step 2 data to hidden fields in step 3
+        document.getElementById('hidden_student_no').value = document.getElementById('student_no').value;
+        document.getElementById('hidden_section_code').value = document.getElementById('section_code').value;
+        document.getElementById('hidden_group_code').value = document.getElementById('group_code').value;
+        
+        // Move to Step 3
+        showStep(3);
+      });
+
+      // Go back to previous step
+      function goBack(targetStep) {
+        showStep(targetStep);
+      }
     </script>
   </body>
 </html>
