@@ -305,6 +305,14 @@
             background: #F0F9FF !important;
         }
 
+        .row-white {
+            background-color: #ffffff;
+        }
+
+        .row-gray {
+            background-color: #f8f9fa;
+        }
+
         .student-checkbox {
             width: 16px;
             height: 16px;
@@ -452,7 +460,7 @@
                 <table class="student-table">
                     <thead>
                         <tr>
-                            <th style="width: 20px;"></th>
+                            <th style="width: 140px;">Student Number</th>
                             <th style="text-align: left">Name</th>
                             <th style="width: 50px; text-align: center;">Age</th>
                             <th style="width: 175px; text-align: center;">Sex</th>
@@ -461,6 +469,37 @@
                         </tr>
                     </thead>
                     <tbody id="student-table-body">
+                        {% for student in students %}
+                        <tr class="student-row {% cycle 'row-white' 'row-gray' %}" data-student-no="{{ student.student_no }}" onclick="window.location.href='{% url 'student_profile' student.student_no %}'">
+                            <td style="text-align:center; font-weight: 600">{{ student.student_no }}</td>
+                            <td>
+                                <div class="student-info">
+                                    <div>
+                                        <h6 class="student-name">{{ student.first_name }} {{ student.last_name }}</h6>
+                                        <div class="student-section">{{ student.section_code }}{% if student.group_code %}-{{ student.group_code }}{% endif %}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="student-labelInfo">{{ student.age }}</span>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="student-labelInfo">{{ student.gender }}</span>
+                            </td>
+                            <td style="text-align: center;">
+                                <div class="student-labelInfo">{{ student.user.email }}</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div class="student-labelInfo">{{ student.updated_at|timesince }} ago</div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem; color: #7F8C8D;">
+                                No students found
+                            </td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -469,32 +508,18 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'dummyStudentData.js' %}"></script>
     <script>
-        // Select all functionality
-        const selectAll = document.querySelector('#select-all');
-        const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
-
-        // When the "Select All" checkbox is toggled
-        selectAll.addEventListener('change', function() {
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            document.querySelectorAll('.student-row').forEach(row => {
+                const name = row.querySelector('.student-name').textContent.toLowerCase();
+                const section = row.querySelector('.student-section').textContent.toLowerCase();
+                const emailElement = row.querySelectorAll('.student-labelInfo')[2];
+                const email = emailElement ? emailElement.textContent.toLowerCase() : '';
+                row.style.display = (name.includes(searchTerm) || section.includes(searchTerm) || email.includes(searchTerm)) ? '' : 'none';
             });
         });
-
-        // When any individual checkbox is changed
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                // If even one checkbox is unchecked → uncheck "Select All"
-                if (!this.checked) {
-                    selectAll.checked = false;
-                } else {
-                    // If all checkboxes are checked → check "Select All"
-                    selectAll.checked = Array.from(checkboxes).every(cb => cb.checked);
-                }
-            });
-        });
-        
     </script>
 </body>
 </html>

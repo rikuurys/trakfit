@@ -419,14 +419,34 @@ def student_post_test_view(request):
 def student_settings_view(request):
     return render(request, 'student/settings.html')
 
+@login_required
 def teacher_dashboard(request):
     return render(request, 'teacher-dashboard.html')
 
+@login_required
 def student_management(request):
-    return render(request, 'student-management.html')
+    data = {
+        'students': Student.objects.all(),
+    }
+    return render(request, 'student-management.html', data)
 
-def student_profile(request, student_id):
-    return render(request, 'student-profile.html')
+@login_required
+def student_profile(request, student_no):
+    from .models import FitnessTest
+    
+    student = Student.objects.get(student_no=student_no)
+    
+    # Get pre-test and post-test
+    pre_test = student.fitness_tests.filter(test_type='pre').first()
+    post_test = student.fitness_tests.filter(test_type='post').first()
+    
+    template = "student-profile.html"
+    data = {
+        'student': student,
+        'pre_test': pre_test,
+        'post_test': post_test,
+    }
+    return render(request, template, data)
 
 def change_password(request):
     return render(request, 'change-password.html')
@@ -496,3 +516,6 @@ def student_history(request):
         'pre_test': pre_test,
     }
     return render(request, 'student/history.html', context)
+
+
+# ADMIN SIDE!

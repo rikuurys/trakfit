@@ -655,26 +655,25 @@
             <div id="profile-overview" class="tab-content active">
                 <div class="profile-overview-container">
                     <div class="student-info-card">
-                        <div class="student-avatar-large"></div>
                         <div class="student-details">
                             <div class="cell">
-                                <h2 class="student-name">Juan Dela Cruz</h2>
-                                <div class="student-section">BSIT 1A-G1</div>
+                                <h2 class="student-name">{{ student.first_name }} {{ student.last_name }}</h2>
+                                <div class="student-section">{{ student.section_code }}-{{ student.group_code }}</div>
                             </div>
                             <div class="cell">
                                 <div class="info-item">
-                                    <span class="info-label">Age: 21</span>
+                                    <span class="info-label">Age: {{ student.age }}</span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">Gender: Male</span>
+                                    <span class="info-label">Gender: {{ student.gender }}</span>
                                 </div>
                             </div>
                             <div class="cell">
-                                <div class="info-item">
-                                    <span class="info-label">Contact No.: 09123456789</span>
-                                </div>
                                 <div class="info-item" style="margin-top: 0.25rem;">
-                                    <span class="info-label">Email: juandelacruz@gmail.com</span>
+                                    <span class="info-label">Email: {{ student.user.email }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Last Update: {{ student.updated_at|timesince }} ago</span>
                                 </div>
                             </div>
                         </div>
@@ -853,18 +852,55 @@
         }
 
         const ctx = document.getElementById('fitnessComparisonChart').getContext('2d');
+        
+        const preTestData = {
+            bmi: {{ pre_test.bmi|floatformat:2|default:"null" }},
+            vo2Max: {{ pre_test.vo2_max|floatformat:2|default:"null" }},
+            flexibility: {{ pre_test.flexibility_cm|floatformat:2|default:"null" }},
+            strength: {{ pre_test.strength_reps|default:"null" }},
+            agility: {{ pre_test.agility_sec|floatformat:2|default:"null" }},
+            speed: {{ pre_test.speed_sec|floatformat:2|default:"null" }},
+            endurance: {{ pre_test.endurance_minutes|default:"null" }}
+        };
+        
+        const postTestData = {
+            bmi: {{ post_test.bmi|floatformat:2|default:"null" }},
+            vo2Max: {{ post_test.vo2_max|floatformat:2|default:"null" }},
+            flexibility: {{ post_test.flexibility_cm|floatformat:2|default:"null" }},
+            strength: {{ post_test.strength_reps|default:"null" }},
+            agility: {{ post_test.agility_sec|floatformat:2|default:"null" }},
+            speed: {{ post_test.speed_sec|floatformat:2|default:"null" }},
+            endurance: {{ post_test.endurance_minutes|default:"null" }}
+        };
+        
         new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: ['BMI', 'VO₂ Max', 'Flexibility', 'Strength', 'Agility', 'Speed', 'Endurance'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [24.5, 42.5, 12, 25, 17.8, 5.9, 12.5],
+                    data: [
+                        preTestData.bmi, 
+                        preTestData.vo2Max, 
+                        preTestData.flexibility, 
+                        preTestData.strength, 
+                        preTestData.agility, 
+                        preTestData.speed, 
+                        preTestData.endurance
+                    ],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4
                 }, {
                     label: 'Post-Test',
-                    data: [24.2, 46.1, 15, 35, 16.9, 5.6, 11.25],
+                    data: [
+                        postTestData.bmi, 
+                        postTestData.vo2Max, 
+                        postTestData.flexibility, 
+                        postTestData.strength, 
+                        postTestData.agility, 
+                        postTestData.speed, 
+                        postTestData.endurance
+                    ],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4
                 }]
@@ -876,6 +912,22 @@
                     legend: {
                         position: 'top',
                         align: 'end'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const value = context.parsed.y;
+                                const componentIndex = context.dataIndex;
+                                const units = ['', 'mL/kg/min', 'cm', 'reps', 'sec', 'sec', 'min'];
+                                
+                                if (value === null) {
+                                    return label + ': No data';
+                                }
+                                
+                                return label + ': ' + value + ' ' + units[componentIndex];
+                            }
+                        }
                     }
                 },
                 scales: {
