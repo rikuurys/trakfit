@@ -37,6 +37,84 @@
         overflow-x: hidden;
       }
 
+      .alert-banner {
+        background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 8px rgba(253, 203, 110, 0.3);
+      }
+
+      .alert-banner .alert-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+      }
+
+      .alert-banner .alert-icon {
+        font-size: 1.5rem;
+        color: #e17055;
+      }
+
+      .alert-banner .alert-text {
+        flex: 1;
+      }
+
+      .alert-banner .alert-text h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .alert-banner .alert-text p {
+        margin: 0;
+        font-size: 0.875rem;
+        color: #2c3e50;
+      }
+
+      .alert-banner .btn-alert {
+        background: #2c3e50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background 0.2s ease;
+      }
+
+      .alert-banner .btn-alert:hover {
+        background: #1a252f;
+      }
+
+      .alert-banner .btn-close-banner {
+        background: none;
+        border: none;
+        color: #2c3e50;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 1rem;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+      }
+
+      .alert-banner .btn-close-banner:hover {
+        opacity: 1;
+      }
+
       .main-content {
         margin-left: 250px;
         padding: 1.5rem;
@@ -353,6 +431,27 @@
         </div>
       </div>
 
+      <!-- Pre-Test Alert Banner -->
+      {% if not pre_test %}
+      <div class="alert-banner" id="preTestAlert">
+        <div class="alert-content">
+          <div class="alert-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="alert-text">
+            <h5>No Pre-Test Data Found</h5>
+            <p>Complete your pre-test to start tracking your fitness progress.</p>
+          </div>
+          <a href="{% url 'student-pre-test' %}" class="btn-alert">
+            <i class="fa-solid fa-plus me-2"></i>Take Pre-Test
+          </a>
+        </div>
+        <button class="btn-close-banner" onclick="dismissAlert()" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      {% endif %}
+
       <!-- Personal & Academic Information -->
       <div class="row">
         <!-- Personal Information Card -->
@@ -599,6 +698,18 @@
 
           document.body.appendChild(form);
           form.submit();
+        }
+      }
+
+      function dismissAlert() {
+        const alertBanner = document.getElementById('preTestAlert');
+        if (alertBanner) {
+          alertBanner.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          alertBanner.style.opacity = '0';
+          alertBanner.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            alertBanner.style.display = 'none';
+          }, 300);
         }
       }
 
