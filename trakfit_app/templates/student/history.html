@@ -446,7 +446,7 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="page-title">Fitness Profile History</h1>
         <div class="d-flex align-items-center">
-          <a href="{% url 'student-post-test' %}" class="btn btn-primary me-3" style="background: #3a7ca5; border: none; border-radius: 10px; color: white; font-size: 0.9rem; font-weight: 600; padding: 8px 20px; text-decoration: none;"><i class="fa-solid fa-plus me-2"></i>Post-Test</a>
+          <a href="{% url 'student-post-test' %}" class="btn btn-primary me-3 {% if not pre_test %}disabled{% endif %}" style="background: #3a7ca5; border: none; border-radius: 10px; color: white; font-size: 0.9rem; font-weight: 600; padding: 8px 20px; text-decoration: none;{% if not pre_test %} opacity: 0.5; pointer-events: none;{% endif %}" {% if not pre_test %}title="Complete a pre-test first"{% endif %}><i class="fa-solid fa-plus me-2"></i>Post-Test</a>
           <div class="notification-icon me-3">
             <i class="fa-regular fa-bell" style="font-size: 1.5rem"></i>
           </div>

@@ -287,12 +287,16 @@ def student_profile_view(request):
     pre_test_count = student.fitness_tests.filter(test_type='pre').count()
     post_test_count = student.fitness_tests.filter(test_type='post').count()
     
+    # Get pre-test for button lock check
+    pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    
     context = {
         'student': student,
         'latest_test': latest_test,
         'full_name': f"{student.first_name} {student.last_name}",
         'pre_test_count': pre_test_count,
         'post_test_count': post_test_count,
+        'pre_test': pre_test,
     }
     return render(request, 'student/profile.html', context)
 
@@ -479,6 +483,9 @@ def student_history(request):
         test.bmi_status = get_bmi_status(test.bmi)
         tests_with_status.append(test)
     
+    # Get pre-test for button lock check
+    pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    
     context = {
         'student': student,
         'tests': tests_with_status,
@@ -486,5 +493,6 @@ def student_history(request):
         'start_date_filter': start_date,
         'end_date_filter': end_date,
         'full_name': f"{student.first_name} {student.last_name}",
+        'pre_test': pre_test,
     }
     return render(request, 'student/history.html', context)
