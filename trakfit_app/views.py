@@ -419,18 +419,15 @@ def student_post_test_view(request):
 def student_settings_view(request):
     return render(request, 'student/settings.html')
 
-@login_required
 def teacher_dashboard(request):
     return render(request, 'teacher-dashboard.html')
 
-@login_required
 def student_management(request):
     data = {
         'students': Student.objects.all(),
     }
     return render(request, 'student-management.html', data)
 
-@login_required
 def student_profile(request, student_no):
     from .models import FitnessTest
     
