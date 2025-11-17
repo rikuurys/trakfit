@@ -507,9 +507,10 @@
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.height_cm.errors %}invalid{% endif %}"
                       name="height_cm"
                       placeholder="Enter value..."
+                      value="{{ form.height_cm.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -517,7 +518,9 @@
                       <span class="unit-badge">cm</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 170</div>
+                  {% if form.height_cm.errors %}
+                    <div class="error-message show">{{ form.height_cm.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
               <div class="col-md-6">
@@ -526,9 +529,10 @@
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.weight_kg.errors %}invalid{% endif %}"
                       name="weight_kg"
                       placeholder="Enter value..."
+                      value="{{ form.weight_kg.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -536,7 +540,9 @@
                       <span class="unit-badge">kg</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 65</div>
+                  {% if form.weight_kg.errors %}
+                    <div class="error-message show">{{ form.weight_kg.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -570,9 +576,10 @@
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.vo2_distance_m.errors %}invalid{% endif %}"
                       name="vo2_distance_m"
                       placeholder="Enter value..."
+                      value="{{ form.vo2_distance_m.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -580,7 +587,9 @@
                       <span class="unit-badge">m</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 2200</div>
+                  {% if form.vo2_distance_m.errors %}
+                    <div class="error-message show">{{ form.vo2_distance_m.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
               <div class="col-md-6">
@@ -617,9 +626,10 @@
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.flexibility_cm.errors %}invalid{% endif %}"
                       name="flexibility_cm"
                       placeholder="Enter value..."
+                      value="{{ form.flexibility_cm.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -627,7 +637,9 @@
                       <span class="unit-badge">cm</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 25</div>
+                  {% if form.flexibility_cm.errors %}
+                    <div class="error-message show">{{ form.flexibility_cm.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
               <div class="col-md-6">
@@ -636,9 +648,10 @@
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.strength_reps.errors %}invalid{% endif %}"
                       name="strength_reps"
                       placeholder="Enter value..."
+                      value="{{ form.strength_reps.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -646,7 +659,9 @@
                       <span class="unit-badge">reps</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 30</div>
+                  {% if form.strength_reps.errors %}
+                    <div class="error-message show">{{ form.strength_reps.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -658,9 +673,10 @@
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.agility_sec.errors %}invalid{% endif %}"
                       name="agility_sec"
                       placeholder="Enter value..."
+                      value="{{ form.agility_sec.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -668,7 +684,9 @@
                       <span class="unit-badge">sec</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 12.8</div>
+                  {% if form.agility_sec.errors %}
+                    <div class="error-message show">{{ form.agility_sec.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
               <div class="col-md-6">
@@ -677,9 +695,10 @@
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.speed_sec.errors %}invalid{% endif %}"
                       name="speed_sec"
                       placeholder="Enter value..."
+                      value="{{ form.speed_sec.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -687,7 +706,9 @@
                       <span class="unit-badge">sec</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 14.6</div>
+                  {% if form.speed_sec.errors %}
+                    <div class="error-message show">{{ form.speed_sec.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -699,9 +720,10 @@
                   <div class="position-relative">
                     <input
                       type="text"
-                      class="form-control form-input"
+                      class="form-control form-input {% if form.endurance_time.errors %}invalid{% endif %}"
                       name="endurance_time"
                       placeholder="mm:ss (e.g., 12:30)"
+                      value="{{ form.endurance_time.value|default:'' }}"
                     />
                     <div
                       class="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -709,7 +731,9 @@
                       <span class="unit-badge">mm : ss</span>
                     </div>
                   </div>
-                  <div class="pre-value-badge">Pre : 03 : 45</div>
+                  {% if form.endurance_time.errors %}
+                    <div class="error-message show">{{ form.endurance_time.errors.0 }}</div>
+                  {% endif %}
                 </div>
               </div>
             </div>

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from decimal import Decimal
 
@@ -100,15 +101,63 @@ class FitnessTest(models.Model):
         related_name='fitness_tests'
     )
     test_type = models.CharField(max_length=10, choices=TEST_TYPE_CHOICES)
-    height_cm = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    weight_kg = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    vo2_distance_m = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    flexibility_cm = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    strength_reps = models.IntegerField(null=True, blank=True)
-    agility_sec = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    speed_sec = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    endurance_minutes = models.IntegerField(null=True, blank=True)
-    endurance_seconds = models.IntegerField(null=True, blank=True)
+    height_cm = models.DecimalField(
+        max_digits=5, 
+        decimal_places=1, 
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(Decimal('100')), MaxValueValidator(Decimal('250'))]
+    )
+    weight_kg = models.DecimalField(
+        max_digits=5, 
+        decimal_places=1, 
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(Decimal('30')), MaxValueValidator(Decimal('200'))]
+    )
+    vo2_distance_m = models.DecimalField(
+        max_digits=7, 
+        decimal_places=1, 
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(Decimal('500')), MaxValueValidator(Decimal('5000'))]
+    )
+    flexibility_cm = models.DecimalField(
+        max_digits=5, 
+        decimal_places=1, 
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(Decimal('-20')), MaxValueValidator(Decimal('50'))]
+    )
+    strength_reps = models.IntegerField(
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(200)]
+    )
+    agility_sec = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(Decimal('5')), MaxValueValidator(Decimal('60'))]
+    )
+    speed_sec = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(Decimal('4')), MaxValueValidator(Decimal('20'))]
+    )
+    endurance_minutes = models.IntegerField(
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(99)]
+    )
+    endurance_seconds = models.IntegerField(
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(59)]
+    )
     taken_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

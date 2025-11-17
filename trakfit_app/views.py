@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.db import IntegrityError
 from datetime import datetime
 from .models import User, Student
+from .forms import FitnessTestForm
 
 
 def login(request):
@@ -366,49 +367,45 @@ def student_pre_test_view(request):
     from django.utils import timezone
     
     student = request.user.student_profile
+    form = FitnessTestForm()
     
     if request.method == 'POST':
-        test_type = 'pre'  # Force pre test type
+        form = FitnessTestForm(request.POST)
         
-        # Parse form data
-        height_cm = request.POST.get('height_cm')
-        weight_kg = request.POST.get('weight_kg')
-        vo2_distance_m = request.POST.get('vo2_distance_m')
-        flexibility_cm = request.POST.get('flexibility_cm')
-        strength_reps = request.POST.get('strength_reps')
-        agility_sec = request.POST.get('agility_sec')
-        speed_sec = request.POST.get('speed_sec')
-        endurance_time = request.POST.get('endurance_time')  # mm:ss format
-        
-        try:
-            # Create fitness test
-            fitness_test = FitnessTest.objects.create(
-                student=student,
-                test_type=test_type,
-                height_cm=height_cm if height_cm else None,
-                weight_kg=weight_kg if weight_kg else None,
-                vo2_distance_m=vo2_distance_m if vo2_distance_m else None,
-                flexibility_cm=flexibility_cm if flexibility_cm else None,
-                strength_reps=int(strength_reps) if strength_reps else None,
-                agility_sec=agility_sec if agility_sec else None,
-                speed_sec=speed_sec if speed_sec else None,
-                taken_at=timezone.now()
-            )
-            
-            # Parse and set endurance time
-            if endurance_time:
+        if form.is_valid():
+            try:
+                # Create fitness test with validated data
+                fitness_test = FitnessTest.objects.create(
+                    student=student,
+                    test_type='pre',
+                    height_cm=form.cleaned_data['height_cm'],
+                    weight_kg=form.cleaned_data['weight_kg'],
+                    vo2_distance_m=form.cleaned_data['vo2_distance_m'],
+                    flexibility_cm=form.cleaned_data['flexibility_cm'],
+                    strength_reps=form.cleaned_data['strength_reps'],
+                    agility_sec=form.cleaned_data['agility_sec'],
+                    speed_sec=form.cleaned_data['speed_sec'],
+                    taken_at=timezone.now()
+                )
+                
+                # Parse and set endurance time
+                endurance_time = form.cleaned_data['endurance_time']
                 fitness_test.set_endurance_from_string(endurance_time)
                 fitness_test.save()
-            
-            messages.success(request, 'Pre-test saved successfully!')
-            return redirect('student-profile')
-            
-        except Exception as e:
-            messages.error(request, f'Error saving pre-test: {str(e)}')
+                
+                messages.success(request, 'Pre-test saved successfully!')
+                return redirect('student-profile')
+                
+            except Exception as e:
+                messages.error(request, f'Error saving pre-test: {str(e)}')
+        else:
+            # Form validation failed - errors will be displayed in template
+            messages.error(request, 'Please fix the errors below and try again.')
     
     context = {
         'student': student,
         'full_name': f"{student.first_name} {student.last_name}",
+        'form': form,
     }
     return render(request, 'student/pre_test.html', context)
 
@@ -419,50 +416,46 @@ def student_post_test_view(request):
     
     student = request.user.student_profile
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    form = FitnessTestForm()
     
     if request.method == 'POST':
-        test_type = 'post'  # Force post test type
+        form = FitnessTestForm(request.POST)
         
-        # Parse form data
-        height_cm = request.POST.get('height_cm')
-        weight_kg = request.POST.get('weight_kg')
-        vo2_distance_m = request.POST.get('vo2_distance_m')
-        flexibility_cm = request.POST.get('flexibility_cm')
-        strength_reps = request.POST.get('strength_reps')
-        agility_sec = request.POST.get('agility_sec')
-        speed_sec = request.POST.get('speed_sec')
-        endurance_time = request.POST.get('endurance_time')  # mm:ss format
-        
-        try:
-            # Create fitness test
-            fitness_test = FitnessTest.objects.create(
-                student=student,
-                test_type=test_type,
-                height_cm=height_cm if height_cm else None,
-                weight_kg=weight_kg if weight_kg else None,
-                vo2_distance_m=vo2_distance_m if vo2_distance_m else None,
-                flexibility_cm=flexibility_cm if flexibility_cm else None,
-                strength_reps=int(strength_reps) if strength_reps else None,
-                agility_sec=agility_sec if agility_sec else None,
-                speed_sec=speed_sec if speed_sec else None,
-                taken_at=timezone.now()
-            )
-            
-            # Parse and set endurance time
-            if endurance_time:
+        if form.is_valid():
+            try:
+                # Create fitness test with validated data
+                fitness_test = FitnessTest.objects.create(
+                    student=student,
+                    test_type='post',
+                    height_cm=form.cleaned_data['height_cm'],
+                    weight_kg=form.cleaned_data['weight_kg'],
+                    vo2_distance_m=form.cleaned_data['vo2_distance_m'],
+                    flexibility_cm=form.cleaned_data['flexibility_cm'],
+                    strength_reps=form.cleaned_data['strength_reps'],
+                    agility_sec=form.cleaned_data['agility_sec'],
+                    speed_sec=form.cleaned_data['speed_sec'],
+                    taken_at=timezone.now()
+                )
+                
+                # Parse and set endurance time
+                endurance_time = form.cleaned_data['endurance_time']
                 fitness_test.set_endurance_from_string(endurance_time)
                 fitness_test.save()
-            
-            messages.success(request, 'Post-test saved successfully!')
-            return redirect('student-profile')
-            
-        except Exception as e:
-            messages.error(request, f'Error saving post-test: {str(e)}')
+                
+                messages.success(request, 'Post-test saved successfully!')
+                return redirect('student-profile')
+                
+            except Exception as e:
+                messages.error(request, f'Error saving post-test: {str(e)}')
+        else:
+            # Form validation failed - errors will be displayed in template
+            messages.error(request, 'Please fix the errors below and try again.')
     
     context = {
         'student': student,
         'pre_test': pre_test,
         'full_name': f"{student.first_name} {student.last_name}",
+        'form': form,
     }
     return render(request, 'student/post_test.html', context)
 
@@ -494,40 +487,49 @@ def update_test_view(request, test_id):
         return redirect('student-history')
 
     if request.method == 'POST':
-        # Parse form data
-        height_cm = request.POST.get('height_cm')
-        weight_kg = request.POST.get('weight_kg')
-        vo2_distance_m = request.POST.get('vo2_distance_m')
-        flexibility_cm = request.POST.get('flexibility_cm')
-        strength_reps = request.POST.get('strength_reps')
-        agility_sec = request.POST.get('agility_sec')
-        speed_sec = request.POST.get('speed_sec')
-        endurance_time = request.POST.get('endurance_time')
+        form = FitnessTestForm(request.POST)
         
-        try:
-            # Update test fields
-            test.height_cm = height_cm if height_cm else None
-            test.weight_kg = weight_kg if weight_kg else None
-            test.vo2_distance_m = vo2_distance_m if vo2_distance_m else None
-            test.flexibility_cm = flexibility_cm if flexibility_cm else None
-            test.strength_reps = int(strength_reps) if strength_reps else None
-            test.agility_sec = agility_sec if agility_sec else None
-            test.speed_sec = speed_sec if speed_sec else None
-            
-            # Update endurance time
-            if endurance_time:
+        if form.is_valid():
+            try:
+                # Update test fields with validated data
+                test.height_cm = form.cleaned_data['height_cm']
+                test.weight_kg = form.cleaned_data['weight_kg']
+                test.vo2_distance_m = form.cleaned_data['vo2_distance_m']
+                test.flexibility_cm = form.cleaned_data['flexibility_cm']
+                test.strength_reps = form.cleaned_data['strength_reps']
+                test.agility_sec = form.cleaned_data['agility_sec']
+                test.speed_sec = form.cleaned_data['speed_sec']
+                
+                # Update endurance time
+                endurance_time = form.cleaned_data['endurance_time']
                 test.set_endurance_from_string(endurance_time)
-            
-            # Save (updated_at will be automatically updated by Django)
-            test.save()
+                
+                # Save (updated_at will be automatically updated by Django)
+                test.save()
 
-            messages.success(request, "Test record updated successfully!")
-            return redirect('student-history')
+                messages.success(request, "Test record updated successfully!")
+                return redirect('student-history')
 
-        except Exception as e:
-            messages.error(request, f"Error updating test: {str(e)}")
+            except Exception as e:
+                messages.error(request, f"Error updating test: {str(e)}")
+        else:
+            # Form validation failed - errors will be displayed in template
+            messages.error(request, 'Please fix the errors below and try again.')
+    else:
+        # GET request - initialize form with existing test data
+        initial_data = {
+            'height_cm': test.height_cm,
+            'weight_kg': test.weight_kg,
+            'vo2_distance_m': test.vo2_distance_m,
+            'flexibility_cm': test.flexibility_cm,
+            'strength_reps': test.strength_reps,
+            'agility_sec': test.agility_sec,
+            'speed_sec': test.speed_sec,
+            'endurance_time': test.get_endurance_display(),
+        }
+        form = FitnessTestForm(initial=initial_data)
 
-    # GET request - get pre-test for comparison
+    # Get pre-test for comparison
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
     
     # Render the form with existing values
@@ -536,6 +538,7 @@ def update_test_view(request, test_id):
         'test': test,
         'pre_test': pre_test,
         'full_name': f"{student.first_name} {student.last_name}",
+        'form': form,
     }
     return render(request, 'student/update_test.html', context)
 
