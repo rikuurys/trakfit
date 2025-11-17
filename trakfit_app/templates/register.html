@@ -767,6 +767,26 @@
           this.classList.toggle('bi-eye-slash');
         });
       }
+
+      // Handle Step 3 form submission - store data in sessionStorage for pre-test page
+      document.getElementById('form-step3').addEventListener('submit', function(e) {
+        // Store all registration data in sessionStorage for the pre-test page
+        const registrationData = {
+          first_name: document.getElementById('hidden_first_name').value,
+          last_name: document.getElementById('hidden_last_name').value,
+          birthday: document.getElementById('hidden_birthday').value,
+          gender: document.getElementById('hidden_gender').value,
+          student_no: document.getElementById('hidden_student_no').value,
+          section_code: document.getElementById('hidden_section_code').value,
+          group_code: document.getElementById('hidden_group_code').value,
+          email: document.querySelector('input[name="email"]').value,
+          password: document.getElementById('passwordInput').value
+        };
+        
+        sessionStorage.setItem('registrationData', JSON.stringify(registrationData));
+        
+        // Allow form to submit normally
+      });
     </script>
   </body>
 </html>

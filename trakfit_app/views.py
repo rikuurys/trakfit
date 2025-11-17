@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import IntegrityError
 from datetime import datetime
-from .models import User, Student
+from django.utils import timezone
+from .models import User, Student, FitnessTest
 from .forms import FitnessTestForm
 
 
@@ -136,8 +137,13 @@ def register(request):
             
             # Auto-login the user
             auth_login(request, user)
+            
+            # Store registration data in session for pre-test step
+            request.session['registration_complete'] = True
+            request.session['new_user_id'] = user.id
+            
             messages.success(request, 'Registration successful! Welcome to TrakFit.')
-            return redirect('student-dashboard')
+            return redirect('pre-test-register')
             
         except IntegrityError as e:
             messages.error(request, 'An error occurred during registration. Please try again.')
@@ -147,6 +153,76 @@ def register(request):
             return render(request, 'register.html')
     
     return render(request, 'register.html')
+
+def pre_test_register(request):
+    """Handle pre-test submission during registration (optional)"""
+    # Check if user just completed registration
+    if not request.session.get('registration_complete'):
+        # If no registration session, redirect to login
+        return redirect('login')
+    
+    if request.method == 'POST':
+        # Check if user skipped pre-test
+        skip_pretest = request.POST.get('skip_pretest', 'false') == 'true'
+        
+        if skip_pretest:
+            # Clear registration session and redirect to dashboard
+            request.session.pop('registration_complete', None)
+            request.session.pop('new_user_id', None)
+            messages.info(request, 'You can add your pre-test data later from your profile.')
+            return redirect('student-dashboard')
+        
+        # User submitted pre-test data
+        student = request.user.student_profile
+        
+        try:
+            # Extract and validate pre-test fields
+            height_cm = request.POST.get('height_cm', '').strip()
+            weight_kg = request.POST.get('weight_kg', '').strip()
+            vo2_distance_m = request.POST.get('vo2_distance_m', '').strip()
+            flexibility_cm = request.POST.get('flexibility_cm', '').strip()
+            strength_reps = request.POST.get('strength_reps', '').strip()
+            agility_sec = request.POST.get('agility_sec', '').strip()
+            speed_sec = request.POST.get('speed_sec', '').strip()
+            endurance_time = request.POST.get('endurance_time', '').strip()
+            
+            # Validate all fields are provided
+            if not all([height_cm, weight_kg, vo2_distance_m, flexibility_cm, 
+                       strength_reps, agility_sec, speed_sec, endurance_time]):
+                messages.error(request, 'All fields are required for pre-test submission.')
+                return render(request, 'student/pre_test_on_register.html')
+            
+            # Create fitness test
+            fitness_test = FitnessTest.objects.create(
+                student=student,
+                test_type='pre',
+                height_cm=height_cm,
+                weight_kg=weight_kg,
+                vo2_distance_m=vo2_distance_m,
+                flexibility_cm=flexibility_cm,
+                strength_reps=strength_reps,
+                agility_sec=agility_sec,
+                speed_sec=speed_sec,
+                taken_at=timezone.now()
+            )
+            
+            # Parse and set endurance time
+            fitness_test.set_endurance_from_string(endurance_time)
+            fitness_test.save()
+            
+            # Clear registration session
+            request.session.pop('registration_complete', None)
+            request.session.pop('new_user_id', None)
+            
+            messages.success(request, 'Pre-test completed successfully! Welcome to TrakFit.')
+            return redirect('student-dashboard')
+            
+        except Exception as e:
+            messages.error(request, f'Error saving pre-test: {str(e)}')
+            return render(request, 'student/pre_test_on_register.html')
+    
+    # GET request - show pre-test form
+    return render(request, 'student/pre_test_on_register.html')
 
 def resetPassword(request):
     return render(request, 'reset_password.html')

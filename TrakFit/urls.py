@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('register/', views.register, name='register'),
+    path('register/pre-test/', views.pre_test_register, name='pre-test-register'),
     #path('reset-password/', views.resetPassword, name='resetPassword'),
     #path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('enter-code/', views.enter_code, name='enter_code'),

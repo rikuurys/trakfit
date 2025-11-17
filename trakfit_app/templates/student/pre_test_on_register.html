@@ -1,0 +1,1121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrakFit - Pre-Test (Optional)</title>
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Albert+Sans:wght@400;600&family=Atkinson+Hyperlegible:wght@400&family=Rajdhani:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+      :root {
+        --primary-color: #3a7ca5;
+        --light-blue: #9ec5e5;
+        --dark-text: #2c3e50;
+        --light-bg: #fafafa;
+        --input-bg: #f3f3f3;
+      }
+
+      body {
+        font-family: "Sarabun", sans-serif;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      .brand-font {
+        font-family: "Rajdhani", sans-serif;
+      }
+
+      .split-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      .left-side {
+        background-color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        padding: 2rem;
+      }
+
+      .right-side {
+        background-color: var(--light-bg);
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 2rem;
+        position: relative;
+      }
+
+      .skip-btn {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        background: transparent;
+        border: 2px solid var(--primary-color);
+        border-radius: 2.5rem;
+        color: var(--primary-color);
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 0.5rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+      }
+
+      .skip-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .welcome-text {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        color: var(--dark-text);
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .form-control-custom {
+        background-color: var(--input-bg);
+        border: 1px solid #a2c4d9;
+        border-radius: 1.25rem;
+        height: 3.125rem;
+        padding: 0 1.25rem;
+        font-size: 1.125rem;
+        width: 100%;
+      }
+
+      .form-control-custom::placeholder {
+        color: rgba(44, 62, 80, 0.5);
+      }
+
+      .form-control-custom:disabled {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+      }
+
+      .btn-continue {
+        background-color: var(--primary-color);
+        border: none;
+        border-radius: 2.5rem;
+        height: 3.125rem;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+
+      .btn-continue:hover {
+        background-color: #2c5f7a;
+      }
+
+      .btn-continue:disabled {
+        background-color: #6c757d;
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .back-link {
+        color: var(--primary-color);
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .back-link:hover {
+        color: #2c5f7a;
+        text-decoration: underline;
+      }
+
+      .form-label-custom {
+        color: rgba(44, 62, 80, 0.7);
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.375rem;
+        padding-left: 0.25rem;
+      }
+
+      .brand-logo {
+        width: 5rem;
+        height: 5rem;
+      }
+
+      .brand-name {
+        color: var(--primary-color);
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      .brand-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2rem;
+      }
+
+      .form-content-container {
+        max-width: 37.5rem;
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 1rem;
+      }
+
+      .step-indicator {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .step-dot {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        background-color: #D9D9D9;
+        transition: all 0.3s ease;
+      }
+
+      .step-dot.active {
+        background-color: var(--primary-color);
+        transform: scale(1.2);
+      }
+
+      .step-dot.completed {
+        background-color: var(--primary-color);
+        opacity: 0.6;
+      }
+
+      .step-content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .form-row {
+        display: flex;
+        gap: 1rem;
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+
+      .form-group {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-full-width {
+        flex: 0 0 100%;
+      }
+
+      .form-half {
+        flex: 1;
+      }
+
+      .unit-badge {
+        background: var(--light-blue);
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 15px;
+        padding: 6px 14px;
+        color: black;
+        font-size: 1rem;
+        font-family: "Sarabun", sans-serif;
+        font-weight: 800;
+        display: inline-block;
+        margin-top: 0.5rem;
+      }
+
+      .input-with-unit {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .input-with-unit .form-control-custom {
+        flex: 1;
+      }
+
+      .form-control-custom.invalid {
+        border-color: #dc3545 !important;
+        border-width: 2px;
+      }
+
+      .form-control-custom.valid {
+        border-color: #28a745 !important;
+      }
+
+      .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        font-family: "Sarabun", sans-serif;
+        margin-top: 0.5rem;
+        padding-left: 0.25rem;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      .left-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+
+      /* Mobile layout */
+      @media (max-width: 992px) {
+        .split-container {
+          flex-direction: column;
+          height: auto;
+          min-height: 100vh;
+        }
+
+        .left-side {
+          min-height: 30vh;
+          padding: 1rem;
+        }
+
+        .right-side {
+          min-height: 70vh;
+          padding: 1rem;
+        }
+
+        .skip-btn {
+          top: 1rem;
+          right: 1rem;
+          font-size: 0.875rem;
+          padding: 0.375rem 1rem;
+        }
+
+        .form-row {
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .welcome-text {
+          font-size: 2rem;
+        }
+
+        .brand-name {
+          font-size: 1.5rem;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .brand-header {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .brand-logo {
+          margin-bottom: 0.5rem;
+        }
+
+        .welcome-text {
+          font-size: 1.8rem;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="split-container">
+      <!-- Left Side (Blue Background) -->
+      <div class="left-side">
+        <img
+          src="{% static 'decor.png' %}"
+          alt="TrakFit Illustration"
+          class="left-image"
+        />
+      </div>
+
+      <!-- Right Side (White Background) -->
+      <div class="right-side">
+        <!-- Skip Button (Top Right) -->
+        <button class="skip-btn" onclick="skipPreTest()">Skip for Now</button>
+
+        <div class="brand-header">
+          <div class="brand-logo me-3">
+            <img
+              src="{% static 'logo-noname-transparent.png' %}"
+              alt="Logo"
+              style="width: 100%; height: 100%; object-fit: contain;"
+            />
+          </div>
+          <div class="brand-name brand-font">TrakFit</div>
+        </div>
+
+        <!-- Step 4a: Body Metrics -->
+        <div class="form-content-container" id="step4a">
+          <div class="step-indicator">
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+          </div>
+
+          <div class="step-content">
+            <h1 class="welcome-text">Body Metrics</h1>
+            <p class="subtitle">
+              Let's start with your height, weight, and BMI
+            </p>
+
+            <form class="w-100" id="form-step4a">
+              <!-- Height -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <label class="form-label-custom">Height</label>
+                  <div class="input-with-unit">
+                    <input
+                      type="text"
+                      class="form-control-custom"
+                      id="height_cm"
+                      name="height_cm"
+                      placeholder="Enter height"
+                    />
+                    <span class="unit-badge">cm</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Weight -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <label class="form-label-custom">Weight</label>
+                  <div class="input-with-unit">
+                    <input
+                      type="text"
+                      class="form-control-custom"
+                      id="weight_kg"
+                      name="weight_kg"
+                      placeholder="Enter weight"
+                    />
+                    <span class="unit-badge">kg</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BMI (Auto-calculated) -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <label class="form-label-custom">BMI (Body Mass Index)</label>
+                  <input
+                    type="text"
+                    class="form-control-custom"
+                    id="bmi"
+                    placeholder="Auto-calculated"
+                    disabled
+                  />
+                </div>
+              </div>
+
+              <!-- Continue Button -->
+              <div class="form-row mt-4">
+                <button type="submit" class="btn-continue" disabled>
+                  Continue
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Step 4b: VO2 Max -->
+        <div class="form-content-container" id="step4b" style="display: none;">
+          <div class="step-indicator">
+            <div class="step-dot completed"></div>
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+          </div>
+
+          <div class="step-content">
+            <h1 class="welcome-text">VO₂ Max Test</h1>
+            <p class="subtitle">
+              Cooper 12-minute run test
+            </p>
+
+            <form class="w-100" id="form-step4b">
+              <!-- Distance Covered -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <label class="form-label-custom">Distance Covered (Cooper 12-min)</label>
+                  <div class="input-with-unit">
+                    <input
+                      type="text"
+                      class="form-control-custom"
+                      id="vo2_distance_m"
+                      name="vo2_distance_m"
+                      placeholder="Enter distance"
+                    />
+                    <span class="unit-badge">m</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VO2 Max (Auto-calculated) -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <label class="form-label-custom">VO₂ Max (Computed)</label>
+                  <input
+                    type="text"
+                    class="form-control-custom"
+                    id="vo2_max"
+                    placeholder="Auto-calculated"
+                    disabled
+                  />
+                </div>
+              </div>
+
+              <!-- Continue Button -->
+              <div class="form-row mt-4">
+                <button type="submit" class="btn-continue" disabled>
+                  Continue
+                </button>
+              </div>
+
+              <!-- Back Link -->
+              <div class="text-center mt-3">
+                <a class="back-link" onclick="goBack('4a')">← Go Back</a>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Step 4c: Fitness Profile -->
+        <div class="form-content-container" id="step4c" style="display: none;">
+          <div class="step-indicator">
+            <div class="step-dot completed"></div>
+            <div class="step-dot completed"></div>
+            <div class="step-dot active"></div>
+          </div>
+
+          <div class="step-content">
+            <h1 class="welcome-text">Fitness Profile</h1>
+            <p class="subtitle">
+              Complete your pre-test assessment
+            </p>
+
+            <form class="w-100" method="POST" action="{% url 'pre-test-register' %}" id="form-step4c">
+              {% csrf_token %}
+
+              <!-- Hidden fields from registration (Steps 1-3) -->
+              <input type="hidden" name="first_name" id="hidden_first_name" />
+              <input type="hidden" name="last_name" id="hidden_last_name" />
+              <input type="hidden" name="birthday" id="hidden_birthday" />
+              <input type="hidden" name="gender" id="hidden_gender" />
+              <input type="hidden" name="student_no" id="hidden_student_no" />
+              <input type="hidden" name="section_code" id="hidden_section_code" />
+              <input type="hidden" name="group_code" id="hidden_group_code" />
+              <input type="hidden" name="email" id="hidden_email" />
+              <input type="hidden" name="password" id="hidden_password" />
+
+              <!-- Hidden fields from Step 4a -->
+              <input type="hidden" name="height_cm" id="hidden_height_cm" />
+              <input type="hidden" name="weight_kg" id="hidden_weight_kg" />
+
+              <!-- Hidden fields from Step 4b -->
+              <input type="hidden" name="vo2_distance_m" id="hidden_vo2_distance_m" />
+
+              <!-- Flexibility -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <label class="form-label-custom">Flexibility (Sit & Reach)</label>
+                  <div class="input-with-unit">
+                    <input
+                      type="text"
+                      class="form-control-custom"
+                      id="flexibility_cm"
+                      name="flexibility_cm"
+                      placeholder="Enter flexibility"
+                    />
+                    <span class="unit-badge">cm</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Strength -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <label class="form-label-custom">Strength (Push-ups)</label>
+                  <div class="input-with-unit">
+                    <input
+                      type="text"
+                      class="form-control-custom"
+                      id="strength_reps"
+                      name="strength_reps"
+                      placeholder="Enter repetitions"
+                    />
+                    <span class="unit-badge">reps</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Agility -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <label class="form-label-custom">Agility</label>
+                  <div class="input-with-unit">
+                    <input
+                      type="text"
+                      class="form-control-custom"
+                      id="agility_sec"
+                      name="agility_sec"
+                      placeholder="Enter time"
+                    />
+                    <span class="unit-badge">sec</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Speed -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <label class="form-label-custom">Speed (40m Sprint)</label>
+                  <div class="input-with-unit">
+                    <input
+                      type="text"
+                      class="form-control-custom"
+                      id="speed_sec"
+                      name="speed_sec"
+                      placeholder="Enter time"
+                    />
+                    <span class="unit-badge">sec</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Endurance -->
+              <div class="form-row">
+                <div class="form-group form-full-width">
+                  <label class="form-label-custom">Endurance (1.5km Run)</label>
+                  <div class="input-with-unit">
+                    <input
+                      type="text"
+                      class="form-control-custom"
+                      id="endurance_time"
+                      name="endurance_time"
+                      placeholder="mm:ss"
+                    />
+                    <span class="unit-badge">mm:ss</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="form-row mt-4">
+                <button type="submit" class="btn-continue" disabled>
+                  Complete Registration
+                </button>
+              </div>
+
+              <!-- Back Link -->
+              <div class="text-center mt-3">
+                <a class="back-link" onclick="goBack('4b')">← Go Back</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Get registration data from session storage
+      document.addEventListener('DOMContentLoaded', function() {
+        // Load registration data into hidden fields
+        const regData = JSON.parse(sessionStorage.getItem('registrationData') || '{}');
+        
+        if (regData.first_name) {
+          document.getElementById('hidden_first_name').value = regData.first_name;
+          document.getElementById('hidden_last_name').value = regData.last_name;
+          document.getElementById('hidden_birthday').value = regData.birthday;
+          document.getElementById('hidden_gender').value = regData.gender;
+          document.getElementById('hidden_student_no').value = regData.student_no;
+          document.getElementById('hidden_section_code').value = regData.section_code;
+          document.getElementById('hidden_group_code').value = regData.group_code;
+          document.getElementById('hidden_email').value = regData.email;
+          document.getElementById('hidden_password').value = regData.password;
+        }
+      });
+
+      // Skip pre-test function
+      function skipPreTest() {
+        // Submit registration without pre-test data
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{% url 'pre-test-register' %}";
+        
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+
+        // Add skip flag
+        const skipInput = document.createElement('input');
+        skipInput.type = 'hidden';
+        skipInput.name = 'skip_pretest';
+        skipInput.value = 'true';
+        form.appendChild(skipInput);
+
+        // Add registration data
+        const regData = JSON.parse(sessionStorage.getItem('registrationData') || '{}');
+        for (const [key, value] of Object.entries(regData)) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value;
+          form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+      }
+
+      // Multi-step form logic
+      function showStep(stepId) {
+        document.getElementById('step4a').style.display = 'none';
+        document.getElementById('step4b').style.display = 'none';
+        document.getElementById('step4c').style.display = 'none';
+        document.getElementById('step' + stepId).style.display = 'flex';
+      }
+
+      function goBack(stepId) {
+        showStep(stepId);
+      }
+
+      // ===== VALIDATION UTILITY FUNCTIONS =====
+      
+      function createErrorElement(input, errorId) {
+        let errorEl = document.getElementById(errorId);
+        if (!errorEl) {
+          errorEl = document.createElement('div');
+          errorEl.id = errorId;
+          errorEl.className = 'error-message';
+          // Find the form-group parent and append error message at the end
+          const formGroup = input.closest('.form-group');
+          if (formGroup) {
+            formGroup.appendChild(errorEl);
+          } else {
+            input.parentNode.appendChild(errorEl);
+          }
+        }
+        return errorEl;
+      }
+
+      function showError(input, message) {
+        input.classList.remove('valid');
+        input.classList.add('invalid');
+        const errorId = input.id + '_error';
+        const errorEl = createErrorElement(input, errorId);
+        errorEl.textContent = message;
+        errorEl.classList.add('show');
+      }
+
+      function showValid(input) {
+        input.classList.remove('invalid');
+        input.classList.add('valid');
+        const errorId = input.id + '_error';
+        const errorEl = document.getElementById(errorId);
+        if (errorEl) {
+          errorEl.classList.remove('show');
+        }
+      }
+
+      function clearValidation(input) {
+        input.classList.remove('invalid', 'valid');
+        const errorId = input.id + '_error';
+        const errorEl = document.getElementById(errorId);
+        if (errorEl) {
+          errorEl.classList.remove('show');
+        }
+      }
+
+      function validateNumeric(input, min, max, allowNegative = false, decimals = 2) {
+        const value = input.value.trim();
+        
+        if (value === '') {
+          showError(input, 'This field is required');
+          return false;
+        }
+
+        const num = parseFloat(value);
+        
+        if (isNaN(num)) {
+          showError(input, 'Please enter a valid number');
+          return false;
+        }
+
+        if (!allowNegative && num < 0) {
+          showError(input, 'Value cannot be negative');
+          return false;
+        }
+
+        if (num < min || num > max) {
+          showError(input, `Value must be between ${min} and ${max}`);
+          return false;
+        }
+
+        showValid(input);
+        return true;
+      }
+
+      function validateInteger(input, min, max) {
+        const value = input.value.trim();
+        
+        if (value === '') {
+          showError(input, 'This field is required');
+          return false;
+        }
+
+        const num = parseInt(value);
+        
+        if (isNaN(num) || value.includes('.')) {
+          showError(input, 'Please enter a whole number');
+          return false;
+        }
+
+        if (num < min || num > max) {
+          showError(input, `Value must be between ${min} and ${max}`);
+          return false;
+        }
+
+        showValid(input);
+        return true;
+      }
+
+      function validateTimeFormat(input) {
+        const value = input.value.trim();
+        
+        if (value === '') {
+          showError(input, 'This field is required');
+          return false;
+        }
+
+        const timePattern = /^(\d{1,2}):([0-5]\d)$/;
+        const match = value.match(timePattern);
+
+        if (!match) {
+          showError(input, 'Format must be mm:ss (e.g., 8:30)');
+          return false;
+        }
+
+        const minutes = parseInt(match[1]);
+        const seconds = parseInt(match[2]);
+
+        if (minutes < 4 || minutes > 30) {
+          showError(input, 'Time must be between 4:00 and 30:00');
+          return false;
+        }
+
+        if (minutes === 4 && seconds === 0) {
+          // Allow exactly 4:00
+        } else if (minutes < 4) {
+          showError(input, 'Time must be at least 4:00');
+          return false;
+        }
+
+        showValid(input);
+        return true;
+      }
+
+      function autoRoundDecimal(input, decimals) {
+        const value = parseFloat(input.value);
+        if (!isNaN(value)) {
+          input.value = value.toFixed(decimals);
+        }
+      }
+
+      function filterNumericInput(e, allowDecimal = true, allowNegative = false) {
+        const char = e.key;
+        const value = e.target.value;
+        const selectionStart = e.target.selectionStart;
+
+        // Allow control keys
+        if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(char)) {
+          return true;
+        }
+
+        // Allow Ctrl/Cmd shortcuts
+        if (e.ctrlKey || e.metaKey) {
+          return true;
+        }
+
+        // Allow negative sign only at the start
+        if (allowNegative && char === '-' && selectionStart === 0 && !value.includes('-')) {
+          return true;
+        }
+
+        // Allow decimal point
+        if (allowDecimal && char === '.' && !value.includes('.')) {
+          return true;
+        }
+
+        // Allow digits
+        if (/^\d$/.test(char)) {
+          return true;
+        }
+
+        e.preventDefault();
+        return false;
+      }
+
+      function filterTimeInput(e) {
+        const char = e.key;
+        const value = e.target.value;
+
+        // Allow control keys
+        if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(char)) {
+          return true;
+        }
+
+        // Allow Ctrl/Cmd shortcuts
+        if (e.ctrlKey || e.metaKey) {
+          return true;
+        }
+
+        // Allow colon
+        if (char === ':' && !value.includes(':')) {
+          return true;
+        }
+
+        // Allow digits
+        if (/^\d$/.test(char)) {
+          return true;
+        }
+
+        e.preventDefault();
+        return false;
+      }
+
+      // Auto-calculate BMI
+      function calculateBMI() {
+        const heightInput = document.getElementById('height_cm');
+        const weightInput = document.getElementById('weight_kg');
+        const bmiInput = document.getElementById('bmi');
+
+        const height = parseFloat(heightInput.value);
+        const weight = parseFloat(weightInput.value);
+
+        if (!isNaN(height) && !isNaN(weight) && height > 0) {
+          const heightM = height / 100;
+          const bmi = weight / (heightM * heightM);
+          bmiInput.value = bmi.toFixed(2);
+        } else {
+          bmiInput.value = '';
+        }
+      }
+
+      // Auto-calculate VO2 Max
+      function calculateVO2Max() {
+        const distanceInput = document.getElementById('vo2_distance_m');
+        const vo2MaxInput = document.getElementById('vo2_max');
+
+        const distance = parseFloat(distanceInput.value);
+
+        if (!isNaN(distance) && distance > 0) {
+          const vo2Max = (distance - 504.9) / 44.73;
+          vo2MaxInput.value = vo2Max.toFixed(2);
+        } else {
+          vo2MaxInput.value = '';
+        }
+      }
+
+      // ===== STEP 4a: BODY METRICS =====
+      const heightInput = document.getElementById('height_cm');
+      const weightInput = document.getElementById('weight_kg');
+      const step4aBtn = document.querySelector('#form-step4a .btn-continue');
+
+      function checkStep4aValidity() {
+        const heightValid = validateNumeric(heightInput, 100, 250, false, 1);
+        const weightValid = validateNumeric(weightInput, 30, 200, false, 1);
+        
+        if (heightValid && weightValid) {
+          step4aBtn.disabled = false;
+        } else {
+          step4aBtn.disabled = true;
+        }
+      }
+
+      heightInput.addEventListener('input', function() {
+        calculateBMI();
+        checkStep4aValidity();
+      });
+
+      heightInput.addEventListener('blur', function() {
+        autoRoundDecimal(this, 1);
+        calculateBMI();
+      });
+
+      heightInput.addEventListener('keydown', function(e) {
+        filterNumericInput(e, true, false);
+      });
+
+      weightInput.addEventListener('input', function() {
+        calculateBMI();
+        checkStep4aValidity();
+      });
+
+      weightInput.addEventListener('blur', function() {
+        autoRoundDecimal(this, 1);
+        calculateBMI();
+      });
+
+      weightInput.addEventListener('keydown', function(e) {
+        filterNumericInput(e, true, false);
+      });
+
+      document.getElementById('form-step4a').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!step4aBtn.disabled) {
+          // Save data to hidden fields in step 4c
+          document.getElementById('hidden_height_cm').value = heightInput.value;
+          document.getElementById('hidden_weight_kg').value = weightInput.value;
+          
+          showStep('4b');
+        }
+      });
+
+      // ===== STEP 4b: VO2 MAX =====
+      const distanceInput = document.getElementById('vo2_distance_m');
+      const step4bBtn = document.querySelector('#form-step4b .btn-continue');
+
+      function checkStep4bValidity() {
+        const distanceValid = validateNumeric(distanceInput, 500, 5000, false, 1);
+        
+        if (distanceValid) {
+          step4bBtn.disabled = false;
+        } else {
+          step4bBtn.disabled = true;
+        }
+      }
+
+      distanceInput.addEventListener('input', function() {
+        calculateVO2Max();
+        checkStep4bValidity();
+      });
+
+      distanceInput.addEventListener('blur', function() {
+        autoRoundDecimal(this, 1);
+        calculateVO2Max();
+      });
+
+      distanceInput.addEventListener('keydown', function(e) {
+        filterNumericInput(e, true, false);
+      });
+
+      document.getElementById('form-step4b').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!step4bBtn.disabled) {
+          // Save data to hidden fields in step 4c
+          document.getElementById('hidden_vo2_distance_m').value = distanceInput.value;
+          
+          showStep('4c');
+        }
+      });
+
+      // ===== STEP 4c: FITNESS PROFILE =====
+      const flexibilityInput = document.getElementById('flexibility_cm');
+      const strengthInput = document.getElementById('strength_reps');
+      const agilityInput = document.getElementById('agility_sec');
+      const speedInput = document.getElementById('speed_sec');
+      const enduranceInput = document.getElementById('endurance_time');
+      const step4cBtn = document.querySelector('#form-step4c .btn-continue');
+
+      function checkStep4cValidity() {
+        const flexibilityValid = validateNumeric(flexibilityInput, -20, 50, true, 1);
+        const strengthValid = validateInteger(strengthInput, 0, 200);
+        const agilityValid = validateNumeric(agilityInput, 5, 60, false, 2);
+        const speedValid = validateNumeric(speedInput, 4, 20, false, 2);
+        const enduranceValid = validateTimeFormat(enduranceInput);
+        
+        if (flexibilityValid && strengthValid && agilityValid && speedValid && enduranceValid) {
+          step4cBtn.disabled = false;
+        } else {
+          step4cBtn.disabled = true;
+        }
+      }
+
+      // Flexibility validation
+      flexibilityInput.addEventListener('input', checkStep4cValidity);
+      flexibilityInput.addEventListener('blur', function() {
+        autoRoundDecimal(this, 1);
+      });
+      flexibilityInput.addEventListener('keydown', function(e) {
+        filterNumericInput(e, true, true);
+      });
+
+      // Strength validation
+      strengthInput.addEventListener('input', checkStep4cValidity);
+      strengthInput.addEventListener('keydown', function(e) {
+        filterNumericInput(e, false, false);
+      });
+
+      // Agility validation
+      agilityInput.addEventListener('input', checkStep4cValidity);
+      agilityInput.addEventListener('blur', function() {
+        autoRoundDecimal(this, 2);
+      });
+      agilityInput.addEventListener('keydown', function(e) {
+        filterNumericInput(e, true, false);
+      });
+
+      // Speed validation
+      speedInput.addEventListener('input', checkStep4cValidity);
+      speedInput.addEventListener('blur', function() {
+        autoRoundDecimal(this, 2);
+      });
+      speedInput.addEventListener('keydown', function(e) {
+        filterNumericInput(e, true, false);
+      });
+
+      // Endurance validation
+      enduranceInput.addEventListener('input', checkStep4cValidity);
+      enduranceInput.addEventListener('keydown', function(e) {
+        filterTimeInput(e);
+      });
+
+      // Form submission validation
+      document.getElementById('form-step4c').addEventListener('submit', function(e) {
+        if (step4cBtn.disabled) {
+          e.preventDefault();
+          alert('Please fill in all fields correctly before submitting.');
+        }
+      });
+    </script>
+  </body>
+</html>
