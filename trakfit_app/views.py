@@ -455,6 +455,79 @@ def student_post_test_view(request):
     return render(request, 'student/post_test.html', context)
 
 @login_required
+def update_test_view(request, test_id):
+    """
+    View to update an existing fitness test (post-tests only).
+    """
+    from .models import FitnessTest
+    from django.utils import timezone
+    
+    student = request.user.student_profile
+    
+    # Get the test and verify ownership
+    try:
+        test = FitnessTest.objects.get(test_id=test_id)
+    except FitnessTest.DoesNotExist:
+        messages.error(request, "Test not found.")
+        return redirect('student-history')
+
+    # Verify the test belongs to the logged-in student
+    if test.student != student:
+        messages.error(request, "You do not have permission to edit this test.")
+        return redirect('student-history')
+
+    # Only allow editing post-tests
+    if test.test_type != 'post':
+        messages.error(request, "Only post-tests can be edited.")
+        return redirect('student-history')
+
+    if request.method == 'POST':
+        # Parse form data
+        height_cm = request.POST.get('height_cm')
+        weight_kg = request.POST.get('weight_kg')
+        vo2_distance_m = request.POST.get('vo2_distance_m')
+        flexibility_cm = request.POST.get('flexibility_cm')
+        strength_reps = request.POST.get('strength_reps')
+        agility_sec = request.POST.get('agility_sec')
+        speed_sec = request.POST.get('speed_sec')
+        endurance_time = request.POST.get('endurance_time')
+        
+        try:
+            # Update test fields
+            test.height_cm = height_cm if height_cm else None
+            test.weight_kg = weight_kg if weight_kg else None
+            test.vo2_distance_m = vo2_distance_m if vo2_distance_m else None
+            test.flexibility_cm = flexibility_cm if flexibility_cm else None
+            test.strength_reps = int(strength_reps) if strength_reps else None
+            test.agility_sec = agility_sec if agility_sec else None
+            test.speed_sec = speed_sec if speed_sec else None
+            
+            # Update endurance time
+            if endurance_time:
+                test.set_endurance_from_string(endurance_time)
+            
+            # Save (updated_at will be automatically updated by Django)
+            test.save()
+
+            messages.success(request, "Test record updated successfully!")
+            return redirect('student-history')
+
+        except Exception as e:
+            messages.error(request, f"Error updating test: {str(e)}")
+
+    # GET request - get pre-test for comparison
+    pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    
+    # Render the form with existing values
+    context = {
+        'student': student,
+        'test': test,
+        'pre_test': pre_test,
+        'full_name': f"{student.first_name} {student.last_name}",
+    }
+    return render(request, 'student/update_test.html', context)
+
+@login_required
 def teacher_dashboard(request):
     return render(request, 'teacher-dashboard.html')
 

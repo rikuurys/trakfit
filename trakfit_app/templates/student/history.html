@@ -404,10 +404,38 @@
       .test-details-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         margin-bottom: 1rem;
         flex-shrink: 0;
         gap: 1rem;
+      }
+
+      .test-header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .edit-btn {
+        background: var(--light-blue);
+        color: var(--text-dark);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .edit-btn:hover {
+        background: #87B9D1;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
 
       .test-details-title {
@@ -899,11 +927,21 @@
           remarksHTML = '<div style="text-align: center; color: var(--text-light); padding: 1rem; font-style: italic;">No remarks given yet</div>';
         }
 
+        // Build edit button HTML (only for post-tests)
+        const editButtonHTML = test.test_type_key === 'post'
+          ? `<a href="/student/test/update/${test.test_id}/" class="edit-btn">
+               <i class="fa-solid fa-pencil"></i> Edit
+             </a>`
+          : '';
+
         // Render the test details
         panel.innerHTML = `
           <div class="test-details-content">
             <div class="test-details-header">
-              <h2 class="test-details-title">${test.test_type} Results #${test.test_id}</h2>
+              <div class="test-header-left">
+                <h2 class="test-details-title">${test.test_type} Results #${test.test_id}</h2>
+                ${editButtonHTML}
+              </div>
               <div class="test-details-meta">
                 <div><strong>Taken at:</strong> ${test.taken_at}</div>
                 <div class="updated-at"><strong>Updated at:</strong> ${test.updated_at}</div>
