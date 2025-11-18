@@ -439,6 +439,7 @@
             min-height: 0;
             padding: 0.5rem;
             flex-wrap: wrap;
+            overflow: visible;
         }
 
         .chart-card {
@@ -450,8 +451,8 @@
             flex-direction: column;
             align-items: center;
             width: 8vw;
-            height: 40vh;
-            overflow: hidden;
+            height: 35vh;
+            overflow: visible;
         }
 
         .chart-card-title {
@@ -471,6 +472,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: visible;
         }
 
         .chart-card-canvas canvas {
@@ -976,8 +978,8 @@
                             <div class="stat-label">Average BMI Change</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">42<span class="stat-unit">ml/kg/min</span></div>
-                            <div class="stat-label">Average VO₂ Max</div>
+                            <div class="stat-number">42</div>
+                            <div class="stat-label">Average VO₂ Max (Post-Test)</div>
                         </div>
                     </div>
 
@@ -1160,7 +1162,7 @@
                 <div class="sidebar-right">
                     <!-- BMI Distribution Card -->
                     <div class="sidebar-card" style="flex-shrink: 0;">
-                        <h4 class="section-title">BMI Category Distribution</h4>
+                        <h4 class="section-title">BMI Category Distribution (Post-Test)</h4>
                         <div class="bmi-chart-container">
                             <canvas id="bmiChart"></canvas>
                         </div>
@@ -1316,7 +1318,7 @@
                     display: true,
                     position: 'bottom',
                     labels: {
-                        boxWidth: 12,
+                        boxWidth: 20,
                         padding: 8,
                         font: {
                             size: 10
@@ -1341,7 +1343,7 @@
                     beginAtZero: true,
                     ticks: {
                         font: {
-                            size: 10
+                            size: 8
                         }
                     },
                     grid: {
