@@ -916,13 +916,14 @@
 
         // Build remarks HTML
         let remarksHTML = '';
-        if (test.remarks && test.remarks.length > 0) {
-          remarksHTML = test.remarks.map(remark =>
-            `<div style="margin-bottom: 1rem; padding: 0.75rem; background: #f9fafb; border-radius: 8px;">
-              <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">${remark.created_at}</div>
-              <div style="font-size: 0.85rem; color: var(--text-dark);">${remark.body}</div>
-            </div>`
-          ).join('');
+        if (test.remarks) {
+          let timestampHTML = test.remarksCreated 
+            ? `<div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">${test.remarksCreated}</div>` 
+            : '';
+          remarksHTML = `<div style="margin-bottom: 1rem; padding: 0.75rem; background: #f9fafb; border-radius: 8px;">
+            ${timestampHTML}
+            <div style="font-size: 0.85rem; color: var(--text-dark);">${test.remarks}</div>
+          </div>`;
         } else {
           remarksHTML = '<div style="text-align: center; color: var(--text-light); padding: 1rem; font-style: italic;">No remarks given yet</div>';
         }

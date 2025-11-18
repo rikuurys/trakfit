@@ -161,6 +161,8 @@ class FitnessTest(models.Model):
     taken_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    remarks = models.TextField(null=True, blank=True)
+    remarksCreated= models.DateTimeField(blank=True, null=True)
     
     class Meta:
         db_table = 'fitness_tests'
@@ -208,26 +210,26 @@ class FitnessTest(models.Model):
         return f"{self.student.student_no} - {self.test_type} ({self.taken_at})"
 
 
-class Remark(models.Model):
-    """Remarks/feedback for students on their fitness tests."""
-    
-    student = models.ForeignKey(
-        Student,
-        on_delete=models.CASCADE,
-        db_column='student_id',
-        related_name='remarks'
-    )
-    test = models.ForeignKey(
-        FitnessTest,
-        on_delete=models.CASCADE,
-        db_column='test_id',
-        related_name='remarks'
-    )
-    body = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        db_table = 'remarks'
-    
-    def __str__(self):
-        return f"Remark for {self.student.student_no} on test {self.test.test_id}"
+# class Remark(models.Model):
+#     """Remarks/feedback for students on their fitness tests."""
+#
+#     student = models.ForeignKey(
+#         Student,
+#         on_delete=models.CASCADE,
+#         db_column='student_id',
+#         related_name='remarks'
+#     )
+#     test = models.ForeignKey(
+#         FitnessTest,
+#         on_delete=models.CASCADE,
+#         db_column='test_id',
+#         related_name='remarks'
+#     )
+#     body = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+#
+#     class Meta:
+#         db_table = 'remarks'
+#
+#     def __str__(self):
+#         return f"Remark for {self.student.student_no} on test {self.test.test_id}"
