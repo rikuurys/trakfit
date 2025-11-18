@@ -14,16 +14,17 @@
             --primary-blue: #4A90A4;
             --sidebar-blue: #3A7CA5;
             --light-blue: #C1DBF0;
-            --card-bg: #FFFFFF;
+            --card-bg: #F3F3F3;
             --text-dark: #2C3E50;
             --text-light: #7F8C8D;
             --border-color: #E5E7EB;
         }
 
         html, body {
-            margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #FAFAFA;
+            margin: 0;
+            padding: 0;
             width: 100vw;
             height: 100vh;
             overflow: hidden;
@@ -171,16 +172,69 @@
             font-size: clamp(1rem, 1.2vw, 1.2rem);
         }
 
-        .user-avatar {
-            width: clamp(40px, 3.5vw, 60px);
-            height: clamp(40px, 3.5vw, 60px);
-            background: #D9D9D9;
-            border-radius: 50%;
+        .user-avatar-container {
+            position: relative;
+        }
+
+      .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 180px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            padding: 8px 0;
+        }
+
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            justify-content: space-between;
             cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .dropdown-item:hover {
+            background-color: #F9FAFB;
+        }
+
+        .logout-item {
+            color: #6B7280;
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-item:hover {
+            background-color: #F9FAFB;
         }
 
         .profile-image {
@@ -232,6 +286,7 @@
         .profile-overview-container {
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 1rem;
             flex: 1;
             height: 100%;
@@ -247,6 +302,7 @@
             align-items: center;
             gap: 1.5rem;
             flex-shrink: 0;
+            width: 60%;
         }
 
         .student-avatar-large {
@@ -306,28 +362,52 @@
         .chart-container {
             background: var(--card-bg);
             border-radius: 20px;
-            padding: 1.5rem;
+            padding: 1rem 1.5rem;
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
-            flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
             overflow: hidden;
+            height: 80%;
         }
 
-        .chart-title {
-            text-align: center;
-            font-size: clamp(0.9rem, 1.1vw, 1.2rem);
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-            flex-shrink: 0;
-        }
-
-        .chart-canvas {
-            position: relative;
+        .charts-grid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
             flex: 1;
             min-height: 0;
+            padding: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .chart-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 10vw;
+            height: 45vh;
+            overflow: hidden;
+        }
+
+        .chart-card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+
+        .chart-card-canvas {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+            width: 8vw;
         }
 
         .test-history-container {
@@ -396,6 +476,26 @@
             color: var(--text-dark);
             font-weight: 500;
         }
+
+        .test-details-meta {
+        text-align: right;
+        font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+        color: var(--text-dark);
+        line-height: 1.5;
+      }
+
+      .test-details-meta div {
+        margin-bottom: 0.25rem;
+      }
+
+      .test-details-meta div:last-child {
+        margin-bottom: 0;
+      }
+
+      .test-details-meta .updated-at {
+        font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+        color: #6b7280;
+      }
 
         .view-button {
             background: white;
@@ -637,7 +737,13 @@
     <div class="dashboard-container">
         <div class="sidebar">
             <div class="brand-section">
-                <div class="brand-logo"></div>
+                <div class="brand-logo">
+                    <img
+                    src="{% static 'logo-noname-circle.png' %}"
+                    alt="Logo"
+                    style="width: 100%; height: 100%; object-fit: contain;"
+                    />
+                </div>
                 <span class="brand-name">TrakFit</span>
             </div>
             
@@ -664,11 +770,16 @@
                     <h1 class="page-title">Student Profile</h1>
                 </div>
                 <div class="user-section">
-                    <div class="notification-icon">
-                        <i class="fa-regular fa-bell"></i>
-                    </div>
-                    <div class="user-avatar">
-                        <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
+                    <div class="user-avatar-container">
+                        <div class="user-avatar" onclick="toggleProfileDropdown()">
+                            <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
+                        </div>
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="dropdown-item logout-item" onclick="logout()">
+                                <span>Logout ></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -707,8 +818,49 @@
 
                     <div class="chart-container">
                         <h3 class="chart-title">Fitness Component Comparison (Pre-Test vs Latest Post-Test)</h3>
-                        <div class="chart-canvas">
-                            <canvas id="fitnessComparisonChart"></canvas>
+                        <div class="charts-grid">
+                            <div class="chart-card">
+                                <div class="chart-card-title">Body Mass Index (BMI)</div>
+                                <div class="chart-card-canvas">
+                                    <canvas id="bmiChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-card-title">VO₂ Max</div>
+                                <div class="chart-card-canvas">
+                                    <canvas id="vo2Chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-card-title">Flexibility (Sit & Reach)</div>
+                                <div class="chart-card-canvas">
+                                    <canvas id="flexibilityChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-card-title">Strength (Push-ups)</div>
+                                <div class="chart-card-canvas">
+                                    <canvas id="strengthChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-card-title">Agility (Hexagon)</div>
+                                <div class="chart-card-canvas">
+                                    <canvas id="agilityChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-card-title">Speed (40m Sprint)</div>
+                                <div class="chart-card-canvas">
+                                    <canvas id="speedChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-card-title">Endurance (1.5km)</div>
+                                <div class="chart-card-canvas">
+                                    <canvas id="enduranceChart"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -820,7 +972,7 @@
             // Helper function to format value or show N/A
             const formatValue = (value, unit = '') => {
               if (value === null || value === undefined) return 'N/A';
-              const formattedValue = typeof value === 'number' ? value.toFixed(2) : value;
+              const formattedValue = typeof value === 'number' ? (Math.round(value * 100) / 100).toFixed(2) : value;
               return `${formattedValue}${unit ? ' ' + unit : ''}`;
             };
 
@@ -842,18 +994,24 @@
 
               // For metrics where lower is better (BMI, agility, speed), flip the logic
               const isImprovement = lowerIsBetter ? diff < 0 : diff > 0;
-              return { value: Math.abs(diff).toFixed(1), isPositive: isImprovement };
+              // For BMI specifically, show actual sign (- when decreasing, + when increasing)
+              const actuallyDecreased = diff < 0;
+              return { value: Math.abs(diff).toFixed(1), isPositive: isImprovement, actuallyDecreased };
             };
 
             // Helper function to format old value with difference indicator showing change to current
-            const formatWithDifference = (oldValue, currentValue, unit = '', lowerIsBetter = false) => {
+            const formatWithDifference = (oldValue, currentValue, unit = '', lowerIsBetter = false, isBMI = false) => {
               const valueStr = formatValue(oldValue, unit);
               const diff = calculateDifference(oldValue, currentValue, lowerIsBetter);
 
               if (!diff) return valueStr;
 
-              const sign = diff.isPositive ? '+' : '-';
-              const colorClass = diff.isPositive ? 'difference-positive' : 'difference-negative';
+              // For BMI, use actual sign (- when decreasing) and color: red when decreasing, green when increasing
+              const sign = isBMI ? (diff.actuallyDecreased ? '-' : '+') : (diff.isPositive ? '+' : '-');
+              // For BMI: red when decreasing, green when increasing (opposite of normal)
+              const colorClass = isBMI 
+                ? (diff.actuallyDecreased ? 'difference-negative' : 'difference-positive')
+                : (diff.isPositive ? 'difference-positive' : 'difference-negative');
 
               return `${valueStr} <span class="difference ${colorClass}">(${sign}${diff.value})</span>`;
             };
@@ -912,6 +1070,7 @@
                   </div>
                   <div class="test-details-meta">
                     <div><strong>Taken at:</strong> ${test.taken_at}</div>
+                    <div class="updated-at"><strong>Updated at:</strong> ${test.updated_at}</div>
                   </div>
                 </div>
                 <div class="table-wrapper">
@@ -928,8 +1087,8 @@
                       <tr>
                         <td class="component-name">Body Mass Index (BMI)</td>
                         <td class="current-test-col">${formatValue(test.bmi)}</td>
-                        <td class="previous-test-col">${formatWithDifference(test.previous_test?.bmi, test.bmi, '', true)}</td>
-                        <td class="pre-test-col">${formatWithDifference(test.pre_test?.bmi, test.bmi, '', true)}</td>
+                        <td class="previous-test-col">${formatWithDifference(test.previous_test?.bmi, test.bmi, '', true, true)}</td>
+                        <td class="pre-test-col">${formatWithDifference(test.pre_test?.bmi, test.bmi, '', true, true)}</td>
                       </tr>
                       <tr>
                         <td class="component-name">VO<sub>2</sub> Max</td>
@@ -979,8 +1138,6 @@
             `;
           }
 
-        const ctx = document.getElementById('fitnessComparisonChart').getContext('2d');
-        
         const preTestData = {
             bmi: {{ pre_test.bmi|floatformat:2|default:"null" }},
             vo2Max: {{ pre_test.vo2_max|floatformat:2|default:"null" }},
@@ -988,7 +1145,7 @@
             strength: {{ pre_test.strength_reps|default:"null" }},
             agility: {{ pre_test.agility_sec|floatformat:2|default:"null" }},
             speed: {{ pre_test.speed_sec|floatformat:2|default:"null" }},
-            endurance: {{ pre_test.endurance_minutes|default:"null" }}
+            endurance: {{ pre_endurance_decimal|floatformat:2|default:"null" }}
         };
         
         const postTestData = {
@@ -998,90 +1155,390 @@
             strength: {{ post_test.strength_reps|default:"null" }},
             agility: {{ post_test.agility_sec|floatformat:2|default:"null" }},
             speed: {{ post_test.speed_sec|floatformat:2|default:"null" }},
-            endurance: {{ post_test.endurance_minutes|default:"null" }}
+            endurance: {{ post_endurance_decimal|floatformat:2|default:"null" }}
         };
-        
-        new Chart(ctx, {
+
+        // Common chart options
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 8,
+                        font: {
+                            size: 10
+                        }
+                    }
+                },
+                tooltip: {
+                    position: 'nearest',
+                    yAlign: 'bottom',
+                    padding: 6,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: {
+                        size: 10,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 10
+                    },
+                    footerFont: {
+                        size: 10
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label || '';
+                            const value = context.parsed.y;
+                            if (value === null) {
+                                return label + ': No data';
+                            }
+                            return value + (context.dataset.unit || '');
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        };
+
+        // Create BMI Chart
+        new Chart(document.getElementById('bmiChart'), {
             type: 'bar',
             data: {
-                labels: ['BMI', 'VO₂ Max', 'Flexibility', 'Strength', 'Agility', 'Speed', 'Endurance'],
+                labels: ['BMI'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [
-                        preTestData.bmi, 
-                        preTestData.vo2Max, 
-                        preTestData.flexibility, 
-                        preTestData.strength, 
-                        preTestData.agility, 
-                        preTestData.speed, 
-                        preTestData.endurance
-                    ],
+                    data: [preTestData.bmi],
                     backgroundColor: '#4A90A4',
-                    borderRadius: 4
+                    borderRadius: 4,
+                    unit: ''
                 }, {
                     label: 'Post-Test',
-                    data: [
-                        postTestData.bmi, 
-                        postTestData.vo2Max, 
-                        postTestData.flexibility, 
-                        postTestData.strength, 
-                        postTestData.agility, 
-                        postTestData.speed, 
-                        postTestData.endurance
-                    ],
+                    data: [postTestData.bmi],
                     backgroundColor: '#2C3E50',
-                    borderRadius: 4
+                    borderRadius: 4,
+                    unit: ''
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 50
+                    }
+                }
+            }
+        });
+
+        // Create VO2 Max Chart
+        new Chart(document.getElementById('vo2Chart'), {
+            type: 'bar',
+            data: {
+                labels: ['VO₂ Max'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [preTestData.vo2Max],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ''
+                }, {
+                    label: 'Post-Test',
+                    data: [postTestData.vo2Max],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ''
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // Create Flexibility Chart
+        new Chart(document.getElementById('flexibilityChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Flexibility'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [preTestData.flexibility],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ' cm'
+                }, {
+                    label: 'Post-Test',
+                    data: [postTestData.flexibility],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ' cm'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 50
+                    }
+                }
+            }
+        });
+
+        // Create Strength Chart
+        new Chart(document.getElementById('strengthChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Strength'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [preTestData.strength],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ' reps'
+                }, {
+                    label: 'Post-Test',
+                    data: [postTestData.strength],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ' reps'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 200
+                    }
+                }
+            }
+        });
+
+        // Create Agility Chart
+        new Chart(document.getElementById('agilityChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Agility'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [preTestData.agility !== null ? 60 - preTestData.agility : null],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ' sec',
+                    actualValue: preTestData.agility
+                }, {
+                    label: 'Post-Test',
+                    data: [postTestData.agility !== null ? 60 - postTestData.agility : null],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ' sec',
+                    actualValue: postTestData.agility
+                }]
+            },
+            options: {
+                ...commonOptions,
                 plugins: {
-                    legend: {
-                        position: 'top',
-                        align: 'end'
-                    },
+                    ...commonOptions.plugins,
                     tooltip: {
+                        ...commonOptions.plugins.tooltip,
                         callbacks: {
                             label: function(context) {
                                 const label = context.dataset.label || '';
-                                const value = context.parsed.y;
-                                const componentIndex = context.dataIndex;
-                                const units = ['', 'mL/kg/min', 'cm', 'reps', 'sec', 'sec', 'min'];
-                                
-                                if (value === null) {
+                                const actualValue = context.dataset.actualValue;
+                                if (actualValue === null) {
                                     return label + ': No data';
                                 }
-                                
-                                return label + ': ' + value + ' ' + units[componentIndex];
+                                return actualValue + ' sec';
                             }
                         }
                     }
                 },
                 scales: {
+                    ...commonOptions.scales,
                     y: {
-                        beginAtZero: true,
+                        ...commonOptions.scales.y,
                         max: 60,
                         ticks: {
-                            stepSize: 10
-                        },
-                        grid: {
-                            color: 'rgba(0,0,0,0.05)'
+                            ...commonOptions.scales.y.ticks,
+                            callback: function(value) {
+                                return (60 - value).toFixed(0);
+                            }
                         }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                },
-                elements: {
-                    bar: {
-                        borderWidth: 0
                     }
                 }
             }
         });
+
+        // Create Speed Chart
+        new Chart(document.getElementById('speedChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Speed'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [preTestData.speed !== null ? 20 - preTestData.speed : null],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ' sec',
+                    actualValue: preTestData.speed
+                }, {
+                    label: 'Post-Test',
+                    data: [postTestData.speed !== null ? 20 - postTestData.speed : null],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ' sec',
+                    actualValue: postTestData.speed
+                }]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const actualValue = context.dataset.actualValue;
+                                if (actualValue === null) {
+                                    return label + ': No data';
+                                }
+                                return actualValue + ' sec';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 20,
+                        ticks: {
+                            ...commonOptions.scales.y.ticks,
+                            callback: function(value) {
+                                return (20 - value).toFixed(0);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Create Endurance Chart
+        new Chart(document.getElementById('enduranceChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Endurance'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [preTestData.endurance !== null ? 30 - preTestData.endurance : null],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ' min',
+                    actualValue: preTestData.endurance
+                }, {
+                    label: 'Post-Test',
+                    data: [postTestData.endurance !== null ? 30 - postTestData.endurance : null],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ' min',
+                    actualValue: postTestData.endurance
+                }]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        ...commonOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const actualValue = context.dataset.actualValue;
+                                if (actualValue === null) {
+                                    return label + ': No data';
+                                }
+                                // Convert decimal minutes to mm:ss format
+                                const minutes = Math.floor(actualValue);
+                                const seconds = Math.round((actualValue - minutes) * 60);
+                                return minutes + ':' + String(seconds).padStart(2, '0') + ' min';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 30,
+                        ticks: {
+                            ...commonOptions.scales.y.ticks,
+                            callback: function(value) {
+                                // Show y-axis as inverted decimal minutes (30 at bottom, 0 at top)
+                                return (30 - value).toFixed(1);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        // Profile Dropdown Functions
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const userAvatar = document.querySelector('.user-avatar');
+
+            if (!userAvatar.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                window.location.href = '/';
+            }
+        }
     </script>
 </body>
 </html>

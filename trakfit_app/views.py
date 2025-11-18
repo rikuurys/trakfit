@@ -607,7 +607,296 @@ def update_test_view(request, test_id):
 
 @login_required
 def teacher_dashboard(request):
-    return render(request, 'teacher-dashboard.html')
+    from .models import updates
+    import json
+
+    students= Student.objects.all()
+    
+    # Get all updates ordered by most recent
+    all_updates = updates.objects.select_related('student').all()[:10]  # Get latest 10 updates
+
+    # Dictionary to store section-wise data
+    section_data = {}
+    sections= {}
+    bmi_status= {}
+
+    # Get Total Pre-Test and Post-Test for each student
+    pre_total_bmi= 0
+    post_total_bmi= 0
+    pre_count_bmi = 0
+    post_count_bmi = 0
+
+    pre_total_vo2= 0
+    post_total_vo2= 0
+    pre_count_vo2 = 0
+    post_count_vo2 = 0
+
+    pre_total_flexibility= 0
+    post_total_flexibility= 0
+    pre_count_flexibility = 0
+    post_count_flexibility = 0
+
+    pre_total_strength= 0
+    post_total_strength= 0
+    pre_count_strength = 0
+    post_count_strength = 0
+
+    pre_total_agility= 0
+    post_total_agility= 0
+    pre_count_agility = 0
+    post_count_agility = 0
+
+    pre_total_speed= 0
+    post_total_speed= 0
+    pre_count_speed = 0
+    post_count_speed = 0
+
+    post_total_endurance= 0
+    pre_total_endurance= 0
+    pre_count_endurance = 0
+    post_count_endurance = 0
+
+    bmi_change= 0
+    bmi_change_count = 0
+    
+    # Lists to store all pre-test and post-test dates
+    pre_test_dates = []
+    post_test_dates = []
+
+    for i, stud in enumerate(students):
+
+        section_key = f'{stud.section_code}-{stud.group_code}'
+        sections[section_key] = None
+        
+        # Initialize section data if not exists
+        if section_key not in section_data:
+            section_data[section_key] = {
+                'pre_total_bmi': 0, 'post_total_bmi': 0, 'pre_count_bmi': 0, 'post_count_bmi': 0,
+                'pre_total_vo2': 0, 'post_total_vo2': 0, 'pre_count_vo2': 0, 'post_count_vo2': 0,
+                'pre_total_flexibility': 0, 'post_total_flexibility': 0, 'pre_count_flexibility': 0, 'post_count_flexibility': 0,
+                'pre_total_strength': 0, 'post_total_strength': 0, 'pre_count_strength': 0, 'post_count_strength': 0,
+                'pre_total_agility': 0, 'post_total_agility': 0, 'pre_count_agility': 0, 'post_count_agility': 0,
+                'pre_total_speed': 0, 'post_total_speed': 0, 'pre_count_speed': 0, 'post_count_speed': 0,
+                'pre_total_endurance': 0, 'post_total_endurance': 0, 'pre_count_endurance': 0, 'post_count_endurance': 0,
+                'bmi_change': 0, 'bmi_change_count': 0
+            }
+
+        pre_test= stud.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+        post_test= stud.fitness_tests.filter(test_type='post').order_by('-taken_at').first()
+        
+        # Collect pre-test and post-test dates
+        if pre_test and pre_test.taken_at:
+            pre_test_dates.append(pre_test.taken_at.strftime('%Y-%m-%d'))
+        if post_test and post_test.taken_at:
+            post_test_dates.append(post_test.taken_at.strftime('%Y-%m-%d'))
+        
+        if pre_test and pre_test.bmi:
+            pre_total_bmi += pre_test.bmi
+            pre_count_bmi += 1
+            section_data[section_key]['pre_total_bmi'] += pre_test.bmi
+            section_data[section_key]['pre_count_bmi'] += 1
+        if post_test and post_test.bmi:
+            post_total_bmi += post_test.bmi
+            post_count_bmi += 1
+            section_data[section_key]['post_total_bmi'] += post_test.bmi
+            section_data[section_key]['post_count_bmi'] += 1
+            
+        if pre_test and pre_test.vo2_max:
+            pre_total_vo2 += pre_test.vo2_max
+            pre_count_vo2 += 1
+            section_data[section_key]['pre_total_vo2'] += pre_test.vo2_max
+            section_data[section_key]['pre_count_vo2'] += 1
+        if post_test and post_test.vo2_max:
+            post_total_vo2 += post_test.vo2_max
+            post_count_vo2 += 1
+            section_data[section_key]['post_total_vo2'] += post_test.vo2_max
+            section_data[section_key]['post_count_vo2'] += 1
+            
+        if pre_test and pre_test.flexibility_cm:
+            pre_total_flexibility += pre_test.flexibility_cm
+            pre_count_flexibility += 1
+            section_data[section_key]['pre_total_flexibility'] += pre_test.flexibility_cm
+            section_data[section_key]['pre_count_flexibility'] += 1
+        if post_test and post_test.flexibility_cm:
+            post_total_flexibility += post_test.flexibility_cm
+            post_count_flexibility += 1
+            section_data[section_key]['post_total_flexibility'] += post_test.flexibility_cm
+            section_data[section_key]['post_count_flexibility'] += 1
+            
+        if pre_test and pre_test.strength_reps:
+            pre_total_strength += pre_test.strength_reps
+            pre_count_strength += 1
+            section_data[section_key]['pre_total_strength'] += pre_test.strength_reps
+            section_data[section_key]['pre_count_strength'] += 1
+        if post_test and post_test.strength_reps:
+            post_total_strength += post_test.strength_reps
+            post_count_strength += 1
+            section_data[section_key]['post_total_strength'] += post_test.strength_reps
+            section_data[section_key]['post_count_strength'] += 1
+            
+        if pre_test and pre_test.agility_sec:
+            pre_total_agility += pre_test.agility_sec
+            pre_count_agility += 1
+            section_data[section_key]['pre_total_agility'] += pre_test.agility_sec
+            section_data[section_key]['pre_count_agility'] += 1
+        if post_test and post_test.agility_sec:
+            post_total_agility += post_test.agility_sec
+            post_count_agility += 1
+            section_data[section_key]['post_total_agility'] += post_test.agility_sec
+            section_data[section_key]['post_count_agility'] += 1
+            
+        if pre_test and pre_test.speed_sec:
+            pre_total_speed += pre_test.speed_sec
+            pre_count_speed += 1
+            section_data[section_key]['pre_total_speed'] += pre_test.speed_sec
+            section_data[section_key]['pre_count_speed'] += 1
+        if post_test and post_test.speed_sec:
+            post_total_speed += post_test.speed_sec
+            post_count_speed += 1
+            section_data[section_key]['post_total_speed'] += post_test.speed_sec
+            section_data[section_key]['post_count_speed'] += 1
+            
+        if pre_test and pre_test.endurance_minutes is not None:
+            pre_total_endurance += (pre_test.endurance_minutes * 60) + (pre_test.endurance_seconds or 0)
+            pre_count_endurance += 1
+            section_data[section_key]['pre_total_endurance'] += (pre_test.endurance_minutes * 60) + (pre_test.endurance_seconds or 0)
+            section_data[section_key]['pre_count_endurance'] += 1
+        if post_test and post_test.endurance_minutes is not None:
+            post_total_endurance += (post_test.endurance_minutes * 60) + (post_test.endurance_seconds or 0)
+            post_count_endurance += 1
+            section_data[section_key]['post_total_endurance'] += (post_test.endurance_minutes * 60) + (post_test.endurance_seconds or 0)
+            section_data[section_key]['post_count_endurance'] += 1
+        
+        # Calculate BMI change only for students who have both tests
+        if pre_test and pre_test.bmi and post_test and post_test.bmi:
+            bmi_change += post_test.bmi - pre_test.bmi
+            bmi_change_count += 1
+            section_data[section_key]['bmi_change'] += post_test.bmi - pre_test.bmi
+            section_data[section_key]['bmi_change_count'] += 1
+
+        # Determine BMI status for each student based on post-test BMI
+        if post_test and post_test.bmi: 
+            status = get_bmi_status(post_test.bmi)
+            bmi_status[status] = bmi_status.get(status, 0) + 1
+    
+    # Calculate section averages
+    section_averages = {}
+    for section_key, data in section_data.items():
+        section_averages[section_key] = {
+            'bmi': {
+                'pre': float(data['pre_total_bmi'] / data['pre_count_bmi']) if data['pre_count_bmi'] > 0 else 0,
+                'post': float(data['post_total_bmi'] / data['post_count_bmi']) if data['post_count_bmi'] > 0 else 0,
+            },
+            'vo2_max': {
+                'pre': float(data['pre_total_vo2'] / data['pre_count_vo2']) if data['pre_count_vo2'] > 0 else 0,
+                'post': float(data['post_total_vo2'] / data['post_count_vo2']) if data['post_count_vo2'] > 0 else 0,
+            },
+            'flexibility_cm': {
+                'pre': float(data['pre_total_flexibility'] / data['pre_count_flexibility']) if data['pre_count_flexibility'] > 0 else 0,
+                'post': float(data['post_total_flexibility'] / data['post_count_flexibility']) if data['post_count_flexibility'] > 0 else 0,
+            },
+            'strength_reps': {
+                'pre': float(data['pre_total_strength'] / data['pre_count_strength']) if data['pre_count_strength'] > 0 else 0,
+                'post': float(data['post_total_strength'] / data['post_count_strength']) if data['post_count_strength'] > 0 else 0,
+            },
+            'agility_sec': {
+                'pre': float(data['pre_total_agility'] / data['pre_count_agility']) if data['pre_count_agility'] > 0 else 0,
+                'post': float(data['post_total_agility'] / data['post_count_agility']) if data['post_count_agility'] > 0 else 0,
+            },
+            'speed_sec': {
+                'pre': float(data['pre_total_speed'] / data['pre_count_speed']) if data['pre_count_speed'] > 0 else 0,
+                'post': float(data['post_total_speed'] / data['post_count_speed']) if data['post_count_speed'] > 0 else 0,
+            },
+            'endurance_sec': {
+                'pre': float(data['pre_total_endurance'] / data['pre_count_endurance']) if data['pre_count_endurance'] > 0 else 0,
+                'post': float(data['post_total_endurance'] / data['post_count_endurance']) if data['post_count_endurance'] > 0 else 0,
+            },
+            'bmi_change': float(data['bmi_change'] / data['bmi_change_count']) if data['bmi_change_count'] > 0 else 0,
+        }
+    
+    # Prepare BMI distribution data for chart
+    bmi_distribution = {
+        'underweight': bmi_status.get('Underweight', 0),
+        'normal': bmi_status.get('Normal', 0),
+        'overweight': bmi_status.get('Overweight', 0),
+        'obese': bmi_status.get('Obese', 0),
+    }
+    
+    average= {
+        'bmi': {
+            'pre': pre_total_bmi / pre_count_bmi if pre_count_bmi > 0 else 0,
+            'post': post_total_bmi / post_count_bmi if post_count_bmi > 0 else 0,
+        },
+        'vo2_max': {
+            'pre': pre_total_vo2 / pre_count_vo2 if pre_count_vo2 > 0 else 0,
+            'post': post_total_vo2 / post_count_vo2 if post_count_vo2 > 0 else 0,
+        },
+        'flexibility_cm': {
+            'pre': pre_total_flexibility / pre_count_flexibility if pre_count_flexibility > 0 else 0,
+            'post': post_total_flexibility / post_count_flexibility if post_count_flexibility > 0 else 0,
+        },
+        'strength_reps': {
+            'pre': pre_total_strength / pre_count_strength if pre_count_strength > 0 else 0,
+            'post': post_total_strength / post_count_strength if post_count_strength > 0 else 0,
+        },
+        'agility_sec': {
+            'pre': pre_total_agility / pre_count_agility if pre_count_agility > 0 else 0,
+            'post': post_total_agility / post_count_agility if post_count_agility > 0 else 0,
+        },
+        'speed_sec': {
+            'pre': pre_total_speed / pre_count_speed if pre_count_speed > 0 else 0,
+            'post': post_total_speed / post_count_speed if post_count_speed > 0 else 0,
+        },
+        'endurance_sec': {
+            'pre': pre_total_endurance / pre_count_endurance if pre_count_endurance > 0 else 0,
+            'post': post_total_endurance / post_count_endurance if post_count_endurance > 0 else 0,
+        },
+        'bmi_change': bmi_change / bmi_change_count if bmi_change_count > 0 else 0,
+    }
+
+    # Prepare dates data
+    dates = {
+        'pre_test_dates': pre_test_dates,
+        'post_test_dates': post_test_dates,
+    }
+    
+    # Prepare individual student test data for date filtering
+    student_tests_data = []
+    for student in students:
+        # Get ALL tests for this student (not just the latest)
+        all_tests = student.fitness_tests.all().order_by('taken_at')
+        
+        for test in all_tests:
+            if not test.taken_at:
+                continue
+                
+            test_data = {
+                'section': f'{student.section_code}-{student.group_code}',
+                'test_type': test.test_type,
+                'date': test.taken_at.strftime('%Y-%m-%d'),
+                'bmi': float(test.bmi) if test.bmi else None,
+                'vo2_max': float(test.vo2_max) if test.vo2_max else None,
+                'flexibility_cm': float(test.flexibility_cm) if test.flexibility_cm else None,
+                'strength_reps': float(test.strength_reps) if test.strength_reps else None,
+                'agility_sec': float(test.agility_sec) if test.agility_sec else None,
+                'speed_sec': float(test.speed_sec) if test.speed_sec else None,
+                'endurance_sec': float(test.endurance_minutes * 60) if test.endurance_minutes is not None else None,
+            }
+            student_tests_data.append(test_data)
+
+    context = {
+        'average': average,
+        'total_students': students.count(),
+        'total_sections': len(sections),
+        'bmi_distribution': bmi_distribution,
+        'recent_updates': all_updates,
+        'sections': sorted(sections),
+        'section_averages_json': json.dumps(section_averages),
+        'dates': dates,
+        'student_tests_json': json.dumps(student_tests_data),
+    }
+
+    return render(request, 'teacher-dashboard.html', context)
 
 @login_required
 def student_management(request):
@@ -630,10 +919,29 @@ def student_profile(request, student_no):
 
     # Get pre-test (only one per student ever)
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
-    post_test= student.fitness_tests.filter(test_type='post').order_by('-taken_at').last()
+    post_test = student.fitness_tests.filter(test_type='post').order_by('-taken_at').first()
+    
+    # Compute endurance as decimal minutes (minutes + seconds/60) for chart rendering
+    def _endurance_decimal(test):
+        if not test:
+            return None
+        mins = test.endurance_minutes or 0
+        secs = test.endurance_seconds or 0
+        try:
+            return float(mins) + (float(secs) / 60.0)
+        except Exception:
+            return None
+    
+    pre_endurance_decimal = _endurance_decimal(pre_test)
+    post_endurance_decimal = _endurance_decimal(post_test)
+    
     # Get all tests ordered by date for finding previous test
     all_tests_ordered = list(student.fitness_tests.all().order_by('-taken_at'))
 
+    # Get all post-tests ordered by taken_at to calculate post-test numbers
+    post_tests_ordered = student.fitness_tests.filter(test_type='post').order_by('taken_at')
+    post_test_numbers = {test.test_id: idx + 1 for idx, test in enumerate(post_tests_ordered)}
+    
     # Prepare test data with BMI, VO2 Max, remarks, pre-test, and previous test for JSON
     tests_data = []
     for idx, test in enumerate(tests):
@@ -644,8 +952,8 @@ def student_profile(request, student_no):
         if pre_test:
             pre_test_data = {
                 'test_id': pre_test.test_id,
-                'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
-                'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
+                'bmi': round(pre_test.bmi, 2) if pre_test.bmi else None,
+                'vo2_max': round(pre_test.vo2_max, 2) if pre_test.vo2_max else None,
                 'height_cm': float(pre_test.height_cm) if pre_test.height_cm else None,
                 'weight_kg': float(pre_test.weight_kg) if pre_test.weight_kg else None,
                 'flexibility_cm': float(pre_test.flexibility_cm) if pre_test.flexibility_cm else None,
@@ -665,8 +973,8 @@ def student_profile(request, student_no):
                 previous_test = all_tests_ordered[current_test_index + 1]
                 previous_test_data = {
                     'test_id': previous_test.test_id,
-                    'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
-                    'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
+                    'bmi': round(previous_test.bmi, 2) if previous_test.bmi else None,
+                    'vo2_max': round(previous_test.vo2_max, 2) if previous_test.vo2_max else None,
                     'height_cm': float(previous_test.height_cm) if previous_test.height_cm else None,
                     'weight_kg': float(previous_test.weight_kg) if previous_test.weight_kg else None,
                     'flexibility_cm': float(previous_test.flexibility_cm) if previous_test.flexibility_cm else None,
@@ -678,14 +986,18 @@ def student_profile(request, student_no):
         except StopIteration:
             pass
 
+        # Get post-test number for this test if it's a post-test
+        post_test_number = post_test_numbers.get(test.test_id, None) if test.test_type == 'post' else None
+
         test_dict = {
             'test_id': test.test_id,
             'test_type': test.get_test_type_display(),
             'test_type_key': test.test_type,
+            'post_test_number': post_test_number,
             'taken_at': test.taken_at.strftime('%B %d, %Y') if test.taken_at else 'N/A',
             'updated_at': test.updated_at.strftime('%B %d, %Y') if test.updated_at else 'N/A',
-            'bmi': round(test.bmi, 1) if test.bmi else None,
-            'vo2_max': round(test.vo2_max, 1) if test.vo2_max else None,
+            'bmi': round(test.bmi, 2) if test.bmi else None,
+            'vo2_max': round(test.vo2_max, 2) if test.vo2_max else None,
             'height_cm': float(test.height_cm) if test.height_cm else None,
             'weight_kg': float(test.weight_kg) if test.weight_kg else None,
             'flexibility_cm': float(test.flexibility_cm) if test.flexibility_cm else None,
@@ -707,6 +1019,8 @@ def student_profile(request, student_no):
         'tests': tests,
         'pre_test': pre_test,
         'post_test': post_test,
+        'pre_endurance_decimal': pre_endurance_decimal,
+        'post_endurance_decimal': post_endurance_decimal,
         'tests_json': json.dumps(tests_data),
     }
 
