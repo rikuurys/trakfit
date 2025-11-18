@@ -712,6 +712,7 @@ def student_profile(request, student_no):
             'speed_sec': float(test.speed_sec) if test.speed_sec else None,
             'endurance_display': test.get_endurance_display(),
             'remarks': test.remarks,
+            'remarksCreated': test.remarksCreated.strftime('%B %d, %Y') if test.remarksCreated else None,
             'pre_test': pre_test_data,
             'previous_test': previous_test_data,
         }

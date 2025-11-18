@@ -914,18 +914,18 @@
         // Check if current test is the pre-test
         const isPreTest = test.test_type_key === 'pre';
 
-        // Build remarks HTML
+        // Build remarks HTML with timestamp
         let remarksHTML = '';
-        if (test.remarks) {
+        if (test.remarks && test.remarks.trim() !== '') {
           let timestampHTML = test.remarksCreated 
-            ? `<div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">${test.remarksCreated}</div>` 
+            ? `<div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.5rem; font-weight: 500;"><i class="fa-regular fa-calendar" style="margin-right: 0.25rem;"></i>${test.remarksCreated}</div>` 
             : '';
-          remarksHTML = `<div style="margin-bottom: 1rem; padding: 0.75rem; background: #f9fafb; border-radius: 8px;">
+          remarksHTML = `<div style="margin-bottom: 1rem; padding: 1rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             ${timestampHTML}
-            <div style="font-size: 0.85rem; color: var(--text-dark);">${test.remarks}</div>
+            <div style="font-size: 0.9rem; color: var(--text-dark); line-height: 1.6; white-space: pre-wrap;">${test.remarks}</div>
           </div>`;
         } else {
-          remarksHTML = '<div style="text-align: center; color: var(--text-light); padding: 1rem; font-style: italic;">No remarks given yet</div>';
+          remarksHTML = '<div style="text-align: center; color: var(--text-light); padding: 2rem 1rem; font-style: italic; font-size: 0.9rem;"><i class="fa-regular fa-comment-dots" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>No remarks given yet</div>';
         }
 
         // Build edit button HTML (only for post-tests)
