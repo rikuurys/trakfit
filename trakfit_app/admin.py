@@ -45,7 +45,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 class FitnessTestAdmin(admin.ModelAdmin):
     """Admin for FitnessTest model."""
-    list_display = ('test_id', 'student', 'test_type', 'bmi', 'vo2_max', 'taken_at')
+    list_display = ('test_id', 'student', 'test_type', 'bmi', 'vo2_max', 'taken_at', 'updated_at')
     list_filter = ('test_type', 'taken_at')
     search_fields = ('student__student_no', 'student__first_name', 'student__last_name')
     ordering = ('-taken_at',)

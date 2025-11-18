@@ -321,11 +321,10 @@
             border-radius: 20px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            position: relative;
-            overflow: hidden;
             height: clamp(80px, 10vh, 120px);
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
-            flex-shrink: 0;
+            display: flex;
+            align-items: center;
         }
 
         .welcome-content h2 {
@@ -407,6 +406,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            flex: 1;
         }
 
         .chart-header {
@@ -709,6 +709,16 @@
         .day.current-day:hover {
             background: #2563EB;
         }
+        
+        .day.selected {
+            background: #3B82F6;
+            color: white;
+        }
+        
+        .day.in-range {
+            background: #DBEAFE;
+            color: #1F2937;
+        }
 
         /* Sidebar Right */
         .sidebar-right {
@@ -742,7 +752,7 @@
 
         .bmi-chart-container {
             position: relative;
-            height: clamp(100px, 12vh, 160px);
+            height: clamp(80px, 10vh, 120px);
             margin-bottom: 1rem;
             display: flex;
             justify-content: center;
@@ -850,6 +860,7 @@
         .update-info small {
             color: var(--text-dark);
             font-size: clamp(0.65rem, 0.75vw, 0.8rem);
+            font-weight: 500;
             display: block;
             line-height: 1.3;
         }
@@ -914,7 +925,13 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="brand-section">
-                <div class="brand-logo"></div>
+                <div class="brand-logo">
+                    <img
+                    src="{% static 'logo-noname-circle.png' %}"
+                    alt="Logo"
+                    style="width: 100%; height: 100%; object-fit: contain;"
+                    />
+                </div>
                 <span class="brand-name">TrakFit</span>
             </div>
 
@@ -952,16 +969,15 @@
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 3fr 0.7fr; gap: 1rem; overflow: hidden; min-height: 0;">
+            <div style="display: grid; grid-template-columns: 3fr 0.7fr; gap: 1rem; overflow: hidden; min-height: 0; flex: 1;">
 
-                <div style="display: flex; flex-direction: column; overflow: hidden; min-height: 0;">
+                <div style="display: flex; flex-direction: column; overflow: hidden; min-height: 0; height: 100%;">
                     <!-- Welcome Card -->
                     <div class="welcome-card">
                         <div class="welcome-content">
-                            <h2>Welcome, John!</h2>
+                            <h2>Welcome, Teacher!</h2>
                             <p>Track progress, monitor growth, and keep your students moving forward!</p>
                         </div>
-                        <div class="welcome-illustration"></div>
                     </div>
 
                     <!-- Stats Grid -->
@@ -975,7 +991,7 @@
                             <div class="stat-label">Total Sections</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{ average.bmi_change|floatformat:1 }}</div>
+                            <div class="stat-number">{% if average.bmi_change > 0 %}+{% endif %}{{ average.bmi_change|floatformat:1 }}</div>
                             <div class="stat-label">Average BMI Change</div>
                         </div>
                         <div class="stat-card">
@@ -999,12 +1015,9 @@
                                     </div>
                                     <div class="dropdown-menu" id="sectionDropdown">
                                         <div class="dropdown-option" onclick="selectSection('All Sections')">All Sections</div>
-                                        <div class="dropdown-option selected" onclick="selectSection('BSIT 1A-G1')">✓ BSIT 1A-G1</div>
-                                        <div class="dropdown-option selected" onclick="selectSection('BSIT 1A-G2')">✓ BSIT 1A-G2</div>
-                                        <div class="dropdown-option selected" onclick="selectSection('BSIT 1B-G1')">✓ BSIT 1B-G1</div>
-                                        <div class="dropdown-option selected" onclick="selectSection('BSIT 1B-G2')">✓ BSIT 1B-G2</div>
-                                        <div class="dropdown-option" onclick="selectSection('BSIT 1C-G1')">BSIT 1C-G1</div>
-                                        <div class="dropdown-option" onclick="selectSection('BSIT 1C-G2')">BSIT 1C-G2</div>
+                                        {% for section in sections %}
+                                            <div class="dropdown-option" onclick="selectSection('{{ section }}')">{{ section }}</div>
+                                        {% endfor %}
                                     </div>
                                 </div>
 
@@ -1016,7 +1029,7 @@
                                         <span class="dropdown-arrow">▼</span>
                                     </div>
                                     <div class="dropdown-menu" id="testTypeDropdown">
-                                        <div class="dropdown-option selected" onclick="selectTestType('Pre-test vs Post-test')">✓ Pre-test vs Post-test</div>
+                                        <div class="dropdown-option" onclick="selectTestType('Pre-test vs Post-test')">Pre-test vs Post-test</div>
                                         <div class="dropdown-option" onclick="selectTestType('Pre-test Only')">Pre-test Only</div>
                                         <div class="dropdown-option" onclick="selectTestType('Post-test Only')">Post-test Only</div>
                                     </div>
@@ -1035,8 +1048,8 @@
 
                                         <!-- Date Range Inputs -->
                                         <div class="date-range-inputs">
-                                            <input type="text" placeholder="November 4, 2025" class="date-input" id="startDate" value="November 4, 2025">
-                                            <input type="text" placeholder="November 4, 2025" class="date-input" id="endDate" value="November 4, 2025">
+                                            <input type="text" placeholder="Start Date" class="date-input" id="startDate" readonly>
+                                            <input type="text" placeholder="End Date" class="date-input" id="endDate" readonly>
                                         </div>
 
                                         <!-- Set to All Time Button -->
@@ -1058,54 +1071,7 @@
                                             <div class="day-header">Th</div>
                                             <div class="day-header">Fr</div>
                                             <div class="day-header">Sa</div>
-
-                                            <!-- Previous month days -->
-                                            <div class="day prev-month">26</div>
-                                            <div class="day prev-month">27</div>
-                                            <div class="day prev-month">28</div>
-                                            <div class="day prev-month">29</div>
-                                            <div class="day prev-month">30</div>
-                                            <div class="day prev-month">31</div>
-
-                                            <!-- Current month days -->
-                                            <div class="day">1</div>
-                                            <div class="day">2</div>
-                                            <div class="day">3</div>
-                                            <div class="day">4</div>
-                                            <div class="day">5</div>
-                                            <div class="day">6</div>
-                                            <div class="day">7</div>
-                                            <div class="day">8</div>
-                                            <div class="day">9</div>
-                                            <div class="day">10</div>
-                                            <div class="day current-day">11</div>
-                                            <div class="day">12</div>
-                                            <div class="day">13</div>
-                                            <div class="day">14</div>
-                                            <div class="day">15</div>
-                                            <div class="day">16</div>
-                                            <div class="day">17</div>
-                                            <div class="day">18</div>
-                                            <div class="day">19</div>
-                                            <div class="day">20</div>
-                                            <div class="day">21</div>
-                                            <div class="day">22</div>
-                                            <div class="day">23</div>
-                                            <div class="day">24</div>
-                                            <div class="day">25</div>
-                                            <div class="day">26</div>
-                                            <div class="day">27</div>
-                                            <div class="day">28</div>
-                                            <div class="day">29</div>
-                                            <div class="day">30</div>
-
-                                            <!-- Next month days -->
-                                            <div class="day next-month">1</div>
-                                            <div class="day next-month">2</div>
-                                            <div class="day next-month">3</div>
-                                            <div class="day next-month">4</div>
-                                            <div class="day next-month">5</div>
-                                            <div class="day next-month">6</div>
+                                            <!-- Days will be dynamically generated by JavaScript -->
                                         </div>
                                     </div>
                                 </div>
@@ -1162,7 +1128,7 @@
                 <!-- Right Sidebar -->
                 <div class="sidebar-right">
                     <!-- BMI Distribution Card -->
-                    <div class="sidebar-card" style="flex-shrink: 0;">
+                    <div class="sidebar-card" style="flex: 0 0 auto;">
                         <h4 class="section-title">BMI Category Distribution (Post-Test)</h4>
                         <div class="bmi-chart-container">
                             <canvas id="bmiChart"></canvas>
@@ -1198,106 +1164,14 @@
                         <h4 class="section-title" style="margin: 0 0.5rem 1rem 0.5rem; font-size: clamp(1rem, 1.2vw, 1.5rem); flex-shrink: 0;">Recent Updates</h4>
                         <div style="border-bottom: solid 1px rgba(0, 0, 0, 0.20); flex-shrink: 0;"></div>
                         <div style="overflow-y: auto; flex: 1; min-height: 0;">
-
-                            <div class="recent-update">
-                                <div class="update-avatar maria-avatar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                    </svg>
+                            {% for update in recent_updates %}
+                                <div class="recent-update">
+                                    <div class="update-info">
+                                        <small>{{ update.body }}</small>
+                                        <small class="time-stamp">{{ update.updated_at | timesince}}</small>
+                                    </div>
                                 </div>
-                                <div class="update-info">
-                                    <h6>Maria Cruz</h6>
-                                    <small>Submitted Post-Test Results</small>
-                                    <small class="time-stamp">2 hours ago</small>
-                                </div>
-                            </div>
-
-                            <div class="recent-update">
-                                <div class="update-avatar john-avatar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                    </svg>
-                                </div>
-                                <div class="update-info">
-                                    <h6>John Dela Cruz</h6>
-                                    <small>Updated BMI: 24.8 → 26.2</small>
-                                    <small class="time-stamp">8 hours ago</small>
-                                </div>
-                            </div>
-
-                            <div class="recent-update">
-                                <div class="update-avatar alyssa-avatar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                    </svg>
-                                </div>
-                                <div class="update-info">
-                                    <h6>Alyssa Tan</h6>
-                                    <small>Completed Strength Test (+10%)</small>
-                                    <small class="time-stamp">9 hours ago</small>
-                                </div>
-                            </div>
-
-                            <div class="recent-update">
-                                <div class="update-avatar mark-avatar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                    </svg>
-                                </div>
-                                <div class="update-info">
-                                    <h6>Mark Villanueva</h6>
-                                    <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                                    <small class="time-stamp">Yesterday</small>
-                                </div>
-                            </div>
-                            <div class="recent-update">
-                                <div class="update-avatar mark-avatar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                    </svg>
-                                </div>
-                                <div class="update-info">
-                                    <h6>Mark Villanueva</h6>
-                                    <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                                    <small class="time-stamp">Yesterday</small>
-                                </div>
-                            </div>
-                            <div class="recent-update">
-                                <div class="update-avatar mark-avatar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                    </svg>
-                                </div>
-                                <div class="update-info">
-                                    <h6>Mark Villanueva</h6>
-                                    <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                                    <small class="time-stamp">Yesterday</small>
-                                </div>
-                            </div>
-                            <div class="recent-update">
-                                <div class="update-avatar mark-avatar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                    </svg>
-                                </div>
-                                <div class="update-info">
-                                    <h6>Mark Villanueva</h6>
-                                    <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                                    <small class="time-stamp">Yesterday</small>
-                                </div>
-                            </div>
-                            <div class="recent-update">
-                                <div class="update-avatar mark-avatar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/>
-                                    </svg>
-                                </div>
-                                <div class="update-info">
-                                    <h6>Mark Villanueva</h6>
-                                    <small>Updated VO₂ Max results (+3.2 ml/kg/min)</small>
-                                    <small class="time-stamp">Yesterday</small>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -1310,6 +1184,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // Store chart instances globally for updating
+        let charts = {};
+        
+        // Store all section data
+        const sectionAverages = {{ section_averages_json|safe }};
+        const allSectionsData = {
+            bmi: { pre: {{ average.bmi.pre|floatformat:2|default:0 }}, post: {{ average.bmi.post|floatformat:2|default:0 }} },
+            vo2_max: { pre: {{ average.vo2_max.pre|floatformat:2|default:0 }}, post: {{ average.vo2_max.post|floatformat:2|default:0 }} },
+            flexibility_cm: { pre: {{ average.flexibility_cm.pre|floatformat:2|default:0 }}, post: {{ average.flexibility_cm.post|floatformat:2|default:0 }} },
+            strength_reps: { pre: {{ average.strength_reps.pre|floatformat:2|default:0 }}, post: {{ average.strength_reps.post|floatformat:2|default:0 }} },
+            agility_sec: { pre: {{ average.agility_sec.pre|floatformat:2|default:0 }}, post: {{ average.agility_sec.post|floatformat:2|default:0 }} },
+            speed_sec: { pre: {{ average.speed_sec.pre|floatformat:2|default:0 }}, post: {{ average.speed_sec.post|floatformat:2|default:0 }} },
+            endurance_sec: { pre: {{ average.endurance_sec.pre|floatformat:2|default:0 }}, post: {{ average.endurance_sec.post|floatformat:2|default:0 }} },
+            bmi_change: {{ average.bmi_change|floatformat:2|default:0 }}
+        };
+        
+        // Store individual student test data for filtering
+        const studentTests = {{ student_tests_json|safe }};
+        
+        // Store current selected section for filtering
+        let currentSection = 'All Sections';
+        
         // Common chart options
         const commonOptions = {
             responsive: true,
@@ -1384,19 +1280,19 @@
         };
 
         // Create BMI Comparison Chart
-        new Chart(document.getElementById('bmiComparisonChart'), {
+        charts.bmi = new Chart(document.getElementById('bmiComparisonChart'), {
             type: 'bar',
             data: {
                 labels: ['BMI'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [23],
+                    data: [{{ average.bmi.pre|floatformat:2|default:0 }}],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
                     unit: ''
                 }, {
                     label: 'Post-Test',
-                    data: [22],
+                    data: [{{ average.bmi.post|floatformat:2|default:0 }}],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
                     unit: ''
@@ -1415,19 +1311,19 @@
         });
 
         // Create VO2 Max Comparison Chart
-        new Chart(document.getElementById('vo2ComparisonChart'), {
+        charts.vo2 = new Chart(document.getElementById('vo2ComparisonChart'), {
             type: 'bar',
             data: {
                 labels: ['VO₂ Max'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [33],
+                    data: [{{ average.vo2_max.pre|floatformat:2|default:0 }}],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
                     unit: ''
                 }, {
                     label: 'Post-Test',
-                    data: [78],
+                    data: [{{ average.vo2_max.post|floatformat:2|default:0 }}],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
                     unit: ''
@@ -1446,19 +1342,19 @@
         });
 
         // Create Flexibility Comparison Chart
-        new Chart(document.getElementById('flexibilityComparisonChart'), {
+        charts.flexibility = new Chart(document.getElementById('flexibilityComparisonChart'), {
             type: 'bar',
             data: {
                 labels: ['Flexibility'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [50],
+                    data: [{{ average.flexibility_cm.pre|floatformat:2|default:0 }}],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
                     unit: ' cm'
                 }, {
                     label: 'Post-Test',
-                    data: [45],
+                    data: [{{ average.flexibility_cm.post|floatformat:2|default:0 }}],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
                     unit: ' cm'
@@ -1477,19 +1373,19 @@
         });
 
         // Create Strength Comparison Chart
-        new Chart(document.getElementById('strengthComparisonChart'), {
+        charts.strength = new Chart(document.getElementById('strengthComparisonChart'), {
             type: 'bar',
             data: {
                 labels: ['Strength'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [18],
+                    data: [{{ average.strength_reps.pre|floatformat:2|default:0 }}],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
                     unit: ' reps'
                 }, {
                     label: 'Post-Test',
-                    data: [33],
+                    data: [{{ average.strength_reps.post|floatformat:2|default:0 }}],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
                     unit: ' reps'
@@ -1508,24 +1404,24 @@
         });
 
         // Create Agility Comparison Chart
-        new Chart(document.getElementById('agilityComparisonChart'), {
+        charts.agility = new Chart(document.getElementById('agilityComparisonChart'), {
             type: 'bar',
             data: {
                 labels: ['Agility'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [60 - 5],
+                    data: [{{ average.agility_sec.pre|floatformat:2|default:0 }} !== 0 ? 60 - {{ average.agility_sec.pre|floatformat:2|default:0 }} : null],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
                     unit: ' sec',
-                    actualValue: 5
+                    actualValue: {{ average.agility_sec.pre|floatformat:2|default:0 }}
                 }, {
                     label: 'Post-Test',
-                    data: [60 - 6],
+                    data: [{{ average.agility_sec.post|floatformat:2|default:0 }} !== 0 ? 60 - {{ average.agility_sec.post|floatformat:2|default:0 }} : null],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
                     unit: ' sec',
-                    actualValue: 6
+                    actualValue: {{ average.agility_sec.post|floatformat:2|default:0 }}
                 }]
             },
             options: {
@@ -1538,6 +1434,9 @@
                             label: function(context) {
                                 const label = context.dataset.label || '';
                                 const actualValue = context.dataset.actualValue;
+                                if (actualValue === 0 || actualValue === null) {
+                                    return 'No data';
+                                }
                                 return actualValue + ' sec';
                             }
                         }
@@ -1560,24 +1459,24 @@
         });
 
         // Create Speed Comparison Chart
-        new Chart(document.getElementById('speedComparisonChart'), {
+        charts.speed = new Chart(document.getElementById('speedComparisonChart'), {
             type: 'bar',
             data: {
                 labels: ['Speed'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [20 - 10],
+                    data: [{{ average.speed_sec.pre|floatformat:2|default:0 }} !== 0 ? 20 - {{ average.speed_sec.pre|floatformat:2|default:0 }} : null],
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
                     unit: ' sec',
-                    actualValue: 10
+                    actualValue: {{ average.speed_sec.pre|floatformat:2|default:0 }}
                 }, {
                     label: 'Post-Test',
-                    data: [20 - 7],
+                    data: [{{ average.speed_sec.post|floatformat:2|default:0 }} !== 0 ? 20 - {{ average.speed_sec.post|floatformat:2|default:0 }} : null],
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
                     unit: ' sec',
-                    actualValue: 7
+                    actualValue: {{ average.speed_sec.post|floatformat:2|default:0 }}
                 }]
             },
             options: {
@@ -1590,6 +1489,9 @@
                             label: function(context) {
                                 const label = context.dataset.label || '';
                                 const actualValue = context.dataset.actualValue;
+                                if (actualValue === 0 || actualValue === null) {
+                                    return 'No data';
+                                }
                                 return actualValue + ' sec';
                             }
                         }
@@ -1612,24 +1514,24 @@
         });
 
         // Create Endurance Comparison Chart
-        new Chart(document.getElementById('enduranceComparisonChart'), {
+        charts.endurance = new Chart(document.getElementById('enduranceComparisonChart'), {
             type: 'bar',
             data: {
                 labels: ['Endurance'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [30 - 9.5], // 9 minutes 30 seconds = 9.5 decimal minutes, inverted
+                    data: [{{ average.endurance_sec.pre|floatformat:2|default:0 }} !== 0 ? 30 - ({{ average.endurance_sec.pre|floatformat:2|default:0 }} / 60) : null], // Convert seconds to minutes, inverted
                     backgroundColor: '#4A90A4',
                     borderRadius: 4,
                     unit: ' min',
-                    actualValue: 9.5
+                    actualValue: {{ average.endurance_sec.pre|floatformat:2|default:0 }} / 60
                 }, {
                     label: 'Post-Test',
-                    data: [30 - 7.25], // 7 minutes 15 seconds = 7.25 decimal minutes, inverted
+                    data: [{{ average.endurance_sec.post|floatformat:2|default:0 }} !== 0 ? 30 - ({{ average.endurance_sec.post|floatformat:2|default:0 }} / 60) : null], // Convert seconds to minutes, inverted
                     backgroundColor: '#2C3E50',
                     borderRadius: 4,
                     unit: ' min',
-                    actualValue: 7.25
+                    actualValue: {{ average.endurance_sec.post|floatformat:2|default:0 }} / 60
                 }]
             },
             options: {
@@ -1642,8 +1544,8 @@
                             label: function(context) {
                                 const label = context.dataset.label || '';
                                 const actualValue = context.dataset.actualValue;
-                                if (actualValue === null) {
-                                    return label + ': No data';
+                                if (actualValue === 0 || actualValue === null) {
+                                    return 'No data';
                                 }
                                 // Convert decimal minutes to mm:ss format
                                 const minutes = Math.floor(actualValue);
@@ -1676,8 +1578,8 @@
             data: {
                 labels: ['Underweight', 'Normal', 'Overweight', 'Obese'],
                 datasets: [{
-                    data: [15, 45, 25, 15],
-                    backgroundColor: ['#B7D7EA', '#4A90A4', '#5FA8D3', '#1976D2'],
+                    data: [{{ bmi_distribution.underweight }}, {{ bmi_distribution.normal }}, {{ bmi_distribution.overweight }}, {{ bmi_distribution.obese }}],
+                    backgroundColor: ['#A8E6CF', '#4ECDC4', '#45B7D1', '#2C5F7F'],
                     borderWidth: 0
                 }]
             },
@@ -1744,15 +1646,107 @@
         }
 
         function selectSection(section) {
+            currentSection = section;
             document.getElementById('sectionSelected').textContent = section;
             document.getElementById('sectionDropdown').classList.remove('show');
             document.querySelector(`[onclick="toggleDropdown('sectionDropdown')"]`).classList.remove('active');
+            
+            // If date filter is active, apply both filters together
+            if (startDate && endDate) {
+                filterChartsByDateRange(startDate, endDate);
+            } else {
+                // Otherwise just update by section
+                updateChartsForSection(section);
+            }
+        }
+        
+        function updateChartsForSection(section) {
+            // Get the data for the selected section
+            let data;
+            if (section === 'All Sections') {
+                data = allSectionsData;
+            } else {
+                data = sectionAverages[section] || allSectionsData;
+            }
+            
+            // Helper function to format to 2 decimal places
+            const format = (val) => val !== null && val !== undefined ? parseFloat(val.toFixed(2)) : 0;
+            
+            // Update BMI Chart
+            charts.bmi.data.datasets[0].data = [format(data.bmi.pre)];
+            charts.bmi.data.datasets[1].data = [format(data.bmi.post)];
+            charts.bmi.update();
+            
+            // Update VO2 Max Chart
+            charts.vo2.data.datasets[0].data = [format(data.vo2_max.pre)];
+            charts.vo2.data.datasets[1].data = [format(data.vo2_max.post)];
+            charts.vo2.update();
+            
+            // Update Flexibility Chart
+            charts.flexibility.data.datasets[0].data = [format(data.flexibility_cm.pre)];
+            charts.flexibility.data.datasets[1].data = [format(data.flexibility_cm.post)];
+            charts.flexibility.update();
+            
+            // Update Strength Chart
+            charts.strength.data.datasets[0].data = [format(data.strength_reps.pre)];
+            charts.strength.data.datasets[1].data = [format(data.strength_reps.post)];
+            charts.strength.update();
+            
+            // Update Agility Chart (inverted)
+            const agilityPre = data.agility_sec.pre;
+            const agilityPost = data.agility_sec.post;
+            charts.agility.data.datasets[0].data = [agilityPre !== 0 ? format(60 - agilityPre) : null];
+            charts.agility.data.datasets[0].actualValue = format(agilityPre);
+            charts.agility.data.datasets[1].data = [agilityPost !== 0 ? format(60 - agilityPost) : null];
+            charts.agility.data.datasets[1].actualValue = format(agilityPost);
+            charts.agility.update();
+            
+            // Update Speed Chart (inverted)
+            const speedPre = data.speed_sec.pre;
+            const speedPost = data.speed_sec.post;
+            charts.speed.data.datasets[0].data = [speedPre !== 0 ? format(20 - speedPre) : null];
+            charts.speed.data.datasets[0].actualValue = format(speedPre);
+            charts.speed.data.datasets[1].data = [speedPost !== 0 ? format(20 - speedPost) : null];
+            charts.speed.data.datasets[1].actualValue = format(speedPost);
+            charts.speed.update();
+            
+            // Update Endurance Chart (inverted, convert to minutes)
+            const endurancePre = data.endurance_sec.pre / 60;
+            const endurancePost = data.endurance_sec.post / 60;
+            charts.endurance.data.datasets[0].data = [data.endurance_sec.pre !== 0 ? format(30 - endurancePre) : null];
+            charts.endurance.data.datasets[0].actualValue = format(endurancePre);
+            charts.endurance.data.datasets[1].data = [data.endurance_sec.post !== 0 ? format(30 - endurancePost) : null];
+            charts.endurance.data.datasets[1].actualValue = format(endurancePost);
+            charts.endurance.update();
         }
 
         function selectTestType(testType) {
             document.getElementById('testTypeSelected').textContent = testType;
             document.getElementById('testTypeDropdown').classList.remove('show');
             document.querySelector(`[onclick="toggleDropdown('testTypeDropdown')"]`).classList.remove('active');
+            
+            // Update all charts based on selected test type
+            updateChartsForTestType(testType);
+        }
+        
+        function updateChartsForTestType(testType) {
+            // Determine which datasets to show
+            let showPreTest = testType === 'Pre-test vs Post-test' || testType === 'Pre-test Only';
+            let showPostTest = testType === 'Pre-test vs Post-test' || testType === 'Post-test Only';
+            
+            // Update each chart
+            Object.values(charts).forEach(chart => {
+                if (chart && chart.data && chart.data.datasets) {
+                    chart.data.datasets.forEach((dataset, index) => {
+                        if (index === 0) { // Pre-Test
+                            dataset.hidden = !showPreTest;
+                        } else if (index === 1) { // Post-Test
+                            dataset.hidden = !showPostTest;
+                        }
+                    });
+                    chart.update();
+                }
+            });
         }
 
         function selectDate(date) {
@@ -1762,15 +1756,29 @@
         }
 
         // Calendar Functions
-        let currentMonth = 10; // November (0-indexed)
-        let currentYear = 2025;
+        const today = new Date();
+        let currentMonth = today.getMonth(); // Current month (0-indexed)
+        let currentYear = today.getFullYear();
+        let startDate = null;
+        let endDate = null;
+        let selectingStartDate = true;
+
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
 
         function setAllTime() {
+            startDate = null;
+            endDate = null;
+            selectingStartDate = true;
             document.getElementById('dateSelected').textContent = 'All Time';
             document.getElementById('startDate').value = '';
             document.getElementById('endDate').value = '';
             document.getElementById('dateDropdown').classList.remove('show');
             document.querySelector(`[onclick="toggleDropdown('dateDropdown')"]`).classList.remove('active');
+            renderCalendar();
+            filterChartsByDateRange(null, null);
         }
 
         function previousMonth() {
@@ -1779,7 +1787,7 @@
                 currentMonth = 11;
                 currentYear--;
             }
-            updateCalendarHeader();
+            renderCalendar();
         }
 
         function nextMonth() {
@@ -1788,43 +1796,271 @@
                 currentMonth = 0;
                 currentYear++;
             }
-            updateCalendarHeader();
+            renderCalendar();
         }
 
-        function updateCalendarHeader() {
-            const monthNames = [
-                'January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'
-            ];
+        function renderCalendar() {
+            // Update header
             document.querySelector('.month-year').textContent = `${monthNames[currentMonth]}, ${currentYear}`;
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+            
+            // Get calendar grid
+            const calendarGrid = document.querySelector('.calendar-grid');
+            
+            // Clear existing days (keep headers)
+            const dayElements = calendarGrid.querySelectorAll('.day');
+            dayElements.forEach(el => el.remove());
+            
+            // Add previous month days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                const dayEl = createDayElement(day, 'prev-month');
+                calendarGrid.appendChild(dayEl);
+            }
+            
+            // Add current month days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayEl = createDayElement(day, 'current-month');
+                calendarGrid.appendChild(dayEl);
+            }
+            
+            // Add next month days to fill the grid
+            const totalCells = calendarGrid.children.length - 7; // Subtract day headers
+            const remainingCells = 42 - totalCells; // 6 rows * 7 days
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayEl = createDayElement(day, 'next-month');
+                calendarGrid.appendChild(dayEl);
+            }
         }
 
-        // Add click events to calendar days
-        document.addEventListener('DOMContentLoaded', function() {
-            const days = document.querySelectorAll('.day:not(.prev-month):not(.next-month)');
-            days.forEach(day => {
-                day.addEventListener('click', function() {
-                    // Remove previous selection
-                    document.querySelectorAll('.day.selected').forEach(d => d.classList.remove('selected'));
-                    // Add selection to clicked day
-                    this.classList.add('selected');
+        function createDayElement(day, type) {
+            const dayEl = document.createElement('div');
+            dayEl.className = 'day';
+            dayEl.textContent = day;
+            
+            if (type === 'prev-month' || type === 'next-month') {
+                dayEl.classList.add(type);
+            }
+            
+            // Check if this is today
+            if (type === 'current-month') {
+                const dayDate = new Date(currentYear, currentMonth, day);
+                const todayDate = new Date();
+                if (dayDate.toDateString() === todayDate.toDateString()) {
+                    dayEl.classList.add('current-day');
+                }
+                
+                // Check if date is in selected range
+                if (startDate && endDate) {
+                    const checkDate = new Date(currentYear, currentMonth, day);
+                    if (checkDate >= startDate && checkDate <= endDate) {
+                        dayEl.style.backgroundColor = '#DBEAFE';
+                    }
+                } else if (startDate) {
+                    const checkDate = new Date(currentYear, currentMonth, day);
+                    if (checkDate.toDateString() === startDate.toDateString()) {
+                        dayEl.style.backgroundColor = '#3B82F6';
+                        dayEl.style.color = 'white';
+                    }
+                }
+                
+                // Add click handler
+                dayEl.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Prevent click from bubbling up
+                    handleDayClick(day);
+                });
+            }
+            
+            return dayEl;
+        }
 
-                    // Update date range (this is a simplified example)
-                    const selectedDay = this.textContent;
-                    const monthNames = [
-                        'January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'
-                    ];
-                    const selectedDate = `${monthNames[currentMonth]} ${selectedDay}, ${currentYear}`;
-                    document.getElementById('dateSelected').textContent = selectedDate;
+        function handleDayClick(day) {
+            const selectedDate = new Date(currentYear, currentMonth, day);
+            
+            if (selectingStartDate || (startDate && endDate)) {
+                // Select start date
+                startDate = selectedDate;
+                endDate = null;
+                selectingStartDate = false;
+                document.getElementById('startDate').value = formatDate(startDate);
+                document.getElementById('endDate').value = '';
+                renderCalendar();
+            } else {
+                // Select end date
+                if (selectedDate < startDate) {
+                    // If end date is before start, swap them
+                    endDate = startDate;
+                    startDate = selectedDate;
+                } else {
+                    endDate = selectedDate;
+                }
+                selectingStartDate = true;
+                document.getElementById('endDate').value = formatDate(endDate);
+                
+                // Update the selected text
+                const dateText = formatDate(startDate) + ' - ' + formatDate(endDate);
+                document.getElementById('dateSelected').textContent = dateText;
+                
+                renderCalendar();
+                
+                // Close dropdown and apply filter after rendering
+                setTimeout(() => {
+                    document.getElementById('dateDropdown').classList.remove('show');
+                    document.querySelector(`[onclick="toggleDropdown('dateDropdown')"]`).classList.remove('active');
+                }, 300);
+                
+                // Filter charts by date range
+                filterChartsByDateRange(startDate, endDate);
+            }
+        }
+        
+        function filterChartsByDateRange(start, end) {
+            // If no date range, use all data
+            if (!start || !end) {
+                // Reset to current section's data (or all sections)
+                updateChartsForSection(currentSection);
+                return;
+            }
+            
+            // Convert dates to YYYY-MM-DD format using local time (not UTC)
+            const startStr = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+            const endStr = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+            
+            console.log('Filtering - Date Range:', startStr, 'to', endStr, '| Section:', currentSection);
+            
+            // Debug: Show all test dates
+            console.log('All tests:', studentTests.map(t => ({
+                section: t.section,
+                type: t.test_type,
+                date: t.date
+            })));
+            
+            // Filter tests by date range and section
+            const filteredTests = studentTests.filter(test => {
+                // Filter by section if not "All Sections"
+                if (currentSection !== 'All Sections' && test.section !== currentSection) {
+                    return false;
+                }
+                
+                // Check if test is in the date range
+                return test.date && test.date >= startStr && test.date <= endStr;
+            });
+            
+            console.log('Filtered:', filteredTests.length, 'tests out of', studentTests.length);
+            
+            // Calculate averages from filtered data
+            const averages = {
+                bmi: { pre: 0, post: 0 },
+                vo2_max: { pre: 0, post: 0 },
+                flexibility_cm: { pre: 0, post: 0 },
+                strength_reps: { pre: 0, post: 0 },
+                agility_sec: { pre: 0, post: 0 },
+                speed_sec: { pre: 0, post: 0 },
+                endurance_sec: { pre: 0, post: 0 }
+            };
+            
+            const counts = {
+                bmi: { pre: 0, post: 0 },
+                vo2_max: { pre: 0, post: 0 },
+                flexibility_cm: { pre: 0, post: 0 },
+                strength_reps: { pre: 0, post: 0 },
+                agility_sec: { pre: 0, post: 0 },
+                speed_sec: { pre: 0, post: 0 },
+                endurance_sec: { pre: 0, post: 0 }
+            };
+            
+            filteredTests.forEach(test => {
+                const testType = test.test_type;
+                
+                Object.keys(averages).forEach(metric => {
+                    if (test[metric] !== null && test[metric] !== undefined) {
+                        averages[metric][testType] += test[metric];
+                        counts[metric][testType]++;
+                    }
                 });
             });
+            
+            // Calculate final averages
+            const filteredData = {};
+            Object.keys(averages).forEach(metric => {
+                filteredData[metric] = {
+                    pre: counts[metric].pre > 0 ? averages[metric].pre / counts[metric].pre : 0,
+                    post: counts[metric].post > 0 ? averages[metric].post / counts[metric].post : 0
+                };
+            });
+            
+            console.log('Filtered data:', filteredData);
+            console.log('Counts:', counts);
+            
+            // Update charts with filtered data
+            const format = (val) => val !== null && val !== undefined ? parseFloat(val.toFixed(2)) : 0;
+            
+            // Update BMI Chart
+            charts.bmi.data.datasets[0].data = [format(filteredData.bmi.pre)];
+            charts.bmi.data.datasets[1].data = [format(filteredData.bmi.post)];
+            charts.bmi.update();
+            
+            // Update VO2 Max Chart
+            charts.vo2.data.datasets[0].data = [format(filteredData.vo2_max.pre)];
+            charts.vo2.data.datasets[1].data = [format(filteredData.vo2_max.post)];
+            charts.vo2.update();
+            
+            // Update Flexibility Chart
+            charts.flexibility.data.datasets[0].data = [format(filteredData.flexibility_cm.pre)];
+            charts.flexibility.data.datasets[1].data = [format(filteredData.flexibility_cm.post)];
+            charts.flexibility.update();
+            
+            // Update Strength Chart
+            charts.strength.data.datasets[0].data = [format(filteredData.strength_reps.pre)];
+            charts.strength.data.datasets[1].data = [format(filteredData.strength_reps.post)];
+            charts.strength.update();
+            
+            // Update Agility Chart (inverted)
+            const agilityPre = filteredData.agility_sec.pre;
+            const agilityPost = filteredData.agility_sec.post;
+            charts.agility.data.datasets[0].data = [agilityPre !== 0 ? format(60 - agilityPre) : null];
+            charts.agility.data.datasets[0].actualValue = format(agilityPre);
+            charts.agility.data.datasets[1].data = [agilityPost !== 0 ? format(60 - agilityPost) : null];
+            charts.agility.data.datasets[1].actualValue = format(agilityPost);
+            charts.agility.update();
+            
+            // Update Speed Chart (inverted)
+            const speedPre = filteredData.speed_sec.pre;
+            const speedPost = filteredData.speed_sec.post;
+            charts.speed.data.datasets[0].data = [speedPre !== 0 ? format(20 - speedPre) : null];
+            charts.speed.data.datasets[0].actualValue = format(speedPre);
+            charts.speed.data.datasets[1].data = [speedPost !== 0 ? format(20 - speedPost) : null];
+            charts.speed.data.datasets[1].actualValue = format(speedPost);
+            charts.speed.update();
+            
+            // Update Endurance Chart (inverted, convert to minutes)
+            const endurancePre = filteredData.endurance_sec.pre / 60;
+            const endurancePost = filteredData.endurance_sec.post / 60;
+            charts.endurance.data.datasets[0].data = [filteredData.endurance_sec.pre !== 0 ? format(30 - endurancePre) : null];
+            charts.endurance.data.datasets[0].actualValue = format(endurancePre);
+            charts.endurance.data.datasets[1].data = [filteredData.endurance_sec.post !== 0 ? format(30 - endurancePost) : null];
+            charts.endurance.data.datasets[1].actualValue = format(endurancePost);
+            charts.endurance.update();
+        }
+
+        function formatDate(date) {
+            return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        }
+
+        // Initialize calendar when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCalendar();
         });
 
         // Close dropdowns when clicking outside
         document.addEventListener('click', function(event) {
             const dropdowns = document.querySelectorAll('.dropdown-menu');
             const buttons = document.querySelectorAll('.custom-dropdown');
+            const dateDropdown = document.getElementById('dateDropdown');
 
             let clickedInside = false;
             buttons.forEach(button => {
@@ -1832,9 +2068,16 @@
                     clickedInside = true;
                 }
             });
+            
+            // Check if click is inside date dropdown
+            let clickedInsideDatePicker = dateDropdown && dateDropdown.contains(event.target);
 
             if (!clickedInside) {
                 dropdowns.forEach(dropdown => {
+                    // Don't close date dropdown if clicked inside it
+                    if (dropdown.id === 'dateDropdown' && clickedInsideDatePicker) {
+                        return;
+                    }
                     dropdown.classList.remove('show');
                 });
                 buttons.forEach(button => {

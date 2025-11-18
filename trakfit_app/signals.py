@@ -6,9 +6,7 @@ from .models import FitnessTest, Student, updates
 
 @receiver(post_save, sender=Student)
 def student_registered(sender, instance, created, **kwargs):
-    """
-    Signal to track when a student registers.
-    """
+    # Signal to track when a student registers.
     if created:
         student = instance
         full_name = f"{student.first_name} {student.last_name}"
@@ -20,10 +18,8 @@ def student_registered(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=FitnessTest)
 def update_student_timestamp(sender, instance, created, **kwargs):
-    """
-    Signal to update the student's updated_at field whenever a fitness test is created or updated.
-    Also creates an entry in the updates model to track the change.
-    """
+    # Signal to update the student's updated_at field whenever a fitness test is created or updated.
+    # Also creates an entry in the updates model to track the change.
     student = instance.student
     full_name = f"{student.first_name} {student.last_name}"
     
@@ -35,9 +31,11 @@ def update_student_timestamp(sender, instance, created, **kwargs):
         elif student.gender.lower() in ['female', 'f']:
             pronoun = "her"
     
-    # Update the student's last_data_update_at timestamp
-    student.last_data_update_at = timezone.now()
-    student.save(update_fields=['last_data_update_at', 'updated_at'])
+    # Update the student's last_data_update_at timestamp without triggering signals
+    Student.objects.filter(pk=student.pk).update(
+        last_data_update_at=timezone.now(),
+        updated_at=timezone.now()
+    )
     
     # Generate appropriate message based on action and test type
     if created:
@@ -48,8 +46,11 @@ def update_student_timestamp(sender, instance, created, **kwargs):
             # Count existing post tests to get the number
             post_test_count = student.fitness_tests.filter(test_type='post').count()
             body = f"{full_name} created {pronoun} post test #{post_test_count}"
+        
+        # Create an entry in the updates model to track this change
+        updates.objects.create(student=student, body=body)
     else:
-        # Test updated
+        # Test updated - only for post tests (pre-tests are not editable)
         if instance.test_type == 'post':
             # Find which post test number this is
             post_tests = student.fitness_tests.filter(test_type='post').order_by('taken_at')
@@ -59,8 +60,6 @@ def update_student_timestamp(sender, instance, created, **kwargs):
                     test_number = idx
                     break
             body = f"{full_name} updated {pronoun} post test #{test_number}"
-        else:
-            body = f"{full_name} updated {pronoun} pre-test"
-    
-    # Create an entry in the updates model to track this change
-    updates.objects.create(student=student, body=body)
+            
+            # Create an entry in the updates model to track this change
+            updates.objects.create(student=student, body=body)
