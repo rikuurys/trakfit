@@ -551,6 +551,17 @@
         }
       }
 
+      /* Hide Previous Test column when it's the same as pre-test */
+      .test-results-table.hide-previous-test .previous-test-col {
+        display: none;
+      }
+
+      /* Hide Pre-Test column when viewing the pre-test itself */
+      .test-results-table.hide-pretest-col th:last-child,
+      .test-results-table.hide-pretest-col td:last-child {
+        display: none;
+      }
+
       .remarks-section {
         flex-shrink: 0;
         display: flex;
@@ -914,6 +925,19 @@
         // Check if current test is the pre-test
         const isPreTest = test.test_type_key === 'pre';
 
+        // Check if previous test is the pre-test (to hide redundant column)
+        const isPreviousTestPreTest = test.previous_test?.test_id === test.pre_test?.test_id;
+        
+        // Build class list for hiding columns
+        let hideClasses = [];
+        if (isPreTest || isPreviousTestPreTest) {
+          hideClasses.push('hide-previous-test');
+        }
+        if (isPreTest) {
+          hideClasses.push('hide-pretest-col');
+        }
+        const hideClass = hideClasses.join(' ');
+
         // Build remarks HTML with timestamp
         let remarksHTML = '';
         if (test.remarks && test.remarks.trim() !== '') {
@@ -949,7 +973,7 @@
               </div>
             </div>
             <div class="table-wrapper">
-              <table class="test-results-table">
+              <table class="test-results-table ${hideClass}">
                 <thead>
                   <tr>
                     <th>Fitness Component</th>

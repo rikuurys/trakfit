@@ -593,7 +593,7 @@
             <!-- Table Headers -->
             <div class="row mb-2">
               <div class="col-2">
-                <small class="text-muted">Test #</small>
+                <small class="text-muted">Test ID</small>
               </div>
               <div class="col-2">
                 <small class="text-muted">Date Taken</small>
@@ -754,8 +754,8 @@
         studentData.remarks.forEach((test) => {
           // Test type badge with ID
           const testTypeBadge = test.test_type_key === 'pre' 
-            ? `<span style="background: #3b82f6; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Pre Test #${test.test_id}</span>`
-            : `<span style="background: #10b981; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Post Test #${test.test_id}</span>`;
+            ? `<span style="background: #3b82f6; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Pre Test (ID: ${test.test_id})</span>`
+            : `<span style="background: #10b981; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Post Test (ID: ${test.test_id})</span>`;
 
           // Format BMI and VO2 Max with differences from previous test
           const bmiValue = test.previous_test 
