@@ -253,55 +253,37 @@ def student_dashboard(request):
     if latest_test and latest_test.bmi:
         latest_test.bmi_status = get_bmi_status(latest_test.bmi)
     
-    # Get all tests with remarks for the student
+    # Get all tests for the student (most recent first)
     remarks_data = []
-    tests_with_remarks = student.fitness_tests.filter(remarks__isnull=False).exclude(remarks='').order_by('-taken_at')[:10]
+    all_tests = student.fitness_tests.all().order_by('-taken_at')
     
-    for test in tests_with_remarks:
-        # Try to find the corresponding pre/post test for comparison
-        if test.test_type == 'post':
-            comparison_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    # Create a list of all tests with previous test data for comparison
+    tests_list = list(all_tests)
+    for i, test in enumerate(tests_list):
+        # Find previous test (next in the list since ordered by -taken_at)
+        previous_test = tests_list[i + 1] if i + 1 < len(tests_list) else None
+        
+        # Build test data with previous test comparison
+        test_data = {
+            'test_id': test.test_id,
+            'test_type': test.get_test_type_display(),
+            'test_type_key': test.test_type,
+            'date': test.taken_at.strftime('%B %d, %Y') if test.taken_at else 'N/A',
+            'bmi': round(test.bmi, 2) if test.bmi else None,
+            'vo2_max': round(test.vo2_max, 2) if test.vo2_max else None,
+            'remarks': test.remarks if test.remarks else None,
+        }
+        
+        # Add previous test data for comparison
+        if previous_test:
+            test_data['previous_test'] = {
+                'bmi': round(previous_test.bmi, 2) if previous_test.bmi else None,
+                'vo2_max': round(previous_test.vo2_max, 2) if previous_test.vo2_max else None,
+            }
         else:
-            comparison_test = student.fitness_tests.filter(test_type='post').order_by('-taken_at').first()
+            test_data['previous_test'] = None
         
-        # Determine which metric the remark is about (simplified - using first non-null value)
-        metric_name = "General"
-        pre_value = "N/A"
-        post_value = "N/A"
-        
-        # Check various metrics to determine what was tested
-        if test.flexibility_cm is not None:
-            metric_name = "Flexibility (Sit & Reach)"
-            if test.test_type == 'post' and comparison_test and comparison_test.flexibility_cm:
-                pre_value = float(comparison_test.flexibility_cm)
-                post_value = float(test.flexibility_cm)
-            elif test.test_type == 'pre' and comparison_test and comparison_test.flexibility_cm:
-                pre_value = float(test.flexibility_cm)
-                post_value = float(comparison_test.flexibility_cm)
-        elif test.strength_reps is not None:
-            metric_name = "Strength (Push-ups)"
-            if test.test_type == 'post' and comparison_test and comparison_test.strength_reps:
-                pre_value = comparison_test.strength_reps
-                post_value = test.strength_reps
-            elif test.test_type == 'pre' and comparison_test and comparison_test.strength_reps:
-                pre_value = test.strength_reps
-                post_value = comparison_test.strength_reps
-        elif test.vo2_distance_m is not None and test.vo2_max:
-            metric_name = "VO₂ Max"
-            if test.test_type == 'post' and comparison_test and comparison_test.vo2_max:
-                pre_value = round(comparison_test.vo2_max, 1)
-                post_value = round(test.vo2_max, 1)
-            elif test.test_type == 'pre' and comparison_test and comparison_test.vo2_max:
-                pre_value = round(test.vo2_max, 1)
-                post_value = round(comparison_test.vo2_max, 1)
-        
-        remarks_data.append({
-            'date': test.taken_at.strftime('%Y-%m-%d') if test.taken_at else 'N/A',
-            'metric': metric_name,
-            'pre': pre_value,
-            'post': post_value,
-            'remark': test.remarks
-        })
+        remarks_data.append(test_data)
     
     # Calculate VO2 Max trend data (last 5 tests with VO2 data)
     vo2_tests = student.fitness_tests.exclude(vo2_distance_m__isnull=True).order_by('taken_at')[:5]
@@ -1024,6 +1006,7 @@ def student_profile(request, student_no):
             'speed_sec': float(test.speed_sec) if test.speed_sec else None,
             'endurance_display': test.get_endurance_display(),
             'remarks': test.remarks,
+            'remarksCreated': test.remarksCreated.strftime('%B %d, %Y') if test.remarksCreated else None,
             'pre_test': pre_test_data,
             'previous_test': previous_test_data,
         }

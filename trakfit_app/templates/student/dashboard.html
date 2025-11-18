@@ -402,6 +402,21 @@
           margin-left: 0;
         }
       }
+
+      /* Difference indicator styles */
+      .difference {
+        font-size: 0.85em;
+        font-weight: 600;
+        margin-left: 0.25rem;
+      }
+
+      .difference-positive {
+        color: #16a34a;
+      }
+
+      .difference-negative {
+        color: #dc2626;
+      }
     </style>
   </head>
   <body>
@@ -578,19 +593,19 @@
             <!-- Table Headers -->
             <div class="row mb-2">
               <div class="col-2">
-                <small class="text-muted">Date</small>
-              </div>
-              <div class="col-3">
-                <small class="text-muted">Metric</small>
+                <small class="text-muted">Test #</small>
               </div>
               <div class="col-2">
-                <small class="text-muted">Pre</small>
+                <small class="text-muted">Date Taken</small>
               </div>
               <div class="col-2">
-                <small class="text-muted">Post</small>
+                <small class="text-muted">BMI</small>
               </div>
               <div class="col-3">
-                <small class="text-muted">Remark</small>
+                <small class="text-muted">VO₂ Max</small>
+              </div>
+              <div class="col-3">
+                <small class="text-muted">Remarks</small>
               </div>
             </div>
 
@@ -714,15 +729,58 @@
         container.innerHTML = "";
         fullscreenContainer.innerHTML = "";
 
-        studentData.remarks.forEach((remark) => {
+        // Helper function to calculate difference (for lower is better metrics like BMI)
+        const calculateDifference = (current, previous, lowerIsBetter = false) => {
+          if (current === null || current === undefined || previous === null || previous === undefined) {
+            return null;
+          }
+          const diff = current - previous;
+          if (diff === 0) return { value: 0, isPositive: null };
+          const isImprovement = lowerIsBetter ? diff < 0 : diff > 0;
+          return { value: Math.abs(diff).toFixed(2), isPositive: isImprovement };
+        };
+
+        // Helper function to format value with difference indicator
+        const formatWithDifference = (current, previous, unit = '', lowerIsBetter = false) => {
+          if (current === null || current === undefined) return 'N/A';
+          const valueStr = `${current}${unit ? ' ' + unit : ''}`;
+          const diff = calculateDifference(current, previous, lowerIsBetter);
+          if (!diff) return valueStr;
+          const sign = diff.isPositive ? '+' : '-';
+          const colorClass = diff.isPositive ? 'difference-positive' : 'difference-negative';
+          return `${valueStr} <span class="difference ${colorClass}">(${sign}${diff.value})</span>`;
+        };
+
+        studentData.remarks.forEach((test) => {
+          // Test type badge with ID
+          const testTypeBadge = test.test_type_key === 'pre' 
+            ? `<span style="background: #3b82f6; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Pre Test #${test.test_id}</span>`
+            : `<span style="background: #10b981; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Post Test #${test.test_id}</span>`;
+
+          // Format BMI and VO2 Max with differences from previous test
+          const bmiValue = test.previous_test 
+            ? formatWithDifference(test.bmi, test.previous_test.bmi, '', true)
+            : (test.bmi !== null ? test.bmi.toFixed(2) : 'N/A');
+            
+          const vo2Value = test.previous_test
+            ? formatWithDifference(test.vo2_max, test.previous_test.vo2_max, 'mL/kg/min', false)
+            : (test.vo2_max !== null ? `${test.vo2_max.toFixed(2)} mL/kg/min` : 'N/A');
+
+          // Remarks display
+          const remarksDisplay = test.remarks && test.remarks.trim() !== ''
+            ? `<span style="color: var(--text-dark);">${test.remarks}</span>`
+            : '<span style="color: #9ca3af; font-style: italic;">No remarks yet</span>';
+
           const remarkHTML = `
                     <div class="remarks-table p-3 mb-2">
                         <div class="row align-items-center">
-                            <div class="col-2">${remark.date}</div>
-                            <div class="col-3">${remark.metric}</div>
-                            <div class="col-2">${remark.pre}</div>
-                            <div class="col-2">${remark.post}</div>
-                            <div class="col-3">${remark.remark}</div>
+                            <div class="col-2">
+                              ${testTypeBadge}
+                            </div>
+                            <div class="col-2" style="font-size: 0.85rem;">${test.date}</div>
+                            <div class="col-2" style="font-size: 0.85rem;">${bmiValue}</div>
+                            <div class="col-3" style="font-size: 0.85rem;">${vo2Value}</div>
+                            <div class="col-3" style="font-size: 0.85rem;">${remarksDisplay}</div>
                         </div>
                     </div>
                 `;

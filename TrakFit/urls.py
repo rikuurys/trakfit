@@ -35,6 +35,7 @@ urlpatterns = [
     path('student-pre-test/', views.student_pre_test_view, name='student-pre-test'),
     path('student-post-test/', views.student_post_test_view, name='student-post-test'),
     path('student/test/update/<int:test_id>/', views.update_test_view, name='update-test'),
+    path('student/test/remark/', views.add_remark, name='add-remark'),
     path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
     path('student-management/', views.student_management, name='student_management'),
     path('student-profile/<str:student_no>/', views.student_profile, name='student_profile'),

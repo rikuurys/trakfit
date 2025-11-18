@@ -847,7 +847,7 @@
           if (diff === 0) return { value: 0, isPositive: null };
           
           const isImprovement = lowerIsBetter ? diff < 0 : diff > 0;
-          return { value: Math.abs(diff).toFixed(1), isPositive: isImprovement };
+          return { value: Math.abs(diff).toFixed(2), isPositive: isImprovement };
         };
 
         // Helper function to format with difference
@@ -908,62 +908,62 @@
               <tr>
                 <td class="component-name">Height</td>
                 <td class="current-test-col">${formatValue(latestTest.height_cm, 'cm')}</td>
-                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.height_cm, previousTest?.height_cm, 'cm', false)}</td>
-                <td>${formatWithDifference(latestTest.height_cm, preTest?.height_cm, 'cm', false)}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(previousTest?.height_cm, latestTest.height_cm, 'cm', false)}</td>
+                <td>${formatWithDifference(preTest?.height_cm, latestTest.height_cm, 'cm', false)}</td>
               </tr>
               <tr>
                 <td class="component-name">Weight</td>
                 <td class="current-test-col">${formatValue(latestTest.weight_kg, 'kg')}</td>
-                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.weight_kg, previousTest?.weight_kg, 'kg', true)}</td>
-                <td>${formatWithDifference(latestTest.weight_kg, preTest?.weight_kg, 'kg', true)}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(previousTest?.weight_kg, latestTest.weight_kg, 'kg', false)}</td>
+                <td>${formatWithDifference(preTest?.weight_kg, latestTest.weight_kg, 'kg', false)}</td>
               </tr>
               <tr>
                 <td class="component-name">Body Mass Index (BMI)</td>
                 <td class="current-test-col">${formatValue(latestTest.bmi)}</td>
-                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.bmi, previousTest?.bmi, '', true)}</td>
-                <td>${formatWithDifference(latestTest.bmi, preTest?.bmi, '', true)}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(previousTest?.bmi, latestTest.bmi, '', true)}</td>
+                <td>${formatWithDifference(preTest?.bmi, latestTest.bmi, '', true)}</td>
               </tr>
               <tr>
                 <td class="component-name">VO<sub>2</sub> Distance</td>
                 <td class="current-test-col">${formatValue(latestTest.vo2_distance_m, 'm')}</td>
-                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.vo2_distance_m, previousTest?.vo2_distance_m, 'm', false)}</td>
-                <td>${formatWithDifference(latestTest.vo2_distance_m, preTest?.vo2_distance_m, 'm', false)}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(previousTest?.vo2_distance_m, latestTest.vo2_distance_m, 'm', false)}</td>
+                <td>${formatWithDifference(preTest?.vo2_distance_m, latestTest.vo2_distance_m, 'm', false)}</td>
               </tr>
               <tr>
                 <td class="component-name">VO<sub>2</sub> Max</td>
                 <td class="current-test-col">${formatValue(latestTest.vo2_max, 'mL/kg/min')}</td>
-                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.vo2_max, previousTest?.vo2_max, 'mL/kg/min', false)}</td>
-                <td>${formatWithDifference(latestTest.vo2_max, preTest?.vo2_max, 'mL/kg/min', false)}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(previousTest?.vo2_max, latestTest.vo2_max, 'mL/kg/min', false)}</td>
+                <td>${formatWithDifference(preTest?.vo2_max, latestTest.vo2_max, 'mL/kg/min', false)}</td>
               </tr>
               <tr>
                 <td class="component-name">Flexibility (Sit & Reach)</td>
                 <td class="current-test-col">${formatValue(latestTest.flexibility_cm, 'cm')}</td>
-                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.flexibility_cm, previousTest?.flexibility_cm, 'cm', false)}</td>
-                <td>${formatWithDifference(latestTest.flexibility_cm, preTest?.flexibility_cm, 'cm', false)}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(previousTest?.flexibility_cm, latestTest.flexibility_cm, 'cm', false)}</td>
+                <td>${formatWithDifference(preTest?.flexibility_cm, latestTest.flexibility_cm, 'cm', false)}</td>
               </tr>
               <tr>
                 <td class="component-name">Strength (Push-ups)</td>
                 <td class="current-test-col">${formatValue(latestTest.strength_reps, 'reps')}</td>
-                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.strength_reps, previousTest?.strength_reps, 'reps', false)}</td>
-                <td>${formatWithDifference(latestTest.strength_reps, preTest?.strength_reps, 'reps', false)}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(previousTest?.strength_reps, latestTest.strength_reps, 'reps', false)}</td>
+                <td>${formatWithDifference(preTest?.strength_reps, latestTest.strength_reps, 'reps', false)}</td>
               </tr>
               <tr>
                 <td class="component-name">Agility (Hexagon)</td>
                 <td class="current-test-col">${formatValue(latestTest.agility_sec, 'sec')}</td>
-                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.agility_sec, previousTest?.agility_sec, 'sec', true)}</td>
-                <td>${formatWithDifference(latestTest.agility_sec, preTest?.agility_sec, 'sec', true)}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(previousTest?.agility_sec, latestTest.agility_sec, 'sec', true)}</td>
+                <td>${formatWithDifference(preTest?.agility_sec, latestTest.agility_sec, 'sec', true)}</td>
               </tr>
               <tr>
                 <td class="component-name">Speed (40m Sprint)</td>
                 <td class="current-test-col">${formatValue(latestTest.speed_sec, 'sec')}</td>
-                <td>${isPreTest ? 'N/A' : formatWithDifference(latestTest.speed_sec, previousTest?.speed_sec, 'sec', true)}</td>
-                <td>${formatWithDifference(latestTest.speed_sec, preTest?.speed_sec, 'sec', true)}</td>
+                <td>${isPreTest ? 'N/A' : formatWithDifference(previousTest?.speed_sec, latestTest.speed_sec, 'sec', true)}</td>
+                <td>${formatWithDifference(preTest?.speed_sec, latestTest.speed_sec, 'sec', true)}</td>
               </tr>
               <tr>
                 <td class="component-name">Endurance (3-min Step Test)</td>
                 <td class="current-test-col">${latestTest.endurance_display || 'N/A'}</td>
-                <td>${isPreTest ? 'N/A' : formatEnduranceWithDifference(latestTest.endurance_display, previousTest?.endurance_display)}</td>
-                <td>${formatEnduranceWithDifference(latestTest.endurance_display, preTest?.endurance_display)}</td>
+                <td>${isPreTest ? 'N/A' : formatEnduranceWithDifference(previousTest?.endurance_display, latestTest.endurance_display)}</td>
+                <td>${formatEnduranceWithDifference(preTest?.endurance_display, latestTest.endurance_display)}</td>
               </tr>
             </tbody>
           </table>

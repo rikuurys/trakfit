@@ -250,6 +250,8 @@
         font-weight: 800;
         display: inline-block;
         margin-top: 0.5rem;
+        min-width: 70px;
+        text-align: center;
       }
 
       .input-with-unit {
@@ -278,9 +280,20 @@
         margin-top: 0.5rem;
         padding-left: 0.25rem;
         display: none;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
       }
 
       .error-message.show {
+        display: block;
+        opacity: 1;
+      }
+
+      .error-message.focus-only {
+        display: none;
+      }
+
+      .error-message.focus-only.show {
         display: block;
       }
 
@@ -735,13 +748,24 @@
         return errorEl;
       }
 
-      function showError(input, message) {
+      function showError(input, message, showImmediately = false) {
         input.classList.remove('valid');
         input.classList.add('invalid');
         const errorId = input.id + '_error';
         const errorEl = createErrorElement(input, errorId);
         errorEl.textContent = message;
-        errorEl.classList.add('show');
+        
+        // Store error state
+        input.dataset.hasError = 'true';
+        input.dataset.errorMessage = message;
+        
+        // Only show if focused or explicitly requested (e.g., on form submit)
+        if (showImmediately || document.activeElement === input) {
+          errorEl.classList.add('show');
+          errorEl.classList.remove('focus-only');
+        } else {
+          errorEl.classList.add('focus-only');
+        }
       }
 
       function showValid(input) {
@@ -750,8 +774,11 @@
         const errorId = input.id + '_error';
         const errorEl = document.getElementById(errorId);
         if (errorEl) {
-          errorEl.classList.remove('show');
+          errorEl.classList.remove('show', 'focus-only');
         }
+        // Clear error state
+        delete input.dataset.hasError;
+        delete input.dataset.errorMessage;
       }
 
       function clearValidation(input) {
@@ -759,8 +786,11 @@
         const errorId = input.id + '_error';
         const errorEl = document.getElementById(errorId);
         if (errorEl) {
-          errorEl.classList.remove('show');
+          errorEl.classList.remove('show', 'focus-only');
         }
+        // Clear error state
+        delete input.dataset.hasError;
+        delete input.dataset.errorMessage;
       }
 
       function validateNumeric(input, min, max, allowNegative = false, decimals = 2) {
@@ -953,6 +983,33 @@
         }
       }
 
+      // ===== GLOBAL FOCUS/BLUR HANDLERS FOR ERROR VISIBILITY =====
+      function setupFocusBlurHandlers(input) {
+        input.addEventListener('focus', function() {
+          // Show error if one exists
+          if (this.dataset.hasError === 'true') {
+            const errorId = this.id + '_error';
+            const errorEl = document.getElementById(errorId);
+            if (errorEl) {
+              errorEl.classList.add('show');
+              errorEl.classList.remove('focus-only');
+            }
+          }
+        });
+        
+        input.addEventListener('blur', function() {
+          // Hide error when focus is lost (unless form submit requires showing all)
+          if (this.dataset.hasError === 'true') {
+            const errorId = this.id + '_error';
+            const errorEl = document.getElementById(errorId);
+            if (errorEl && !errorEl.classList.contains('persist')) {
+              errorEl.classList.remove('show');
+              errorEl.classList.add('focus-only');
+            }
+          }
+        });
+      }
+
       // ===== STEP 4a: BODY METRICS =====
       const heightInput = document.getElementById('height_cm');
       const weightInput = document.getElementById('weight_kg');
@@ -968,6 +1025,10 @@
           step4aBtn.disabled = true;
         }
       }
+
+      // Setup focus/blur handlers for error visibility
+      setupFocusBlurHandlers(heightInput);
+      setupFocusBlurHandlers(weightInput);
 
       heightInput.addEventListener('input', function() {
         calculateBMI();
@@ -1006,6 +1067,18 @@
           document.getElementById('hidden_weight_kg').value = weightInput.value;
           
           showStep('4b');
+        } else {
+          // Show all errors on submit attempt
+          [heightInput, weightInput].forEach(input => {
+            if (input.dataset.hasError === 'true') {
+              const errorId = input.id + '_error';
+              const errorEl = document.getElementById(errorId);
+              if (errorEl) {
+                errorEl.classList.add('show', 'persist');
+                errorEl.classList.remove('focus-only');
+              }
+            }
+          });
         }
       });
 
@@ -1022,6 +1095,9 @@
           step4bBtn.disabled = true;
         }
       }
+
+      // Setup focus/blur handlers for error visibility
+      setupFocusBlurHandlers(distanceInput);
 
       distanceInput.addEventListener('input', function() {
         calculateVO2Max();
@@ -1045,6 +1121,16 @@
           document.getElementById('hidden_vo2_distance_m').value = distanceInput.value;
           
           showStep('4c');
+        } else {
+          // Show all errors on submit attempt
+          if (distanceInput.dataset.hasError === 'true') {
+            const errorId = distanceInput.id + '_error';
+            const errorEl = document.getElementById(errorId);
+            if (errorEl) {
+              errorEl.classList.add('show', 'persist');
+              errorEl.classList.remove('focus-only');
+            }
+          }
         }
       });
 
@@ -1069,6 +1155,13 @@
           step4cBtn.disabled = true;
         }
       }
+
+      // Setup focus/blur handlers for error visibility
+      setupFocusBlurHandlers(flexibilityInput);
+      setupFocusBlurHandlers(strengthInput);
+      setupFocusBlurHandlers(agilityInput);
+      setupFocusBlurHandlers(speedInput);
+      setupFocusBlurHandlers(enduranceInput);
 
       // Flexibility validation
       flexibilityInput.addEventListener('input', checkStep4cValidity);
@@ -1113,7 +1206,17 @@
       document.getElementById('form-step4c').addEventListener('submit', function(e) {
         if (step4cBtn.disabled) {
           e.preventDefault();
-          alert('Please fill in all fields correctly before submitting.');
+          // Show all errors on submit attempt
+          [flexibilityInput, strengthInput, agilityInput, speedInput, enduranceInput].forEach(input => {
+            if (input.dataset.hasError === 'true') {
+              const errorId = input.id + '_error';
+              const errorEl = document.getElementById(errorId);
+              if (errorEl) {
+                errorEl.classList.add('show', 'persist');
+                errorEl.classList.remove('focus-only');
+              }
+            }
+          });
         }
       });
     </script>
