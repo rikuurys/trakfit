@@ -169,24 +169,18 @@
             position: relative;
         }
 
-        .user-avatar {
-            width: 3vw;
-            height: 3vw;
-            background: #D9D9D9;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+      .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
 
-        .user-avatar:hover {
-            transform: scale(1.05);
-        }
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
 
         .profile-image {
             width: 100%;
@@ -434,6 +428,54 @@
             margin-bottom: 1rem;
             align-items: flex-end;
             flex-shrink: 0;
+        }
+
+        .charts-grid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-height: 0;
+            padding: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .chart-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 8vw;
+            height: 40vh;
+            overflow: hidden;
+        }
+
+        .chart-card-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .chart-card-canvas {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-card-canvas canvas {
+            max-width: 100%;
+            max-height: 100%;
         }
 
         /* Custom Dropdown Styles */
@@ -893,27 +935,12 @@
             <div class="top-bar">
                 <h1 class="page-title">Dashboard</h1>
                 <div class="user-section">
-                    <div class="notification-icon">
-                        <i class="fa-regular fa-bell" style="font-size: clamp(1.2rem, 1.5vw, 2rem); padding-right: 0.5vw;"></i>
-                    </div>
                     <div class="user-avatar-container">
                         <div class="user-avatar" onclick="toggleProfileDropdown()">
                             <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
                         </div>
                         <!-- Profile Dropdown -->
                         <div class="profile-dropdown" id="profileDropdown">
-                            <div class="dropdown-item view-profile-item" onclick="viewProfile()">
-                                <span>View Profile</span>
-                            </div>
-                            <div class="dropdown-divider"></div>
-                            <div class="dropdown-item dark-mode-item">
-                                <span>Dark mode</span>
-                                <div class="toggle-switch">
-                                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-                                    <label for="darkModeToggle" class="slider"></label>
-                                </div>
-                            </div>
-                            <div class="dropdown-divider"></div>
                             <div class="dropdown-item logout-item" onclick="logout()">
                                 <span>Logout ></span>
                             </div>
@@ -1081,9 +1108,50 @@
                                 </div>
                             </div>
 
-                            <h3 class="chart-title">Average Fitness Component Comparison (Pre-Test vs Post-Test)</h3>
-                            <div style="position: relative; flex: 1; min-height: 0;">
-                                <canvas id="fitnessChart"></canvas>
+                            <h3 class="chart-title">Fitness Component Comparison (Pre-Test vs Latest Post-Test)</h3>
+                            <div class="charts-grid">
+                                <div class="chart-card">
+                                    <div class="chart-card-title">Body Mass Index (BMI)</div>
+                                    <div class="chart-card-canvas">
+                                        <canvas id="bmiComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="chart-card">
+                                    <div class="chart-card-title">VO₂ Max</div>
+                                    <div class="chart-card-canvas">
+                                        <canvas id="vo2ComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="chart-card">
+                                    <div class="chart-card-title">Flexibility (Sit & Reach)</div>
+                                    <div class="chart-card-canvas">
+                                        <canvas id="flexibilityComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="chart-card">
+                                    <div class="chart-card-title">Strength (Push-ups)</div>
+                                    <div class="chart-card-canvas">
+                                        <canvas id="strengthComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="chart-card">
+                                    <div class="chart-card-title">Agility (Hexagon)</div>
+                                    <div class="chart-card-canvas">
+                                        <canvas id="agilityComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="chart-card">
+                                    <div class="chart-card-title">Speed (40m Sprint)</div>
+                                    <div class="chart-card-canvas">
+                                        <canvas id="speedComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="chart-card">
+                                    <div class="chart-card-title">Endurance (1.5km)</div>
+                                    <div class="chart-card-canvas">
+                                        <canvas id="enduranceComparisonChart"></canvas>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1239,53 +1307,272 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Fitness Component Comparison Chart
-        const fitnessCtx = document.getElementById('fitnessChart').getContext('2d');
-        new Chart(fitnessCtx, {
+        // Common chart options
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 8,
+                        font: {
+                            size: 10
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label || '';
+                            const value = context.parsed.y;
+                            if (value === null) {
+                                return label + ': No data';
+                            }
+                            return label + ': ' + value + (context.dataset.unit || '');
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        };
+
+        // Create BMI Comparison Chart
+        new Chart(document.getElementById('bmiComparisonChart'), {
             type: 'bar',
             data: {
-                labels: ['BMI', 'VO₂ Max', 'Flexibility', 'Strength', 'Agility', 'Speed', 'Endurance'],
+                labels: ['BMI'],
                 datasets: [{
                     label: 'Pre-Test',
-                    data: [18, 25, 24, 20, 24, 30, 48],
+                    data: [23],
                     backgroundColor: '#4A90A4',
-                    borderRadius: 4
+                    borderRadius: 4,
+                    unit: ''
                 }, {
                     label: 'Post-Test',
-                    data: [19, 28, 27, 32, 42, 48, 55],
+                    data: [22],
                     backgroundColor: '#2C3E50',
-                    borderRadius: 4
+                    borderRadius: 4,
+                    unit: ''
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        align: 'end'
-                    }
-                },
+                ...commonOptions,
                 scales: {
+                    ...commonOptions.scales,
                     y: {
-                        beginAtZero: true,
-                        max: 60,
-                        ticks: {
-                            stepSize: 10
-                        },
-                        grid: {
-                            color: 'rgba(0,0,0,0.05)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
+                        ...commonOptions.scales.y,
+                        max: 50
                     }
-                },
-                elements: {
-                    bar: {
-                        borderWidth: 0
+                }
+            }
+        });
+
+        // Create VO2 Max Comparison Chart
+        new Chart(document.getElementById('vo2ComparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['VO₂ Max'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [33],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ''
+                }, {
+                    label: 'Post-Test',
+                    data: [78],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ''
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // Create Flexibility Comparison Chart
+        new Chart(document.getElementById('flexibilityComparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Flexibility'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [50],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ' cm'
+                }, {
+                    label: 'Post-Test',
+                    data: [45],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ' cm'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 50
+                    }
+                }
+            }
+        });
+
+        // Create Strength Comparison Chart
+        new Chart(document.getElementById('strengthComparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Strength'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [18],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ' reps'
+                }, {
+                    label: 'Post-Test',
+                    data: [33],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ' reps'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 200
+                    }
+                }
+            }
+        });
+
+        // Create Agility Comparison Chart
+        new Chart(document.getElementById('agilityComparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Agility'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [5],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ' sec'
+                }, {
+                    label: 'Post-Test',
+                    data: [6],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ' sec'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 60
+                    }
+                }
+            }
+        });
+
+        // Create Speed Comparison Chart
+        new Chart(document.getElementById('speedComparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Speed'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [10],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ' sec'
+                }, {
+                    label: 'Post-Test',
+                    data: [7],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ' sec'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 20
+                    }
+                }
+            }
+        });
+
+        // Create Endurance Comparison Chart
+        new Chart(document.getElementById('enduranceComparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Endurance'],
+                datasets: [{
+                    label: 'Pre-Test',
+                    data: [9],
+                    backgroundColor: '#4A90A4',
+                    borderRadius: 4,
+                    unit: ' min'
+                }, {
+                    label: 'Post-Test',
+                    data: [7],
+                    backgroundColor: '#2C3E50',
+                    borderRadius: 4,
+                    unit: ' min'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        max: 20
                     }
                 }
             }
@@ -1330,24 +1617,6 @@
                 dropdown.classList.remove('show');
             }
         });
-
-        function viewProfile() {
-            alert('View Profile clicked - This would navigate to profile page');
-            document.getElementById('profileDropdown').classList.remove('show');
-        }
-
-        function toggleDarkMode() {
-            const toggle = document.getElementById('darkModeToggle');
-            toggle.checked = !toggle.checked;
-
-            if (toggle.checked) {
-                document.body.classList.add('dark-mode');
-                alert('Dark mode enabled - This would apply dark theme');
-            } else {
-                document.body.classList.remove('dark-mode');
-                alert('Dark mode disabled - This would apply light theme');
-            }
-        }
 
         function logout() {
             if (confirm('Are you sure you want to log out?')) {

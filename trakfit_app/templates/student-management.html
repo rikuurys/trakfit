@@ -22,9 +22,10 @@
 
 
         html, body {
-            margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #FAFAFA;
+            margin: 0;
+            padding: 0;
             width: 100vw;
             height: 100vh;
             overflow: hidden;
@@ -154,20 +155,22 @@
             color: var(--text-light);
             font-size: clamp(1rem, 1.2vw, 1.2rem);
         }
-
-        .user-avatar {
-            width: clamp(40px, 3.5vw, 60px);
-            height: clamp(40px, 3.5vw, 60px);
-            background: #D9D9D9;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            overflow: hidden;
-            cursor: pointer;
+        .user-avatar-container {
+            position: relative;
         }
+
+      .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
 
         .profile-image {
             width: 100%;
@@ -358,6 +361,53 @@
             color: var(--text-light);
             margin-bottom: 2px;
         }
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 180px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            padding: 8px 0;
+        }
+
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .dropdown-item:hover {
+            background-color: #F9FAFB;
+        }
+
+        .logout-item {
+            color: #6B7280;
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-item:hover {
+            background-color: #F9FAFB;
+        }
 
         @media (max-width: 768px) {
             .sidebar {
@@ -399,11 +449,16 @@
             <div class="top-bar">
                 <h1 class="page-title">Student Management</h1>
                 <div class="user-section">
-                    <div class="notification-icon">
-                        <i class="fa-regular fa-bell" style="font-size: clamp(1.2rem, 1.5vw, 2rem); padding-right: 0.5vw;"></i>
-                    </div>
-                    <div class="user-avatar">
-                        <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
+                    <div class="user-avatar-container">
+                        <div class="user-avatar" onclick="toggleProfileDropdown()">
+                            <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
+                        </div>
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="dropdown-item logout-item" onclick="logout()">
+                                <span>Logout ></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -517,6 +572,27 @@
                 row.style.display = (name.includes(searchTerm) || section.includes(searchTerm) || email.includes(searchTerm)) ? '' : 'none';
             });
         });
+        // Profile Dropdown Functions
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const userAvatar = document.querySelector('.user-avatar');
+
+            if (!userAvatar.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                window.location.href = '/';
+            }
+        }
     </script>
 </body>
 </html>

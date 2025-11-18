@@ -21,9 +21,10 @@
         }
 
         html, body {
-            margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #FAFAFA;
+            margin: 0;
+            padding: 0;
             width: 100vw;
             height: 100vh;
             overflow: hidden;
@@ -171,16 +172,69 @@
             font-size: clamp(1rem, 1.2vw, 1.2rem);
         }
 
-        .user-avatar {
-            width: clamp(40px, 3.5vw, 60px);
-            height: clamp(40px, 3.5vw, 60px);
-            background: #D9D9D9;
-            border-radius: 50%;
+        .user-avatar-container {
+            position: relative;
+        }
+
+      .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 180px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            padding: 8px 0;
+        }
+
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            justify-content: space-between;
             cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .dropdown-item:hover {
+            background-color: #F9FAFB;
+        }
+
+        .logout-item {
+            color: #6B7280;
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-item:hover {
+            background-color: #F9FAFB;
         }
 
         .profile-image {
@@ -310,11 +364,11 @@
             border-radius: 20px;
             padding: 1rem 1.5rem;
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
-            flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
             overflow: hidden;
+            height: 80%;
         }
 
         .charts-grid {
@@ -422,6 +476,26 @@
             color: var(--text-dark);
             font-weight: 500;
         }
+
+        .test-details-meta {
+        text-align: right;
+        font-size: clamp(0.8rem, 0.9vw, 0.9rem);
+        color: var(--text-dark);
+        line-height: 1.5;
+      }
+
+      .test-details-meta div {
+        margin-bottom: 0.25rem;
+      }
+
+      .test-details-meta div:last-child {
+        margin-bottom: 0;
+      }
+
+      .test-details-meta .updated-at {
+        font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+        color: #6b7280;
+      }
 
         .view-button {
             background: white;
@@ -690,11 +764,16 @@
                     <h1 class="page-title">Student Profile</h1>
                 </div>
                 <div class="user-section">
-                    <div class="notification-icon">
-                        <i class="fa-regular fa-bell"></i>
-                    </div>
-                    <div class="user-avatar">
-                        <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
+                    <div class="user-avatar-container">
+                        <div class="user-avatar" onclick="toggleProfileDropdown()">
+                            <img src="{% static 'profile.png' %}" alt="Profile" class="profile-image">
+                        </div>
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="dropdown-item logout-item" onclick="logout()">
+                                <span>Logout ></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -979,6 +1058,7 @@
                   </div>
                   <div class="test-details-meta">
                     <div><strong>Taken at:</strong> ${test.taken_at}</div>
+                    <div class="updated-at"><strong>Updated at:</strong> ${test.updated_at}</div>
                   </div>
                 </div>
                 <div class="table-wrapper">
@@ -1145,7 +1225,7 @@
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 40
+                        max: 50
                     }
                 }
             }
@@ -1176,7 +1256,7 @@
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 60
+                        max: 100
                     }
                 }
             }
@@ -1238,7 +1318,7 @@
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 60
+                        max: 200
                     }
                 }
             }
@@ -1269,7 +1349,7 @@
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 30
+                        max: 60
                     }
                 }
             }
@@ -1331,11 +1411,32 @@
                     ...commonOptions.scales,
                     y: {
                         ...commonOptions.scales.y,
-                        max: 20
+                        max: 30
                     }
                 }
             }
         });
+        // Profile Dropdown Functions
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const userAvatar = document.querySelector('.user-avatar');
+
+            if (!userAvatar.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                window.location.href = '/';
+            }
+        }
     </script>
 </body>
 </html>

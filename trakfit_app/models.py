@@ -210,6 +210,24 @@ class FitnessTest(models.Model):
         return f"{self.student.student_no} - {self.test_type} ({self.taken_at})"
 
 
+class updates(models.Model):
+    """Model to track updates to student data."""
+    
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        db_column='student_id',
+        related_name='updates'
+    )
+    body = models.TextField(help_text="Description of the update action")
+    updated_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'updates'
+        ordering = ['-updated_at']
+    
+    def __str__(self):
+        return f"{self.body} at {self.updated_at}"
 # class Remark(models.Model):
 #     """Remarks/feedback for students on their fitness tests."""
 #
