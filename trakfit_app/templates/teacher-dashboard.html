@@ -451,7 +451,7 @@
             flex-direction: column;
             align-items: center;
             width: 8vw;
-            height: 35vh;
+            height: 33vh;
             overflow: visible;
         }
 
@@ -951,7 +951,7 @@
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem; flex: 1; overflow: hidden; min-height: 0;">
+            <div style="display: grid; grid-template-columns: 3fr 0.7fr; gap: 1.5rem; flex: 1; overflow: hidden; min-height: 0;">
 
                 <div style="display: flex; flex-direction: column; overflow: hidden; min-height: 0;">
                     <!-- Welcome Card -->
@@ -1326,6 +1326,8 @@
                     }
                 },
                 tooltip: {
+                    position: 'nearest',
+                    yAlign: 'bottom',
                     callbacks: {
                         label: function(context) {
                             const label = context.dataset.label || '';
@@ -1359,6 +1361,11 @@
                     grid: {
                         display: false
                     }
+                }
+            },
+            layout: {
+                padding: {
+                    top: 25
                 }
             }
         };
