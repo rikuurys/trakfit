@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Student, FitnessTest, Remark
+from .models import User, Student, FitnessTest
 
 
 class UserAdmin(BaseUserAdmin):
@@ -61,23 +61,24 @@ class FitnessTestAdmin(admin.ModelAdmin):
 
 
 class RemarkAdmin(admin.ModelAdmin):
-    """Admin for Remark model."""
-    list_display = ('id', 'student', 'test', 'created_at')
-    list_filter = ('created_at',)
-    search_fields = ('student__student_no', 'student__first_name', 'student__last_name', 'body')
-    ordering = ('-created_at',)
-    
-    fieldsets = (
-        ('Remark Information', {'fields': ('student', 'test', 'body')}),
-        ('Timestamp', {'fields': ('created_at',)}),
-    )
-    
-    readonly_fields = ('created_at',)
+    """Admin for Remark model - DEPRECATED: Remarks now stored in FitnessTest.remarks field."""
+    pass
+    # list_display = ('id', 'student', 'test', 'created_at')
+    # list_filter = ('created_at',)
+    # search_fields = ('student__student_no', 'student__first_name', 'student__last_name', 'body')
+    # ordering = ('-created_at',)
+    # 
+    # fieldsets = (
+    #     ('Remark Information', {'fields': ('student', 'test', 'body')}),
+    #     ('Timestamp', {'fields': ('created_at',)}),
+    # )
+    # 
+    # readonly_fields = ('created_at',)
 
 
 # Register models
 admin.site.register(User, UserAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(FitnessTest, FitnessTestAdmin)
-admin.site.register(Remark, RemarkAdmin)
+# admin.site.register(Remark, RemarkAdmin)  # Deprecated - remarks now in FitnessTest model
 

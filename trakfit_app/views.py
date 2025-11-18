@@ -176,12 +176,11 @@ def student_dashboard(request):
     if latest_test and latest_test.bmi:
         latest_test.bmi_status = get_bmi_status(latest_test.bmi)
     
-    # Get all remarks for the student
+    # Get all tests with remarks for the student
     remarks_data = []
-    remarks = student.remarks.select_related('test').order_by('-created_at')[:10]
+    tests_with_remarks = student.fitness_tests.filter(remarks__isnull=False).exclude(remarks='').order_by('-taken_at')[:10]
     
-    for remark in remarks:
-        test = remark.test
+    for test in tests_with_remarks:
         # Try to find the corresponding pre/post test for comparison
         if test.test_type == 'post':
             comparison_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
@@ -224,7 +223,7 @@ def student_dashboard(request):
             'metric': metric_name,
             'pre': pre_value,
             'post': post_value,
-            'remark': remark.body
+            'remark': test.remarks
         })
     
     # Calculate VO2 Max trend data (last 5 tests with VO2 data)
@@ -557,16 +556,131 @@ def student_profile(request, student_no):
     student = Student.objects.get(student_no=student_no)
     
     # Get pre-test and post-test
-    pre_test = student.fitness_tests.filter(test_type='pre').first()
-    post_test = student.fitness_tests.filter(test_type='post').first()
+
+    tests= student.fitness_tests.all().order_by('-taken_at')
     
     template = "student-profile.html"
+
+    # Get pre-test (only one per student ever)
+    pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+    post_test= student.fitness_tests.filter(test_type='post').order_by('-taken_at').last()
+    # Get all tests ordered by date for finding previous test
+    all_tests_ordered = list(student.fitness_tests.all().order_by('-taken_at'))
+
+    # Prepare test data with BMI, VO2 Max, remarks, pre-test, and previous test for JSON
+    tests_data = []
+    for idx, test in enumerate(tests):
+        # Get remarks for this test
+
+        # Build pre-test data
+        pre_test_data = None
+        if pre_test:
+            pre_test_data = {
+                'test_id': pre_test.test_id,
+                'bmi': round(pre_test.bmi, 1) if pre_test.bmi else None,
+                'vo2_max': round(pre_test.vo2_max, 1) if pre_test.vo2_max else None,
+                'height_cm': float(pre_test.height_cm) if pre_test.height_cm else None,
+                'weight_kg': float(pre_test.weight_kg) if pre_test.weight_kg else None,
+                'flexibility_cm': float(pre_test.flexibility_cm) if pre_test.flexibility_cm else None,
+                'strength_reps': pre_test.strength_reps,
+                'agility_sec': float(pre_test.agility_sec) if pre_test.agility_sec else None,
+                'speed_sec': float(pre_test.speed_sec) if pre_test.speed_sec else None,
+                'endurance_display': pre_test.get_endurance_display(),
+            }
+
+        # Find previous test (the one taken before the current test)
+        previous_test_data = None
+        try:
+            # Find the current test in the all_tests_ordered list
+            current_test_index = next(i for i, t in enumerate(all_tests_ordered) if t.test_id == test.test_id)
+            # Previous test is the next one in the list (since list is sorted by -taken_at)
+            if current_test_index + 1 < len(all_tests_ordered):
+                previous_test = all_tests_ordered[current_test_index + 1]
+                previous_test_data = {
+                    'test_id': previous_test.test_id,
+                    'bmi': round(previous_test.bmi, 1) if previous_test.bmi else None,
+                    'vo2_max': round(previous_test.vo2_max, 1) if previous_test.vo2_max else None,
+                    'height_cm': float(previous_test.height_cm) if previous_test.height_cm else None,
+                    'weight_kg': float(previous_test.weight_kg) if previous_test.weight_kg else None,
+                    'flexibility_cm': float(previous_test.flexibility_cm) if previous_test.flexibility_cm else None,
+                    'strength_reps': previous_test.strength_reps,
+                    'agility_sec': float(previous_test.agility_sec) if previous_test.agility_sec else None,
+                    'speed_sec': float(previous_test.speed_sec) if previous_test.speed_sec else None,
+                    'endurance_display': previous_test.get_endurance_display(),
+                }
+        except StopIteration:
+            pass
+
+        test_dict = {
+            'test_id': test.test_id,
+            'test_type': test.get_test_type_display(),
+            'test_type_key': test.test_type,
+            'taken_at': test.taken_at.strftime('%B %d, %Y') if test.taken_at else 'N/A',
+            'updated_at': test.updated_at.strftime('%B %d, %Y') if test.updated_at else 'N/A',
+            'bmi': round(test.bmi, 1) if test.bmi else None,
+            'vo2_max': round(test.vo2_max, 1) if test.vo2_max else None,
+            'height_cm': float(test.height_cm) if test.height_cm else None,
+            'weight_kg': float(test.weight_kg) if test.weight_kg else None,
+            'flexibility_cm': float(test.flexibility_cm) if test.flexibility_cm else None,
+            'strength_reps': test.strength_reps,
+            'agility_sec': float(test.agility_sec) if test.agility_sec else None,
+            'speed_sec': float(test.speed_sec) if test.speed_sec else None,
+            'endurance_display': test.get_endurance_display(),
+            'remarks': test.remarks,
+            'pre_test': pre_test_data,
+            'previous_test': previous_test_data,
+        }
+        tests_data.append(test_dict)
+
+    import json
+    
     data = {
         'student': student,
+        'tests': tests,
         'pre_test': pre_test,
         'post_test': post_test,
+        'tests_json': json.dumps(tests_data),
     }
+
+
     return render(request, template, data)
+
+@login_required
+def add_remark(request):
+    """Handle remark submission via AJAX."""
+    from .models import FitnessTest
+    from django.http import JsonResponse
+    from django.utils import timezone
+    
+    if request.method == 'POST':
+        test_id = request.POST.get('test_id')
+        remark_text = request.POST.get('remark', '').strip()
+        
+        if not test_id or not remark_text:
+            return JsonResponse({'success': False, 'error': 'Missing test_id or remark text'})
+        
+        try:
+            # Get the fitness test
+            test = FitnessTest.objects.get(test_id=test_id)
+            
+            test.remarks = remark_text
+            test.remarksCreated = timezone.now()
+            test.save()
+            
+            return JsonResponse({
+                'success': True,
+                'remark': {
+                    'body': remark_text,
+                    'created_at': timezone.now().strftime('%B %d, %Y')
+                }
+            })
+            
+        except FitnessTest.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Test not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 def change_password(request):
     return render(request, 'change-password.html')
@@ -620,22 +734,15 @@ def student_history(request):
     
     # Get pre-test (only one per student ever)
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
-    
+
     # Get all tests ordered by date for finding previous test
     all_tests_ordered = list(student.fitness_tests.all().order_by('-taken_at'))
     
     # Prepare test data with BMI, VO2 Max, remarks, pre-test, and previous test for JSON
     tests_data = []
     for idx, test in enumerate(tests):
-        # Get remarks for this test
-        remarks = test.remarks.all().order_by('-created_at')
-        remarks_list = [
-            {
-                'body': remark.body,
-                'created_at': remark.created_at.strftime('%B %d, %Y') if remark.created_at else 'N/A'
-            }
-            for remark in remarks
-        ]
+        # Get remarks for this test (now stored as text field)
+        remarks_text = test.remarks if test.remarks else None
         
         # Build pre-test data
         pre_test_data = None
@@ -691,7 +798,8 @@ def student_history(request):
             'agility_sec': float(test.agility_sec) if test.agility_sec else None,
             'speed_sec': float(test.speed_sec) if test.speed_sec else None,
             'endurance_display': test.get_endurance_display(),
-            'remarks': remarks_list,
+            'remarks': remarks_text,
+            'remarksCreated': test.remarksCreated.strftime('%B %d, %Y at %I:%M %p') if test.remarksCreated else None,
             'pre_test': pre_test_data,
             'previous_test': previous_test_data,
         }

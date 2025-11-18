@@ -542,7 +542,7 @@
 
         .remarks-textarea {
             width: 100%;
-            height: 90px;
+            height: 10vh;
             padding: 0.75rem;
             border: 1px solid #E5E7EB;
             border-radius: 8px;
@@ -551,6 +551,7 @@
             resize: none;
             background: white;
             flex-shrink: 0;
+            overflow-y: auto;
         }
 
         .remarks-textarea:focus {
@@ -578,6 +579,34 @@
 
         .submit-button:hover {
             background: #87B9D1;
+        }
+
+        /* Hide previous test column when there's no meaningful previous test */
+        .test-results-table.hide-previous-test .previous-test-col {
+            display: none;
+        }
+
+        /* Hide pre-test column when viewing pre-test itself */
+        .test-results-table.hide-pre-test .pre-test-col {
+            display: none;
+        }
+
+        .difference {
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 0.25rem;
+        }
+
+        .difference-positive {
+            color: #16a34a;
+        }
+
+        .difference-negative {
+            color: #dc2626;
+        }
+
+        .difference-neutral {
+            color: #6b7280;
         }
 
         @media (max-width: 768px) {
@@ -618,9 +647,6 @@
                 </div>
                 <div class="nav-item">
                     <a href="{% url 'student_management' %}" class="nav-link active">Student Management</a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link">Settings</a>
                 </div>
             </div>
 
@@ -680,7 +706,7 @@
                     </div>
 
                     <div class="chart-container">
-                        <h3 class="chart-title">Fitness Component Comparison</h3>
+                        <h3 class="chart-title">Fitness Component Comparison (Pre-Test vs Latest Post-Test)</h3>
                         <div class="chart-canvas">
                             <canvas id="fitnessComparisonChart"></canvas>
                         </div>
@@ -691,21 +717,20 @@
             <div id="test-history" class="tab-content">
                 <div class="test-history-container">
                     <div class="test-list">
-                        <h3 class="test-list-title">Test Records</h3>
-                        <div class="test-item" onclick="showTestDetails('pre-test', event)">
-                            <div class="test-item-content">
-                                <div class="test-type">Pre-Test</div>
-                                <div class="test-date">{{ pre_test.created_at | date:"F j, Y" }}</div>
-                            </div>
-                            <button class="view-button">View</button>
+                      <h3 class="test-list-title">Test Records</h3>
+                      {% if tests %}
+                        {% for test in tests %}
+                        <div class="test-item" onclick="showTestDetails({{ test.test_id }}, event)">
+                          <div class="test-item-content">
+                            <div class="test-type">{{ test.get_test_type_display }}</div>
+                            <div class="test-date">{{ test.taken_at|date:"F d, Y"|default:"N/A" }}</div>
+                          </div>
+                          <button class="view-button">View</button>
                         </div>
-                        <div class="test-item" onclick="showTestDetails('post-test', event)">
-                            <div class="test-item-content">
-                                <div class="test-type">Post-Test</div>
-                                <div class="test-date">{{ post_test.created_at | date:"F j, Y" }}</div>
-                            </div>
-                            <button class="view-button">View</button>
-                        </div>
+                        {% endfor %}
+                      {% else %}
+                        <p style="color: var(--text-light); text-align: center; margin-top: 2rem;">No test records found.</p>
+                      {% endif %}
                     </div>
 
                     <div class="test-details-panel" id="test-details-panel">
@@ -721,6 +746,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        // Load test data from Django template
+        const testsData = {{ tests_json|safe }};
+        
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
@@ -734,122 +762,222 @@
             event.target.classList.add('active');
         }
 
-        function showTestDetails(testType, event) {
+        function submitRemark(event, testId) {
+            event.preventDefault();
+            
+            const textarea = document.getElementById(`remark-text-${testId}`);
+            const remarkText = textarea.value.trim();
+            
+            if (!remarkText) {
+                alert('Please enter a remark before submitting.');
+                return;
+            }
+            
+            // Get CSRF token from Django
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+            
+            // Submit the remark via fetch
+            fetch('{% url "add_remark" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: `test_id=${testId}&remark=${encodeURIComponent(remarkText)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Remark added successfully!');
+                    // Reload the page to show the new remark
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to add remark'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the remark.');
+            });
+        }
+
+        function showTestDetails(testId, event) {
             // Remove active class from all test items
             document.querySelectorAll('.test-item').forEach(item => {
-                item.classList.remove('active');
+              item.classList.remove('active');
             });
-            
+
             // Add active class to clicked item
             event.currentTarget.classList.add('active');
+
+            // Find the test data
+            const test = testsData.find(t => t.test_id === testId);
+            if (!test) return;
 
             const panel = document.getElementById('test-details-panel');
             panel.classList.add('has-content');
 
-            if (testType === 'pre-test') {
-                panel.innerHTML = `
-                    <div class="test-details-content">
-                        <h2 class="test-details-title">Pre-Test Results</h2>
-                        <div class="table-wrapper">
-                            <table class="test-results-table">
-                                <thead>
-                                    <tr>
-                                        <th>Fitness Component</th>
-                                        <th>Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="component-name">Body Mass Index (BMI)</td>
-                                        <td>{{ pre_test.bmi | floatformat:2}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">VO<sub>2</sub> Max</td>
-                                        <td>{{ pre_test.vo2_max | floatformat:2}} mL/kg/min</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">Flexibility</td>
-                                        <td>{{ pre_test.flexibility_cm | floatformat:2 }} cm</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">Strength</td>
-                                        <td>{{ pre_test.strength_reps }} push-ups</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">Agility</td>
-                                        <td>{{ pre_test.agility_sec | floatformat:2 }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">Speed</td>
-                                        <td>{{ pre_test.speed_sec | floatformat:2 }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">Endurance</td>
-                                        <td> {{ pre_test.get_endurance_display }} min</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="remarks-section">
-                            <h3 class="remarks-title">Remarks</h3>
-                            <textarea class="remarks-textarea" placeholder="Enter your remarks...">Student shows good baseline fitness levels. Focus on improving flexibility and endurance in the coming semester.</textarea>
-                            <button class="submit-button">Submit</button>
-                        </div>
-                    </div>
-                `;
-            } else if (testType === 'post-test') {
-                panel.innerHTML = `
-                    <div class="test-details-content">
-                        <h2 class="test-details-title">Post-Test Results</h2>
-                        <div class="table-wrapper">
-                            <table class="test-results-table">
-                                <thead>
-                                    <tr>
-                                        <th>Fitness Component</th>
-                                        <th>Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="component-name">Body Mass Index (BMI)</td>
-                                        <td>{{ post_test.bmi | floatformat:2}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">VO<sub>2</sub> Max</td>
-                                        <td>{{ post_test.vo2_max | floatformat:2}} mL/kg/min</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">Flexibility</td>
-                                        <td>{{ post_test.flexibility_cm | floatformat:2 }} cm</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">Strength</td>
-                                        <td>{{ post_test.strength_reps }} push-ups</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">Agility</td>
-                                        <td>{{ post_test.agility_sec | floatformat:2 }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">Speed</td>
-                                        <td>{{ post_test.speed_sec | floatformat:2 }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="component-name">Endurance</td>
-                                        <td> {{ post_test.get_endurance_display }} min</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="remarks-section">
-                            <h3 class="remarks-title">Remarks</h3>
-                            <textarea class="remarks-textarea" placeholder="Enter your remarks...">Excellent improvement across all fitness components! Student has shown great dedication and progress. Continue current training regimen.</textarea>
-                            <button class="submit-button">Submit</button>
-                        </div>
-                    </div>
-                `;
+            // Helper function to format value or show N/A
+            const formatValue = (value, unit = '') => {
+              if (value === null || value === undefined) return 'N/A';
+              const formattedValue = typeof value === 'number' ? value.toFixed(2) : value;
+              return `${formattedValue}${unit ? ' ' + unit : ''}`;
+            };
+
+            // Helper function to safely get test value from nested object
+            const getTestValue = (testData, field, unit = '') => {
+              if (!testData) return 'N/A';
+              return formatValue(testData[field], unit);
+            };
+
+            // Helper function to calculate difference from old value to current value
+            // oldValue is the reference point (pre-test or previous test)
+            // currentValue is what we're comparing to
+            const calculateDifference = (oldValue, currentValue, lowerIsBetter = false) => {
+              if (oldValue === null || oldValue === undefined || currentValue === null || currentValue === undefined) {
+                return null;
+              }
+              const diff = currentValue - oldValue;
+              if (diff === 0) return { value: 0, isPositive: null };
+
+              // For metrics where lower is better (BMI, agility, speed), flip the logic
+              const isImprovement = lowerIsBetter ? diff < 0 : diff > 0;
+              return { value: Math.abs(diff).toFixed(1), isPositive: isImprovement };
+            };
+
+            // Helper function to format old value with difference indicator showing change to current
+            const formatWithDifference = (oldValue, currentValue, unit = '', lowerIsBetter = false) => {
+              const valueStr = formatValue(oldValue, unit);
+              const diff = calculateDifference(oldValue, currentValue, lowerIsBetter);
+
+              if (!diff) return valueStr;
+
+              const sign = diff.isPositive ? '+' : '-';
+              const colorClass = diff.isPositive ? 'difference-positive' : 'difference-negative';
+
+              return `${valueStr} <span class="difference ${colorClass}">(${sign}${diff.value})</span>`;
+            };
+
+            // Helper function to convert endurance time (mm:ss) to seconds
+            const convertEnduranceToSeconds = (timeStr) => {
+              if (!timeStr || timeStr === 'N/A') return null;
+              const parts = timeStr.split(':');
+              if (parts.length !== 2) return null;
+              const minutes = parseInt(parts[0], 10);
+              const seconds = parseInt(parts[1], 10);
+              if (isNaN(minutes) || isNaN(seconds)) return null;
+              return minutes * 60 + seconds;
+            };
+
+            // Helper function to format endurance with difference showing change from old to current
+            const formatEnduranceWithDifference = (oldTime, currentTime) => {
+              if (!oldTime || oldTime === 'N/A') return 'N/A';
+
+              const oldSeconds = convertEnduranceToSeconds(oldTime);
+              const currentSeconds = convertEnduranceToSeconds(currentTime);
+
+              if (!currentSeconds) return oldTime;
+
+              const diff = calculateDifference(oldSeconds, currentSeconds, true);
+              if (!diff) return oldTime;
+
+              const sign = diff.isPositive ? '+' : '-';
+              const colorClass = diff.isPositive ? 'difference-positive' : 'difference-negative';
+
+              return `${oldTime} min <span class="difference ${colorClass}">(${sign}${diff.value}s)</span>`;
+            };
+
+            // Check if current test is the pre-test
+            const isPreTest = test.test_type_key === 'pre';
+
+            // Check if there's a previous test AND it's not the pre-test
+            // (if previous test is the pre-test, we don't show Previous Test column since we already have Pre-Test column)
+            const hasPreviousTest = test.previous_test !== null && 
+                                    test.previous_test !== undefined && 
+                                    test.previous_test.test_id !== test.pre_test?.test_id;
+
+            // Build remarks HTML - remarks is now a simple text field
+            let remarksHTML = '';
+            if (test.remarks) {
+              remarksHTML = test.remarks;
             }
-        }
+
+
+            // Render the test details
+            panel.innerHTML = `
+              <div class="test-details-content">
+                <div class="test-details-header" style="display:flex; align-items: center; justify-content: space-between">
+                  <div class="test-header-left">
+                    <h2 class="test-details-title">${isPreTest? test.test_type + ' Results'  : test.test_type + ' Results #' + (test.test_id-1)}</h2>
+                  </div>
+                  <div class="test-details-meta">
+                    <div><strong>Taken at:</strong> ${test.taken_at}</div>
+                  </div>
+                </div>
+                <div class="table-wrapper">
+                  <table class="test-results-table ${!hasPreviousTest ? 'hide-previous-test' : ''} ${isPreTest ? 'hide-pre-test' : ''}">
+                    <thead>
+                      <tr>
+                        <th>Fitness Component</th>
+                        <th class="current-test-col">${isPreTest? 'Value' : 'Current Value'}</th>
+                        <th class="previous-test-col">Previous Test</th>
+                        <th class="pre-test-col">Pre-Test</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="component-name">Body Mass Index (BMI)</td>
+                        <td class="current-test-col">${formatValue(test.bmi)}</td>
+                        <td class="previous-test-col">${formatWithDifference(test.previous_test?.bmi, test.bmi, '', true)}</td>
+                        <td class="pre-test-col">${formatWithDifference(test.pre_test?.bmi, test.bmi, '', true)}</td>
+                      </tr>
+                      <tr>
+                        <td class="component-name">VO<sub>2</sub> Max</td>
+                        <td class="current-test-col">${formatValue(test.vo2_max, 'mL/kg/min')}</td>
+                        <td class="previous-test-col">${formatWithDifference(test.previous_test?.vo2_max, test.vo2_max, 'mL/kg/min', false)}</td>
+                        <td class="pre-test-col">${formatWithDifference(test.pre_test?.vo2_max, test.vo2_max, 'mL/kg/min', false)}</td>
+                      </tr>
+                      <tr>
+                        <td class="component-name">Flexibility (Sit & Reach)</td>
+                        <td class="current-test-col">${formatValue(test.flexibility_cm, 'cm')}</td>
+                        <td class="previous-test-col">${formatWithDifference(test.previous_test?.flexibility_cm, test.flexibility_cm, 'cm', false)}</td>
+                        <td class="pre-test-col">${formatWithDifference(test.pre_test?.flexibility_cm, test.flexibility_cm, 'cm', false)}</td>
+                      </tr>
+                      <tr>
+                        <td class="component-name">Strength (Push-ups)</td>
+                        <td class="current-test-col">${formatValue(test.strength_reps, 'reps')}</td>
+                        <td class="previous-test-col">${formatWithDifference(test.previous_test?.strength_reps, test.strength_reps, 'reps', false)}</td>
+                        <td class="pre-test-col">${formatWithDifference(test.pre_test?.strength_reps, test.strength_reps, 'reps', false)}</td>
+                      </tr>
+                      <tr>
+                        <td class="component-name">Agility (Hexagon)</td>
+                        <td class="current-test-col">${formatValue(test.agility_sec, 'sec')}</td>
+                        <td class="previous-test-col">${formatWithDifference(test.previous_test?.agility_sec, test.agility_sec, 'sec', true)}</td>
+                        <td class="pre-test-col">${formatWithDifference(test.pre_test?.agility_sec, test.agility_sec, 'sec', true)}</td>
+                      </tr>
+                      <tr>
+                        <td class="component-name">Speed (40m Sprint)</td>
+                        <td class="current-test-col">${formatValue(test.speed_sec, 'sec')}</td>
+                        <td class="previous-test-col">${formatWithDifference(test.previous_test?.speed_sec, test.speed_sec, 'sec', true)}</td>
+                        <td class="pre-test-col">${formatWithDifference(test.pre_test?.speed_sec, test.speed_sec, 'sec', true)}</td>
+                      </tr>
+                      <tr>
+                        <td class="component-name">Endurance (1.5km)</td>
+                        <td class="current-test-col">${test.endurance_display ? test.endurance_display + ' min' : 'N/A'}</td>
+                        <td class="previous-test-col">${formatEnduranceWithDifference(test.previous_test?.endurance_display, test.endurance_display)}</td>
+                        <td class="pre-test-col">${formatEnduranceWithDifference(test.pre_test?.endurance_display, test.endurance_display)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="remarks-section">
+                    <h3 class="remarks-title">Remarks</h3>
+                    <textarea id="remark-text-${test.test_id}" class="remarks-textarea" placeholder="No remarks given yet">${remarksHTML}</textarea>
+                    <button class="submit-button" onclick="submitRemark(event, ${test.test_id})">Submit</button>
+                </div>
+                
+            `;
+          }
 
         const ctx = document.getElementById('fitnessComparisonChart').getContext('2d');
         
