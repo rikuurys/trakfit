@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Student, FitnessTest
+from .models import User, Student, FitnessTest, updates
 
 
 class UserAdmin(BaseUserAdmin):
@@ -76,9 +76,24 @@ class RemarkAdmin(admin.ModelAdmin):
     # readonly_fields = ('created_at',)
 
 
+class UpdatesAdmin(admin.ModelAdmin):
+    """Admin for updates model."""
+    list_display = ('id', 'student', 'body', 'updated_at')
+    list_filter = ('updated_at',)
+    search_fields = ('student__student_no', 'student__first_name', 'student__last_name', 'body')
+    ordering = ('-updated_at',)
+    
+    fieldsets = (
+        ('Update Information', {'fields': ('student', 'body', 'updated_at')}),
+    )
+    
+    readonly_fields = ('updated_at',)
+
+
 # Register models
 admin.site.register(User, UserAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(FitnessTest, FitnessTestAdmin)
-# admin.site.register(Remark, RemarkAdmin)  # Deprecated - remarks now in FitnessTest model
+admin.site.register(updates, UpdatesAdmin)
+# admin.site.register(Remark, RemarkAdmin) 
 

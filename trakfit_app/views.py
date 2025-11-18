@@ -607,7 +607,103 @@ def update_test_view(request, test_id):
 
 @login_required
 def teacher_dashboard(request):
-    return render(request, 'teacher-dashboard.html')
+
+    students= Student.objects.all()
+
+    # Get Total Pre-Test and Post-Test for each student
+    pre_total_bmi= 0
+    post_total_bmi= 0
+
+    pre_total_vo2= 0
+    post_total_vo2= 0
+
+    pre_total_flexibility= 0
+    post_total_flexibility= 0
+
+    pre_total_strength= 0
+    post_total_strength= 0
+
+    pre_total_agility= 0
+    post_total_agility= 0
+
+    pre_total_speed= 0
+    post_total_speed= 0
+
+    post_total_endurance= 0
+    pre_total_endurance= 0
+
+    bmi_change= 0
+
+    sections= {}
+
+    for i, stud in enumerate(students):
+
+        sections= {
+            f'{stud.section_code}-{stud.group_code}': None,
+        }
+
+        pre_test= stud.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
+        post_test= stud.fitness_tests.filter(test_type='post').order_by('-taken_at').first()
+        
+        pre_total_bmi += pre_test.bmi if pre_test and pre_test.bmi else 0
+        post_total_bmi += post_test.bmi if post_test and post_test.bmi else 0
+        pre_total_vo2 += pre_test.vo2_max if pre_test and pre_test.vo2_max else 0
+        post_total_vo2 += post_test.vo2_max if post_test and post_test.vo2_max else 0
+        pre_total_flexibility += pre_test.flexibility_cm if pre_test and pre_test.flexibility_cm else 0
+        post_total_flexibility += post_test.flexibility_cm if post_test and post_test.flexibility_cm else 0
+        pre_total_strength += pre_test.strength_reps if pre_test and pre_test.strength_reps else 0
+        post_total_strength += post_test.strength_reps if post_test and post_test.strength_reps else 0
+        pre_total_agility += pre_test.agility_sec if pre_test and pre_test.agility_sec else 0
+        post_total_agility += post_test.agility_sec if post_test and post_test.agility_sec else 0
+        pre_total_speed += pre_test.speed_sec if pre_test and pre_test.speed_sec else 0
+        post_total_speed += post_test.speed_sec if post_test and post_test.speed_sec else 0
+        if pre_test and pre_test.endurance_minutes is not None:
+            pre_total_endurance += (pre_test.endurance_minutes * 60) + (pre_test.endurance_seconds or 0)
+        if post_test and post_test.endurance_minutes is not None:
+            post_total_endurance += (post_test.endurance_minutes * 60) + (post_test.endurance_seconds or 0)
+        
+        bmi_change+= post_total_bmi - pre_total_bmi
+
+    totalCount= students.count() if students.count() > 0 else 1  # Prevent division by zero
+    average= {
+        'bmi': {
+            'pre': pre_total_bmi / totalCount,
+            'post': post_total_bmi / totalCount,
+        },
+        'vo2_max': {
+            'pre': pre_total_vo2 / totalCount,
+            'post': post_total_vo2 / totalCount,
+        },
+        'flexibility_cm': {
+            'pre': pre_total_flexibility / totalCount,
+            'post': post_total_flexibility / totalCount,
+        },
+        'strength_reps': {
+            'pre': pre_total_strength / totalCount,
+            'post': post_total_strength / totalCount,
+        },
+        'agility_sec': {
+            'pre': pre_total_agility / totalCount,
+            'post': post_total_agility / totalCount,
+        },
+        'speed_sec': {
+            'pre': pre_total_speed / totalCount,
+            'post': post_total_speed / totalCount,
+        },
+        'endurance_sec': {
+            'pre': pre_total_endurance / totalCount,
+            'post': post_total_endurance / totalCount,
+        },
+        'bmi_change': bmi_change / totalCount,
+    }
+
+    context = {
+        'average': average,
+        'total_students': students.count(),
+        'total_sections': len(sections),
+    }
+
+    return render(request, 'teacher-dashboard.html', context)
 
 @login_required
 def student_management(request):
@@ -630,7 +726,22 @@ def student_profile(request, student_no):
 
     # Get pre-test (only one per student ever)
     pre_test = student.fitness_tests.filter(test_type='pre').order_by('-taken_at').first()
-    post_test= student.fitness_tests.filter(test_type='post').order_by('-taken_at').last()
+    post_test = student.fitness_tests.filter(test_type='post').order_by('-taken_at').first()
+    
+    # Compute endurance as decimal minutes (minutes + seconds/60) for chart rendering
+    def _endurance_decimal(test):
+        if not test:
+            return None
+        mins = test.endurance_minutes or 0
+        secs = test.endurance_seconds or 0
+        try:
+            return float(mins) + (float(secs) / 60.0)
+        except Exception:
+            return None
+    
+    pre_endurance_decimal = _endurance_decimal(pre_test)
+    post_endurance_decimal = _endurance_decimal(post_test)
+    
     # Get all tests ordered by date for finding previous test
     all_tests_ordered = list(student.fitness_tests.all().order_by('-taken_at'))
 
@@ -707,6 +818,8 @@ def student_profile(request, student_no):
         'tests': tests,
         'pre_test': pre_test,
         'post_test': post_test,
+        'pre_endurance_decimal': pre_endurance_decimal,
+        'post_endurance_decimal': post_endurance_decimal,
         'tests_json': json.dumps(tests_data),
     }
 
